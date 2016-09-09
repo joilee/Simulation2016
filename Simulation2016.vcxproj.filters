@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{0fbc307e-66c7-4ea7-93df-7bd87cfc5e5c}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{d727c30b-527a-4035-a6a3-09c7d818cead}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="rasterHeight">
+      <UniqueIdentifier>{fbe07af8-5187-488d-a6fd-ee2cd9990d3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{3a7006ae-39ce-4e5e-80be-49f208c8c003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{f655c760-b131-4038-b907-ebe98701d491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="geometry">
+      <UniqueIdentifier>{47f01f16-4968-4d53-9fe5-d5f382d99fd0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_mainwindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterHeight\canny.cpp">
+      <Filter>rasterHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterHeight\IO_obj.cpp">
+      <Filter>rasterHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterHeight\Mesh.cpp">
+      <Filter>rasterHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterHeight\point.cpp">
+      <Filter>rasterHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterHeight\readGrid.cpp">
+      <Filter>rasterHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterHeight\TriMesh.cpp">
+      <Filter>rasterHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\emxBBoxD.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\emxFace.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\emxKdTreeD.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\emxModel.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\emxVertex.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\SphereBeam.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="util\ArcBall.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Color.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\emxCamera.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\HsvToRgb.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Quaternion.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="outdoorFile.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_outdoorFile.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_outdoorFile.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow.h">
+      <Filter>UI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="outdoorFile.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="outdoorFile.h">
+      <Filter>UI</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\canny.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\defaultPara.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\IO_obj.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\Mesh.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\point.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\readGrid.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterHeight\TriMesh.h">
+      <Filter>rasterHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\dataStruct.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxBBoxD.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxFace.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxKdTreeD.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxModel.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxPoint.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxRayD.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\emxVertex.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\SphereBeam.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="util\ArcBall.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Color.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\EField.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\emxCamera.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\emxRenderUtility.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\emxUtilityInc.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\HsvToRgb.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\PredictionIndex.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Quaternion.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\vector.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_outdoorFile.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
