@@ -52,11 +52,9 @@
     <property name="title">
      <string>Computer</string>
     </property>
-    <addaction name="action_2"/>
+    <addaction name="computerOption"/>
     <addaction name="separator"/>
-    <addaction name="action_8"/>
     <addaction name="separator"/>
-    <addaction name="action_11"/>
    </widget>
    <widget class="QMenu" name="menuVisualize">
     <property name="title">
@@ -184,9 +182,9 @@
     <string>选项</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="computerOption">
    <property name="text">
-    <string>发射源参数</string>
+    <string>选项</string>
    </property>
   </action>
   <action name="action_8">

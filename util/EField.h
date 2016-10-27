@@ -1,4 +1,4 @@
-#ifndef EFIELD_H
+ï»¿#ifndef EFIELD_H
 #define EFIELD_H
 #include "util/vector.h"
 #include <complex>
@@ -10,10 +10,10 @@ public:
 	double all_distance;
 	double power_Loss;
 	vector<Vector3d> Path_interPoint;	
-	vector<int> propagation_type;   //0´ú±í·´Éä£¬1´ú±íÍ¸Éä£¬2´ú±íÈÆÉä 
-	vector<Vector3d> intersect_faceNormal;  //·´Í¸ÉäÂ·¾¶Ïà½»ÃæÆ¬µÄ·¨ÏòÁ¿
-	vector<int>Intersection_FaceID; //·´Í¸ÉäÂ·¾¶Ïà½»ÃæÆ¬±àºÅ
-	int edge_id;   //ÈÆÉäÂ·¾¶¾­¹ıµÄÀâ±ßidºÅ
+	vector<int> propagation_type;   //0ä»£è¡¨åå°„ï¼Œ1ä»£è¡¨é€å°„ï¼Œ2ä»£è¡¨ç»•å°„ 
+	vector<Vector3d> intersect_faceNormal;  //åé€å°„è·¯å¾„ç›¸äº¤é¢ç‰‡çš„æ³•å‘é‡
+	vector<int>Intersection_FaceID; //åé€å°„è·¯å¾„ç›¸äº¤é¢ç‰‡ç¼–å·
+	int edge_id;   //ç»•å°„è·¯å¾„ç»è¿‡çš„æ£±è¾¹idå·
 	Field_Path() {all_distance = 0; power_Loss = 0; edge_id = -1;}
 };
 
@@ -26,18 +26,18 @@ struct DiffEdgeInfo
 class EField
 {
 public:
-	Vector3d Position;  //½ÓÊÕµãÎ»ÖÃ
-	std::vector<Field_Path> Path;  //Field_Path Àà³ÉÔ±£ºall_distance¡¢power_loss¡¢Path_interPoint
-	double MolStrength;   //ĞÅºÅÄ£Öµ
-	Vector3cd EFieldAll;  //Ê¸Á¿×Ü³¡Ç¿
-	bool In_or_Out; //½ÓÊÕµãÊÇ·ñÔÚ½¨ÖşÎïÄÚ²¿µÄÌØÕ÷±êÖ¾£¬0±íÊ¾ÔÚÄÚ²¿£¬1±íÊ¾²»ÔÚÄÚ²¿
+	Vector3d Position;  //æ¥æ”¶ç‚¹ä½ç½®
+	std::vector<Field_Path> Path;  //Field_Path ç±»æˆå‘˜ï¼šall_distanceã€power_lossã€Path_interPoint
+	double MolStrength;   //ä¿¡å·æ¨¡å€¼
+	Vector3cd EFieldAll;  //çŸ¢é‡æ€»åœºå¼º
+	bool In_or_Out; //æ¥æ”¶ç‚¹æ˜¯å¦åœ¨å»ºç­‘ç‰©å†…éƒ¨çš„ç‰¹å¾æ ‡å¿—ï¼Œ0è¡¨ç¤ºåœ¨å†…éƒ¨ï¼Œ1è¡¨ç¤ºä¸åœ¨å†…éƒ¨
 	//complex<double> InitEFstrength;
-	//	int ordernum;  //½ÓÊÕµã´¦³¡Ç¿´óĞ¡µÄÅÅĞò
-	//int pathnum; //ÄÜ¹»µ½´ï¸Ã½ÓÊÕµãµÄÂ·¾¶ÊıÄ¿
+	//	int ordernum;  //æ¥æ”¶ç‚¹å¤„åœºå¼ºå¤§å°çš„æ’åº
+	//int pathnum; //èƒ½å¤Ÿåˆ°è¾¾è¯¥æ¥æ”¶ç‚¹çš„è·¯å¾„æ•°ç›®
 	//complex<double> EFieldStrength;  
-	//complex<double> EFieldTotal;  //Ä£Öµ×Ü³¡Ç¿
-	double HorizontalDis;  //½ÓÊÕµãºÍ·¢ÉäÔ´Ö®¼äË®Æ½¾àÀë
-	double LosDis; //½ÓÊÕµãºÍ·¢ÉäÔ´Ö®¼äµÄÖ±´ï¾àÀë
+	//complex<double> EFieldTotal;  //æ¨¡å€¼æ€»åœºå¼º
+	double HorizontalDis;  //æ¥æ”¶ç‚¹å’Œå‘å°„æºä¹‹é—´æ°´å¹³è·ç¦»
+	double LosDis; //æ¥æ”¶ç‚¹å’Œå‘å°„æºä¹‹é—´çš„ç›´è¾¾è·ç¦»
 	EField(): MolStrength(0.0),EFieldAll(Vector3cd(0, 0, 0)),In_or_Out(1){}
 };
 #endif

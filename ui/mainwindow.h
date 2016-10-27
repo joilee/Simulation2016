@@ -4,7 +4,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_mainwindow.h"
 #include "outdoorFile.h"
-
+#include "computerOptionDialog.h"
 class QAction; 
 
 class MainWindow : public QMainWindow
@@ -17,11 +17,12 @@ public:
 
 private slots:
 	void openOutdoorFile();
-
+	void computerOption();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;
 	outdoorFileDialog*  M_outdoorFileDialog;
+	computerOptionDialog* M_computeroptionDialog;
 
 	//内部变量
  private:

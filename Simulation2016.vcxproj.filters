@@ -32,25 +32,22 @@
     <Filter Include="rasterHeight">
       <UniqueIdentifier>{fbe07af8-5187-488d-a6fd-ee2cd9990d3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{3a7006ae-39ce-4e5e-80be-49f208c8c003}</UniqueIdentifier>
-    </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{f655c760-b131-4038-b907-ebe98701d491}</UniqueIdentifier>
     </Filter>
     <Filter Include="geometry">
       <UniqueIdentifier>{47f01f16-4968-4d53-9fe5-d5f382d99fd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="visual">
+      <UniqueIdentifier>{d89f6df9-82b3-44f8-82d5-c5ef2c5de2b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{ac179024-fa07-49ba-be6a-db055f9c4895}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_mainwindow.cpp">
       <Filter>Generated Files</Filter>
@@ -72,9 +69,6 @@
     </ClCompile>
     <ClCompile Include="rasterHeight\TriMesh.cpp">
       <Filter>rasterHeight</Filter>
-    </ClCompile>
-    <ClCompile Include="mainwindow.cpp">
-      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="geometry\emxBBoxD.cpp">
       <Filter>geometry</Filter>
@@ -109,8 +103,35 @@
     <ClCompile Include="util\Quaternion.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="outdoorFile.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="ui\computeOptionPage.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_computeOptionPage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_computeOptionPage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\computerOptionDialog.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_computerOptionDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_computerOptionDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\mainwindow.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\outdoorFile.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_outdoorFile.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -126,14 +147,20 @@
     <CustomBuild Include="mainwindow.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="mainwindow.h">
-      <Filter>UI</Filter>
-    </CustomBuild>
     <CustomBuild Include="outdoorFile.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="outdoorFile.h">
-      <Filter>UI</Filter>
+    <CustomBuild Include="ui\computeOptionPage.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ui\computerOptionDialog.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ui\mainwindow.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ui\outdoorFile.h">
+      <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

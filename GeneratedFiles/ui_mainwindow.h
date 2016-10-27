@@ -36,7 +36,7 @@ public:
     QAction *action_6;
     QAction *action_7;
     QAction *action_9;
-    QAction *action_2;
+    QAction *computerOption;
     QAction *action_8;
     QAction *action_11;
     QWidget *centralWidget;
@@ -77,8 +77,8 @@ public:
         action_7->setObjectName(QStringLiteral("action_7"));
         action_9 = new QAction(MainWindowClass);
         action_9->setObjectName(QStringLiteral("action_9"));
-        action_2 = new QAction(MainWindowClass);
-        action_2->setObjectName(QStringLiteral("action_2"));
+        computerOption = new QAction(MainWindowClass);
+        computerOption->setObjectName(QStringLiteral("computerOption"));
         action_8 = new QAction(MainWindowClass);
         action_8->setObjectName(QStringLiteral("action_8"));
         action_11 = new QAction(MainWindowClass);
@@ -163,11 +163,9 @@ public:
         menuMesh->addAction(action_7);
         menuMesh->addSeparator();
         menuMesh->addAction(action_9);
-        menuComputer->addAction(action_2);
+        menuComputer->addAction(computerOption);
         menuComputer->addSeparator();
-        menuComputer->addAction(action_8);
         menuComputer->addSeparator();
-        menuComputer->addAction(action_11);
 
         retranslateUi(MainWindowClass);
 
@@ -183,7 +181,7 @@ public:
         action_6->setText(QApplication::translate("MainWindowClass", "\345\211\226\345\210\206", 0));
         action_7->setText(QApplication::translate("MainWindowClass", "\345\217\226\346\266\210\345\211\226\345\210\206", 0));
         action_9->setText(QApplication::translate("MainWindowClass", "\351\200\211\351\241\271", 0));
-        action_2->setText(QApplication::translate("MainWindowClass", "\345\217\221\345\260\204\346\272\220\345\217\202\346\225\260", 0));
+        computerOption->setText(QApplication::translate("MainWindowClass", "\351\200\211\351\241\271", 0));
         action_8->setText(QApplication::translate("MainWindowClass", "\345\234\272\347\202\271", 0));
         action_11->setText(QApplication::translate("MainWindowClass", "\344\273\277\347\234\237\345\217\202\346\225\260", 0));
         menuFILE->setTitle(QApplication::translate("MainWindowClass", "File", 0));
