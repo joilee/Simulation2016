@@ -1,4 +1,4 @@
-//¶ÁÈ¡¼¸ºÎÎÄ¼şobj£¬ÌáÈ¡ĞÅÏ¢´æ·ÅÔÚvectorÈİÆ÷£¨¼ÇÂ¼¶¥µãÈİÆ÷V¡¢¼ÇÂ¼ÃæÈİÆ÷F£©ÖĞ
+ï»¿//è¯»å–å‡ ä½•æ–‡ä»¶objï¼Œæå–ä¿¡æ¯å­˜æ”¾åœ¨vectorå®¹å™¨ï¼ˆè®°å½•é¡¶ç‚¹å®¹å™¨Vã€è®°å½•é¢å®¹å™¨Fï¼‰ä¸­
 
 #include "geometry/emxModel.h"
 #include "util/emxUtilityInc.h"
@@ -56,7 +56,9 @@ emxModel::emxModel (const char* filename)
 		else if (strncmp(buffer,"# material",10) == 0)
 		{
 			if(sscanf(buffer, "# material %d", &Id) == 1)
-			{}
+			{
+				//ææ–™é»˜è®¤æ˜¯åªæœ‰ä¸€ç§ææ–™ï¼Œæ•´ä¸ªobjæ–‡ä»¶åªåŒ…å«ä¸€ä¸ªIDï¼Œè¯¥idæŒ‡å‘çš„ææ–™ä¸€èˆ¬æ˜¯æ··å‡åœŸ
+			}
 			else
 			{
 				everything_ok = 0;
@@ -66,7 +68,7 @@ emxModel::emxModel (const char* filename)
 		else if (strncmp(buffer,"f ",2) == 0)	
 		{
 			int x,y,z;
-			std::vector<int> vertexes;  //´æ·ÅÃ¿Ò»ĞĞ¶ÁÈ¡ÃæµÄ¶¥µãË÷Òı
+			std::vector<int> vertexes;  //å­˜æ”¾æ¯ä¸€è¡Œè¯»å–é¢çš„é¡¶ç‚¹ç´¢å¼•
 			if (sscanf(buffer, "f %d %d %d", &x, &y, &z) == 3) 
 			{
 				vertexes.push_back(x);
@@ -96,9 +98,9 @@ emxModel::emxModel (const char* filename)
 			 		Vector3d N  = VectorCross(E1, E2);
 			 		if(N.norm() > DOUBLE_EPSILON) 
 			 		{
-			 			F.push_back(Vector3i(vertexes[0] - 1, vertexes[i-1] - 1, vertexes[i] - 1));	//½«ÃæÆ¬ÖĞµãµÄË÷Òı¶ÔÓ¦µ½ÏÂ±êÖµ£¬¹Ê¾ùĞè¼õ1
-			 		//	f_materialId.push_back(Id);   //ÓëÃæÍ¬²½¼ÇÂ¼µÄ²ÄÖÊ±àºÅ
-			 			NF.push_back(N.normalize());  //ÓëÃæÍ¬²½¼ÇÂ¼µÄ·¨ÏòÁ¿
+			 			F.push_back(Vector3i(vertexes[0] - 1, vertexes[i-1] - 1, vertexes[i] - 1));	//å°†é¢ç‰‡ä¸­ç‚¹çš„ç´¢å¼•å¯¹åº”åˆ°ä¸‹æ ‡å€¼ï¼Œæ•…å‡éœ€å‡1
+			 			//f_materialId.push_back(Id);   //ä¸é¢åŒæ­¥è®°å½•çš„æè´¨ç¼–å·
+			 			NF.push_back(N.normalize());  //ä¸é¢åŒæ­¥è®°å½•çš„æ³•å‘é‡
 
 						emxVertex* v1 = vertexVec.at(vertexes[0]-1);
 						emxVertex* v2 = vertexVec.at(vertexes[i-1]-1);
@@ -107,7 +109,7 @@ emxModel::emxModel (const char* filename)
 			 		}
 			 		else 
 			 		{
-						//cout<<"face ("<<vertexes[0]<<", "<<vertexes[i-1]<<", "<<vertexes[i]<<") removed"<<endl;
+					
 			 		}
 			 	}
 			}
@@ -140,6 +142,8 @@ emxModel::emxModel (const char* filename)
 			delete *pos;
 		vertexVec.clear();
 	}
+
+
 	fclose(file);
 }
 emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
@@ -161,14 +165,14 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 	int concave_polygonNum = 0;
 	for (int buildings_id = 0; buildings_id < Local_buildings.size(); buildings_id++)
 	{
-		//Ã¿¶°½¨ÖşÎïÉÏ¶¥Ãæµã×ø±ê°´ÕÕË³Ê±Õë´æ´¢µÄ£¬ËùÒÔÆÊ·ÖÉú³ÉÃæÆ¬Ê±£¬Òª×¢ÒâÃæÆ¬µãµÄË³Ğò£¬È·±£ÃæÆ¬·¨ÏòÁ¿¾ù³¯Íâ
-		int count = Local_buildings[buildings_id].upper_facePoint.size()-1; //¼ÇÂ¼building¶¥Ãæµã×ø±êÊ±£¬Ê×Ä©µãÖØºÏ£¬¼ÇÂ¼Á½´Î£¬ËùÒÔ   .size£¨£©-1
+		//æ¯æ ‹å»ºç­‘ç‰©ä¸Šé¡¶é¢ç‚¹åæ ‡æŒ‰ç…§é¡ºæ—¶é’ˆå­˜å‚¨çš„ï¼Œæ‰€ä»¥å‰–åˆ†ç”Ÿæˆé¢ç‰‡æ—¶ï¼Œè¦æ³¨æ„é¢ç‰‡ç‚¹çš„é¡ºåºï¼Œç¡®ä¿é¢ç‰‡æ³•å‘é‡å‡æœå¤–
+		int count = Local_buildings[buildings_id].upper_facePoint.size()-1; //è®°å½•buildingé¡¶é¢ç‚¹åæ ‡æ—¶ï¼Œé¦–æœ«ç‚¹é‡åˆï¼Œè®°å½•ä¸¤æ¬¡ï¼Œæ‰€ä»¥   .sizeï¼ˆï¼‰-1
 		double building_height = Local_buildings[buildings_id].height;
 		int V_size = V.size();
-		vector<int> upper_PointIndex; //´æ´¢ÉÏ¶¥ÃæµãµÄË÷ÒıÖµ£¬ÒÔ±¸ÉÏ¶¥ÃæÆÊ·ÖÉú³ÉÃæÆ¬Ê±ËùÓÃ
+		vector<int> upper_PointIndex; //å­˜å‚¨ä¸Šé¡¶é¢ç‚¹çš„ç´¢å¼•å€¼ï¼Œä»¥å¤‡ä¸Šé¡¶é¢å‰–åˆ†ç”Ÿæˆé¢ç‰‡æ—¶æ‰€ç”¨
 
-		//µãµÄ´æ´¢²Ù×÷
-		//ÉÏ¶¥ÃæµÄµã
+		//ç‚¹çš„å­˜å‚¨æ“ä½œ
+		//ä¸Šé¡¶é¢çš„ç‚¹
 		for (int id = 0; id < count; id++)
 		{
 			Vector3d point = Local_buildings[buildings_id].upper_facePoint[id];
@@ -176,7 +180,7 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 			upper_PointIndex.push_back(V.size()-1);
 			vertexVec.push_back(new emxVertex(point.x,point.y,point.z));
 		}
-		//ÏÂµ×ÃæµÄµã
+		//ä¸‹åº•é¢çš„ç‚¹
 		for (int id = 0; id < count; id++)
 		{
 			Vector3d point = Local_buildings[buildings_id].upper_facePoint[id];
@@ -186,8 +190,8 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 		}
 
 		Vector3d E1,E2,N;
-		//ÃæÆ¬µÄ²Ù×÷
-		//½¨ÖşÎï²àÃæÆÊ·ÖÉú³ÉÃæÆ¬
+		//é¢ç‰‡çš„æ“ä½œ
+		//å»ºç­‘ç‰©ä¾§é¢å‰–åˆ†ç”Ÿæˆé¢ç‰‡
 		for (int id = 0; id < count; id++) 
 		{
 			int i1,i2,i3,i4;
@@ -226,12 +230,12 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 			}			
 		}	
 
-		//½¨ÖşÎïÉÏ¶¥ÃæÆÊ·ÖÉú³ÉÃæÆ¬£¬ÃæÆ¬·¨ÏòÁ¿¾ùÎªÕızÖá·½Ïò¼´Vector3d(0,0,1),°¼¶à±ßĞÎÈı½Ç»¯ÌØÊâ´¦Àí¼ûÍøÖ·£ºhttp://blog.sina.com.cn/s/blog_5a6f39cf0101374h.html
-		bool convex = true; //ÎªtrueÊ±ÊÇÍ¹¶à±ßĞÎ£¬falseÊ±ÊÇ°¼¶à±ßĞÎ
+		//å»ºç­‘ç‰©ä¸Šé¡¶é¢å‰–åˆ†ç”Ÿæˆé¢ç‰‡ï¼Œé¢ç‰‡æ³•å‘é‡å‡ä¸ºæ­£zè½´æ–¹å‘å³Vector3d(0,0,1),å‡¹å¤šè¾¹å½¢ä¸‰è§’åŒ–ç‰¹æ®Šå¤„ç†è§ç½‘å€ï¼šhttp://blog.sina.com.cn/s/blog_5a6f39cf0101374h.html
+		bool convex = true; //ä¸ºtrueæ—¶æ˜¯å‡¸å¤šè¾¹å½¢ï¼Œfalseæ—¶æ˜¯å‡¹å¤šè¾¹å½¢
 		vector<Vector3d> upper_face = Local_buildings[buildings_id].upper_facePoint;
-		upper_face.pop_back(); //Ê×Ä©µãÖØ¸´£¬ËùÒÔÒªÉ¾µôÄ©Î²µÄÖØ¸´µã
+		upper_face.pop_back(); //é¦–æœ«ç‚¹é‡å¤ï¼Œæ‰€ä»¥è¦åˆ æ‰æœ«å°¾çš„é‡å¤ç‚¹
 		int count1 = upper_face.size();
-	//	vector<int> a(count1,1);  //´æ·ÅµãµÄ°¼Í¹ĞÔ£¬°¼Îª0£¬Í¹Îª1;½öµ±¶Ô°¼µã´¦ÀíÉú³ÉÃæÆ¬Ê±£¬´Ë°¼µãµÄ°¼Í¹ĞÔ¿ÉÄÜ»á·¢Éú±ä»¯£¬ÆäËûµã°¼Í¹ĞÔ±£³Ö²»±ä
+	//	vector<int> a(count1,1);  //å­˜æ”¾ç‚¹çš„å‡¹å‡¸æ€§ï¼Œå‡¹ä¸º0ï¼Œå‡¸ä¸º1;ä»…å½“å¯¹å‡¹ç‚¹å¤„ç†ç”Ÿæˆé¢ç‰‡æ—¶ï¼Œæ­¤å‡¹ç‚¹çš„å‡¹å‡¸æ€§å¯èƒ½ä¼šå‘ç”Ÿå˜åŒ–ï¼Œå…¶ä»–ç‚¹å‡¹å‡¸æ€§ä¿æŒä¸å˜
 		for (int id = 0; id < count1; id++) 
 		{
 			Vector3d v1,v2,v3;
@@ -239,11 +243,11 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 			v2 = upper_face[(id+1)%count1];
 			v3 = upper_face[(id+2)%count1];
 
-			if (Dot(VectorCross(v2-v1,v3-v2),Vector3d(0,0,-1)) < DOUBLE_EPSILON)
+			if (Dot(VectorCross(v2-v1,v3-v2),Vector3d(0,0,-1)) < DOUBLE_EPSILON)//åˆ¤æ–­æ˜¯å¦ä¸ºå‡¹
 			{
-				//a[(id+1)%count1] = 0; //Îª°¼µã
+				//a[(id+1)%count1] = 0; //ä¸ºå‡¹ç‚¹
 
-				//ÅĞ¶ÏÈôÎª°¼µã£¬Ö±½ÓÌŞ³ıµô
+				//åˆ¤æ–­è‹¥ä¸ºå‡¹ç‚¹ï¼Œç›´æ¥å‰”é™¤æ‰
 				std::vector<Vector3d>::iterator it1 = upper_face.begin()+(id+1)%count1;
 				upper_face.erase(it1);
 				std::vector<int>::iterator it2 = upper_PointIndex.begin()+(id+1)%count1;
@@ -259,103 +263,8 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 		{
 			concave_polygonNum++;
 		}
-		//while (!convex)
-		//{
-		//	convex = true;
-		//	bool exception = false; //´Ë¶à±ßĞÎÊÇ·ñÒì³££¬¼´²»´æÔÚ°¼µã£¬Ë³ĞòÏòÉÏ»òÏòÏÂÁ¬ĞøµÄÁ½¸ö¶¥µãYºÍZ¶¼ÊÇÍ¹µã
-		//	//Ã¿´Î´¦ÀíÆäÖĞÒ»¸ö°¼µã£¬×Ü¿ÉÒÔÑ¡³öÕâÑùÒ»¸ö°¼µãX£¬Ë³ĞòÏòÉÏ»òÏòÏÂÁ¬ĞøµÄÁ½¸ö¶¥µãYºÍZ¶¼ÊÇÍ¹µã¡£ÄÇÃ´¾ÍÏÈ´¦ÀíÕâ¸ö°¼µãX¡£Éú³ÉÈı½ÇÃæÆ¬XYZ£¬È»ºó´Ó¶à±ßĞÎ¶¥µã¼¯ÖĞÈ¥³ı¶¥µãY¡£
-		//	for (int id = 0; id < count1; id++)
-		//	{
-		//		if (a[id] == 0)
-		//		{
-		//			if (a[(id+1)%count1] == 1 && a[(id+2)%count1] == 1)
-		//			{
-		//				F.push_back(Vector3i(upper_PointIndex[id], upper_PointIndex[(id+2)%count1], upper_PointIndex[(id+1)%count1]));
-		//				emxVertex* v1 = vertexVec.at(upper_PointIndex[id]);
-		//				emxVertex* v2 = vertexVec.at(upper_PointIndex[(id+2)%count1]);
-		//				emxVertex* v3 = vertexVec.at(upper_PointIndex[(id+1)%count1]);
-		//				faceVec.push_back(new emxFace(v1,v2,v3));
-		//				NF.push_back(Vector3d(0,0,1));
-		//				std::vector<Vector3d>::iterator it1 = upper_face.begin()+(id+1)%count1;
-		//				upper_face.erase(it1);
-		//				std::vector<int>::iterator it2 = upper_PointIndex.begin()+(id+1)%count1;
-		//				upper_PointIndex.erase(it2);
-		//				std::vector<int>::iterator it3 = a.begin()+(id+1)%count1;
-		//				a.erase(it3);
-
-		//				//ÖØĞÂÅĞ¶Ï´Ë°¼µãÔÚĞÂ¶à±ßĞÎ£¨·Ö¸îºóÉú³É£©ÖĞµÄ°¼Í¹ĞÔ
-		//				count1 = upper_face.size();
-		//				Vector3d A,B,C;
-		//				A = upper_face[(id-1+count1)%count1];
-		//				B = upper_face[id];
-		//				C = upper_face[(id+1)%count1];
-
-		//				if (Dot(Cross(B-A,C-B),Vector3d(0,0,-1)) < 0)
-		//				{
-		//					a[id] = 0; //Îª°¼µã
-		//				}
-		//				else
-		//				{
-		//					a[id] = 1;
-		//				}
-		//				break;
-		//			}
-		//			else if (a[(id-1+count1)%count1] == 1 && a[(id-2+count1)%count1] == 1)
-		//			{
-		//				F.push_back(Vector3i(upper_PointIndex[id], upper_PointIndex[(id-1+count1)%count1],upper_PointIndex[(id-2+count1)%count1]));
-		//				emxVertex* v1 = vertexVec.at(upper_PointIndex[id]);
-		//				emxVertex* v2 = vertexVec.at(upper_PointIndex[(id-1+count1)%count1]);
-		//				emxVertex* v3 = vertexVec.at(upper_PointIndex[(id-2+count1)%count1]);
-		//				faceVec.push_back(new emxFace(v1,v2,v3));
-		//				NF.push_back(Vector3d(0,0,1));
-		//				std::vector<Vector3d>::iterator it1 = upper_face.begin() + (id-1+count1)%count1;
-		//				upper_face.erase(it1);
-		//				std::vector<int>::iterator it2 = upper_PointIndex.begin() + (id-1+count1)%count1;
-		//				upper_PointIndex.erase(it2);
-		//				std::vector<int>::iterator it3 = a.begin()+(id-1+count1)%count1;
-		//				a.erase(it3);
-
-		//				//É¾³ıÒ»¸öË÷ÒıÎªid-1µÄµãºó£¬Ô­Ê¼Ë÷ÒıÎªidµÄ°¼µã±àºÅ±äÎª (id-1+count1)%count1
-		//				count1 = upper_face.size();
-		//				Vector3d A,B,C;
-		//				A = upper_face[(id-2+count1)%count1];
-		//				B = upper_face[(id-1+count1)%count1];
-		//				C = upper_face[id];
-
-		//				if (Dot(Cross(B-A,C-B),Vector3d(0,0,-1)) < 0)
-		//				{
-		//					a[(id-1+count1)%count1] = 0; //Îª°¼µã
-		//				}
-		//				else
-		//				{
-		//					a[(id-1+count1)%count1] = 1;
-		//				}
-		//				break;
-		//			}
-		//			else
-		//			{
-		//				if (id == count1-1)
-		//				{
-		//					exception = true;
-		//					cout<<"Õâ¸ö¶à±ßĞÎ²»´æÔÚÕâÑùµÄÒ»¸ö°¼µã£¬¼´ÆäÏòÉÏ»òÏòÏÂÁ¬ĞøÁ½¸öµãÎªÍ¹µã¡£"<<endl;	
-		//				}
-		//			}
-		//		}
-		//	}
-		//	if (!exception)
-		//	{
-		//		//ÅĞ¶ÏĞÂÉú³ÉµÄ¶à±ßĞÎµÄ°¼Í¹ĞÔ
-		//		for (int id = 0; id < a.size(); id++)
-		//		{
-		//			if (a[id] == 0)
-		//			{
-		//				convex = false;
-		//				break;
-		//			}
-		//		}
-		//	}	
-		//}
-		//Í¹¶à±ßĞÎÆÊ·Ö£¬Ñ¡ÔñÒ»¸ö¶¥µã£¬È»ºóÒÀ´ÎÑ°ÕÒÏÂÁ½¸ö¶¥µã×é³ÉÒ»¸öÈı½ÇĞÎ
+	
+		//å‡¸å¤šè¾¹å½¢å‰–åˆ†ï¼Œé€‰æ‹©ä¸€ä¸ªé¡¶ç‚¹ï¼Œç„¶åä¾æ¬¡å¯»æ‰¾ä¸‹ä¸¤ä¸ªé¡¶ç‚¹ç»„æˆä¸€ä¸ªä¸‰è§’å½¢
 		int count2 = upper_face.size();
 		for (int id = 0; id <= count2 - 3; id++)
 		{
@@ -376,13 +285,13 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 	cout<<"the total num of buildings is:"<<Local_buildings.size()<<endl;
 	cout<<"the num of concave polygon is: "<<concave_polygonNum<<endl;
 
-	//µØÃæ½¨Ä£ added by ligen  ´ÓpMeshÖĞÌí¼ÓÈı½ÇĞÎºÍµã ¼Ç×¡·¨ÏòÁ¿±ØĞë³¯Íâ
+	//åœ°é¢å»ºæ¨¡ added by ligen  ä»pMeshä¸­æ·»åŠ ä¸‰è§’å½¢å’Œç‚¹ è®°ä½æ³•å‘é‡å¿…é¡»æœå¤–
 	int V_num = V.size();
 	int F_startNum=F.size();
 	int NF_startNum=NF.size();
 	VERTEX2D_PTR pVtx=pMesh->pVerArr;
 	int numV=pMesh->vertex_num;
-	for(int i=3;i<numV+3;i++)//Ç°Èı¸öµãÊÇbounding triangle
+	for(int i=3;i<numV+3;i++)//å‰ä¸‰ä¸ªç‚¹æ˜¯bounding triangle
 	{
 		double x,y,z;
 		x=((VERTEX2D_PTR)(pMesh->pVerArr+i))->x;
@@ -424,7 +333,7 @@ emxModel::emxModel (vector<building> &Local_buildings, MESH_PTR pMesh)
 	
 	int F_endNum=F.size();
 	int NF_endNum=NF.size();
-	cout<<"µØÃæ½¨Ä£µãµÄÊıÁ¿ "<<V.size()-V_num<<"  Èı½ÇĞÎÊıÁ¿ "<<F_endNum-F_startNum<<" ·¨ÏòÁ¿ÊıÁ¿ "<<NF_endNum-NF_startNum<<endl;
+	cout<<"åœ°é¢å»ºæ¨¡ç‚¹çš„æ•°é‡ "<<V.size()-V_num<<"  ä¸‰è§’å½¢æ•°é‡ "<<F_endNum-F_startNum<<" æ³•å‘é‡æ•°é‡ "<<NF_endNum-NF_startNum<<endl;
 
 
 	// calculate the bounding box
@@ -452,10 +361,10 @@ emxModel::emxModel(MESH_PTR pMesh, double SimPlane_height)
 		delete *pos;
 	vertexVec.clear();
 
-	//ÓÉµØÃæÉú³É¸ß¶ÈÎªSimPlane_heightµÄĞéÄâ·ÂÕæÃæ
+	//ç”±åœ°é¢ç”Ÿæˆé«˜åº¦ä¸ºSimPlane_heightçš„è™šæ‹Ÿä»¿çœŸé¢
 	VERTEX2D_PTR pVtx=pMesh->pVerArr;
 	int numV=pMesh->vertex_num;
-	for(int i=3;i<numV+3;i++)//Ç°Èı¸öµãÊÇbounding triangle
+	for(int i=3;i<numV+3;i++)//å‰ä¸‰ä¸ªç‚¹æ˜¯bounding triangle
 	{
 		double x,y,z;
 		x=((VERTEX2D_PTR)(pMesh->pVerArr+i))->x;
@@ -495,7 +404,7 @@ emxModel::emxModel(MESH_PTR pMesh, double SimPlane_height)
 		pTri = pTri->pNext;
 	}
 //	UnInitMesh(pMesh);
-	cout<<"ĞéÄâ·ÂÕæÃæ½¨Ä£µãµÄÊıÁ¿ "<<V.size()<<"  Èı½ÇĞÎÊıÁ¿ "<<F.size()<<"  ·¨ÏòÁ¿ÊıÁ¿ "<<NF.size()<<endl;
+	cout<<"è™šæ‹Ÿä»¿çœŸé¢å»ºæ¨¡ç‚¹çš„æ•°é‡ "<<V.size()<<"  ä¸‰è§’å½¢æ•°é‡ "<<F.size()<<"  æ³•å‘é‡æ•°é‡ "<<NF.size()<<endl;
 
 	// calculate the bounding box
 	std::vector<Vector3d>::const_iterator v = V.begin();
@@ -539,5 +448,12 @@ Vector3d emxModel::GetCenter(size_t i)
 
 int emxModel::getMtlId(int faceId)
 {
-	return f_materialId[faceId];   //¼ÇÂ¼±àºÅÎªfaceIdµÄÃæÆ¬¶ÔÓ¦²ÄÖÊ±àºÅ
+	if (faceId>NumMaterialF()-1)
+	{
+		return -1;
+	}else if(NumMaterialF()==0)
+	{
+		return -1;
+	}
+	return f_materialId[faceId];   //è®°å½•ç¼–å·ä¸ºfaceIdçš„é¢ç‰‡å¯¹åº”æè´¨ç¼–å·
 }

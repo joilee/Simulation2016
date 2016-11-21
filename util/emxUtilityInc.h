@@ -28,10 +28,7 @@ using namespace std;
 
 #pragma warning( disable  : 4996 )
 
-// constants
-//static const double M_PI           = 3.14159265358979323846;
-//static const double M_PI_2         = 1.57079632679489661923;
-//static const double M_PI_4         = 0.785398163397448309616;
+
 
 static const double M_PI_180       = M_PI / 180;
 static const double M_180_PI       = 180 / M_PI;

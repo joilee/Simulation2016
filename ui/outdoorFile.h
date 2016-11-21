@@ -8,20 +8,27 @@ class outdoorFileDialog : public QDialog
 public:
 	outdoorFileDialog(QWidget *parent = 0);
 	~outdoorFileDialog();
-	QString getMaterialPath();
 	QStringList  getScene2DPath();//建筑物
 	QStringList  getSceneHeightPath();//高度
 	QString getPlanePath(); //海拔 
 	void createActions();
 private slots:
-		void openMaterialFile();
+		
 		void openBuildingVector();
 		void openHeight();
 		void openPlane();
+		void onOkButton();
+		void deleteBuilding();
+		void deleteHeight();
+		void deletePlane();
+signals:  
+		void  fileIsOK(QString name,QStringList v,QStringList h,QString p);  
+
 private:
 	Ui::outdoorFile ui;
-	QString O_material_path;
+public:
 
+	QString mapName;
 	QString O_Scene2DInfoFile_path;//建筑物文件
 	QStringList  O_Scene2DInfoFile_paths;
 	

@@ -18,6 +18,8 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
@@ -31,30 +33,31 @@ public:
     QWidget *layoutWidget;
     QVBoxLayout *verticalLayout;
     QGroupBox *groupBox;
+    QWidget *widget;
     QHBoxLayout *horizontalLayout;
-    QCheckBox *checkBox;
-    QPushButton *materialButton;
-    QPushButton *pushButton_2;
+    QLabel *label;
+    QSpacerItem *horizontalSpacer;
+    QLineEdit *lineEdit_name;
     QGroupBox *groupBox_3;
     QHBoxLayout *horizontalLayout_3;
     QCheckBox *checkBox_2;
     QPushButton *buildingButton;
-    QPushButton *pushButton_6;
+    QPushButton *pushButton_deleteV;
     QGroupBox *groupBox_4;
     QHBoxLayout *horizontalLayout_5;
     QCheckBox *checkBox_4;
     QPushButton *heightButton;
-    QPushButton *pushButton_10;
+    QPushButton *pushButton_deleteH;
     QGroupBox *groupBox_2;
     QHBoxLayout *horizontalLayout_2;
     QCheckBox *checkBox_3;
     QPushButton *altitudeButton;
-    QPushButton *pushButton_4;
+    QPushButton *pushButton_deleteP;
     QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout_4;
-    QPushButton *pushButton_7;
+    QPushButton *pushButton_LoadFile;
     QSpacerItem *horizontalSpacer_4;
-    QPushButton *pushButton_8;
+    QPushButton *pushButton_cancel;
 
     void setupUi(QDialog *outdoorFile)
     {
@@ -68,28 +71,31 @@ public:
         outdoorFile->setSizePolicy(sizePolicy);
         layoutWidget = new QWidget(outdoorFile);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(10, 10, 281, 251));
+        layoutWidget->setGeometry(QRect(10, 10, 295, 251));
         verticalLayout = new QVBoxLayout(layoutWidget);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
         groupBox = new QGroupBox(layoutWidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
-        horizontalLayout = new QHBoxLayout(groupBox);
+        widget = new QWidget(groupBox);
+        widget->setObjectName(QStringLiteral("widget"));
+        widget->setGeometry(QRect(10, 20, 177, 22));
+        horizontalLayout = new QHBoxLayout(widget);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        checkBox = new QCheckBox(groupBox);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
+        label = new QLabel(widget);
+        label->setObjectName(QStringLiteral("label"));
 
-        horizontalLayout->addWidget(checkBox);
+        horizontalLayout->addWidget(label);
 
-        materialButton = new QPushButton(groupBox);
-        materialButton->setObjectName(QStringLiteral("materialButton"));
+        horizontalSpacer = new QSpacerItem(100, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout->addWidget(materialButton);
+        horizontalLayout->addItem(horizontalSpacer);
 
-        pushButton_2 = new QPushButton(groupBox);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
+        lineEdit_name = new QLineEdit(widget);
+        lineEdit_name->setObjectName(QStringLiteral("lineEdit_name"));
 
-        horizontalLayout->addWidget(pushButton_2);
+        horizontalLayout->addWidget(lineEdit_name);
 
 
         verticalLayout->addWidget(groupBox);
@@ -100,6 +106,7 @@ public:
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
         checkBox_2 = new QCheckBox(groupBox_3);
         checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBox_2->setCheckable(true);
 
         horizontalLayout_3->addWidget(checkBox_2);
 
@@ -108,10 +115,10 @@ public:
 
         horizontalLayout_3->addWidget(buildingButton);
 
-        pushButton_6 = new QPushButton(groupBox_3);
-        pushButton_6->setObjectName(QStringLiteral("pushButton_6"));
+        pushButton_deleteV = new QPushButton(groupBox_3);
+        pushButton_deleteV->setObjectName(QStringLiteral("pushButton_deleteV"));
 
-        horizontalLayout_3->addWidget(pushButton_6);
+        horizontalLayout_3->addWidget(pushButton_deleteV);
 
 
         verticalLayout->addWidget(groupBox_3);
@@ -122,6 +129,7 @@ public:
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
         checkBox_4 = new QCheckBox(groupBox_4);
         checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
+        checkBox_4->setCheckable(true);
 
         horizontalLayout_5->addWidget(checkBox_4);
 
@@ -130,10 +138,10 @@ public:
 
         horizontalLayout_5->addWidget(heightButton);
 
-        pushButton_10 = new QPushButton(groupBox_4);
-        pushButton_10->setObjectName(QStringLiteral("pushButton_10"));
+        pushButton_deleteH = new QPushButton(groupBox_4);
+        pushButton_deleteH->setObjectName(QStringLiteral("pushButton_deleteH"));
 
-        horizontalLayout_5->addWidget(pushButton_10);
+        horizontalLayout_5->addWidget(pushButton_deleteH);
 
 
         verticalLayout->addWidget(groupBox_4);
@@ -144,6 +152,7 @@ public:
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
         checkBox_3 = new QCheckBox(groupBox_2);
         checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
+        checkBox_3->setCheckable(true);
 
         horizontalLayout_2->addWidget(checkBox_3);
 
@@ -152,10 +161,10 @@ public:
 
         horizontalLayout_2->addWidget(altitudeButton);
 
-        pushButton_4 = new QPushButton(groupBox_2);
-        pushButton_4->setObjectName(QStringLiteral("pushButton_4"));
+        pushButton_deleteP = new QPushButton(groupBox_2);
+        pushButton_deleteP->setObjectName(QStringLiteral("pushButton_deleteP"));
 
-        horizontalLayout_2->addWidget(pushButton_4);
+        horizontalLayout_2->addWidget(pushButton_deleteP);
 
 
         verticalLayout->addWidget(groupBox_2);
@@ -166,19 +175,21 @@ public:
         horizontalLayout_4 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
         horizontalLayout_4->setContentsMargins(0, 0, 0, 0);
-        pushButton_7 = new QPushButton(layoutWidget1);
-        pushButton_7->setObjectName(QStringLiteral("pushButton_7"));
+        pushButton_LoadFile = new QPushButton(layoutWidget1);
+        pushButton_LoadFile->setObjectName(QStringLiteral("pushButton_LoadFile"));
+        pushButton_LoadFile->setCheckable(false);
+        pushButton_LoadFile->setDefault(false);
 
-        horizontalLayout_4->addWidget(pushButton_7);
+        horizontalLayout_4->addWidget(pushButton_LoadFile);
 
         horizontalSpacer_4 = new QSpacerItem(18, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_4->addItem(horizontalSpacer_4);
 
-        pushButton_8 = new QPushButton(layoutWidget1);
-        pushButton_8->setObjectName(QStringLiteral("pushButton_8"));
+        pushButton_cancel = new QPushButton(layoutWidget1);
+        pushButton_cancel->setObjectName(QStringLiteral("pushButton_cancel"));
 
-        horizontalLayout_4->addWidget(pushButton_8);
+        horizontalLayout_4->addWidget(pushButton_cancel);
 
 
         retranslateUi(outdoorFile);
@@ -189,24 +200,22 @@ public:
     void retranslateUi(QDialog *outdoorFile)
     {
         outdoorFile->setWindowTitle(QApplication::translate("outdoorFile", "Dialog", 0));
-        groupBox->setTitle(QApplication::translate("outdoorFile", "\345\257\274\345\205\245\346\235\220\350\264\250\346\226\207\344\273\266", 0));
-        checkBox->setText(QApplication::translate("outdoorFile", "\347\212\266\346\200\201", 0));
-        materialButton->setText(QApplication::translate("outdoorFile", "\346\211\223\345\274\200", 0));
-        pushButton_2->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
+        groupBox->setTitle(QApplication::translate("outdoorFile", "\345\267\245\347\250\213\345\220\215", 0));
+        label->setText(QApplication::translate("outdoorFile", "\345\234\260\345\233\276\345\220\215", 0));
         groupBox_3->setTitle(QApplication::translate("outdoorFile", "\345\257\274\345\205\245\345\273\272\347\255\221\347\211\251\346\226\207\344\273\266", 0));
         checkBox_2->setText(QApplication::translate("outdoorFile", "\347\212\266\346\200\201", 0));
         buildingButton->setText(QApplication::translate("outdoorFile", "\346\211\223\345\274\200", 0));
-        pushButton_6->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
+        pushButton_deleteV->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
         groupBox_4->setTitle(QApplication::translate("outdoorFile", "\345\257\274\345\205\245\345\273\272\347\255\221\347\211\251\351\253\230\345\272\246\346\226\207\344\273\266", 0));
         checkBox_4->setText(QApplication::translate("outdoorFile", "\347\212\266\346\200\201", 0));
         heightButton->setText(QApplication::translate("outdoorFile", "\346\211\223\345\274\200", 0));
-        pushButton_10->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
+        pushButton_deleteH->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
         groupBox_2->setTitle(QApplication::translate("outdoorFile", "\345\257\274\345\205\245\346\265\267\346\213\224\346\226\207\344\273\266", 0));
         checkBox_3->setText(QApplication::translate("outdoorFile", "\347\212\266\346\200\201", 0));
         altitudeButton->setText(QApplication::translate("outdoorFile", "\346\211\223\345\274\200", 0));
-        pushButton_4->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
-        pushButton_7->setText(QApplication::translate("outdoorFile", "OK", 0));
-        pushButton_8->setText(QApplication::translate("outdoorFile", "Cancel", 0));
+        pushButton_deleteP->setText(QApplication::translate("outdoorFile", "\345\210\240\351\231\244", 0));
+        pushButton_LoadFile->setText(QApplication::translate("outdoorFile", "OK", 0));
+        pushButton_cancel->setText(QApplication::translate("outdoorFile", "Cancel", 0));
     } // retranslateUi
 
 };

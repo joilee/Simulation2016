@@ -25,14 +25,14 @@ class emxModel
 {
 public:
   emxModel (const char* filename); // parse mesh
-  emxModel (vector<building>&Local_buildings, MESH_PTR pMesh);
+  emxModel (vector<building>&Local_buildings, MESH_PTR pMesh);//读取了建筑物和已经剖分好的地面三角面片，并且在构造函数里剖分了建筑物顶部
   emxModel(MESH_PTR pMesh, double SimPlane_height);
   ~emxModel ();					 // default desconstruction
 
   // counts
   size_t NumV () const { return V.size(); } // number of vertices
   size_t NumF () const { return F.size(); } // number of faces
-
+  size_t NumMaterialF()const {return f_materialId.size();}
   // vertex access
   bool CheckValid(size_t i)       { return (i < NumV()); }
   Vector3d GetVertex (size_t i)       { return V[i]; }          //normal member function

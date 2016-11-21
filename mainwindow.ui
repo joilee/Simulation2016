@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>768</height>
+    <width>1191</width>
+    <height>837</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,13 +19,36 @@
   <property name="windowTitle">
    <string>室内信号仿真</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget_Dispaly">
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="GLWidget" name="ModelView">
+       <attribute name="title">
+        <string>模型场景</string>
+       </attribute>
+      </widget>
+      <widget class="GLWidget" name="simuArea">
+       <attribute name="title">
+        <string>仿真场景</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1191</width>
      <height>23</height>
     </rect>
    </property>
@@ -35,7 +58,10 @@
     </property>
     <addaction name="action"/>
     <addaction name="separator"/>
+    <addaction name="action_matFile"/>
+    <addaction name="separator"/>
     <addaction name="action_3"/>
+    <addaction name="action_obj"/>
     <addaction name="separator"/>
     <addaction name="action_5"/>
    </widget>
@@ -60,6 +86,8 @@
     <property name="title">
      <string>Visualize</string>
     </property>
+    <addaction name="action_ShowAll"/>
+    <addaction name="action_localscene"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -84,9 +112,12 @@
   <widget class="QDockWidget" name="dockWidget_outputLog">
    <property name="minimumSize">
     <size>
-     <width>102</width>
-     <height>183</height>
+     <width>128</width>
+     <height>139</height>
     </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="windowTitle">
     <string>Log</string>
@@ -95,45 +126,39 @@
     <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <widget class="QWidget" name="verticalLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>10</y>
-       <width>961</width>
-       <height>144</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
-      </property>
-      <item>
-       <widget class="QTextBrowser" name="textBrowser"/>
-      </item>
-      <item>
-       <widget class="QProgressBar" name="progressBar">
-        <property name="value">
-         <number>24</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser"/>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_outline">
    <property name="minimumSize">
     <size>
      <width>256</width>
-     <height>256</height>
+     <height>600</height>
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea|Qt::TopDockWidgetArea</set>
+    <set>Qt::LeftDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Outline</string>
@@ -141,16 +166,50 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QTreeWidget" name="treeWidget_project">
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_para">
-   <property name="windowTitle">
-    <string>Property</string>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>56</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3"/>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QStackedWidget" name="stackedWidget_Info">
+       <property name="currentIndex">
+        <number>-1</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="action">
    <property name="text">
@@ -179,7 +238,7 @@
   </action>
   <action name="action_9">
    <property name="text">
-    <string>选项</string>
+    <string>材料选项</string>
    </property>
   </action>
   <action name="computerOption">
@@ -197,8 +256,36 @@
     <string>仿真参数</string>
    </property>
   </action>
+  <action name="action_ShowAll">
+   <property name="text">
+    <string>整体场景展示</string>
+   </property>
+  </action>
+  <action name="action_obj">
+   <property name="text">
+    <string>导入obj模型</string>
+   </property>
+  </action>
+  <action name="action_matFile">
+   <property name="text">
+    <string>导入材料文件</string>
+   </property>
+  </action>
+  <action name="action_localscene">
+   <property name="text">
+    <string>仿真区域展示</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GLWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">glWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="mainwindow.qrc"/>
  </resources>

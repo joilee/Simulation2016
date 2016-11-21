@@ -11,15 +11,7 @@ outdoorFileDialog::~outdoorFileDialog()
 
 }
 
-QString outdoorFileDialog::getMaterialPath()
-{
-		if(O_material_path.isEmpty())
-		{
-			QMessageBox::warning(this, QString::fromLocal8Bit("获得材质文件路径"),QString::fromLocal8Bit("请先导入并编辑生成最终场景中所需材质属性"));
-			return NULL;
-		}
-		return O_material_path;
-}
+
 
 QStringList   outdoorFileDialog::getScene2DPath()
 {
@@ -51,14 +43,6 @@ QString outdoorFileDialog::getPlanePath()
 	return O_ScenePlaneHeightInfoFile_path;
 }
 
-void outdoorFileDialog::openMaterialFile()
-{
-	QString path = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开材质文件"),"./",QString::fromLocal8Bit("txt 材质文件 (*.txt)"));
-	if (path.isEmpty())
-		return;
-	O_material_path  = path;  //保存当前材质文件路径，以便后续对材质文件的更新操作
-
-}
 
 
 void outdoorFileDialog::openBuildingVector()
@@ -67,6 +51,8 @@ void outdoorFileDialog::openBuildingVector()
 	if (paths.isEmpty())
 		return;
 	O_Scene2DInfoFile_paths = paths;
+	
+	ui.checkBox_2->setChecked(true);
 }
 
 void outdoorFileDialog:: openHeight()
@@ -75,6 +61,7 @@ void outdoorFileDialog:: openHeight()
 	if (paths.isEmpty())
 		return;
 	O_SceneHeightInfoFile_paths = paths;
+	ui.checkBox_4->setChecked(true);
 }
 
 void outdoorFileDialog::openPlane()
@@ -83,11 +70,50 @@ void outdoorFileDialog::openPlane()
 	if (path.isEmpty())
 		return;
 	O_ScenePlaneHeightInfoFile_path = path;
+	ui.checkBox_3->setChecked(true);
+}
+
+void outdoorFileDialog::onOkButton()
+{
+	mapName=ui.lineEdit_name->text();
+	if (ui.checkBox_2->isChecked()&&ui.checkBox_3->isChecked()&&ui.checkBox_4->isChecked()&& !mapName.isEmpty())
+	{
+		emit fileIsOK(mapName,O_Scene2DInfoFile_paths,O_SceneHeightInfoFile_paths,O_ScenePlaneHeightInfoFile_path);
+		this->close();
+	}else
+	{
+		QMessageBox::warning(this, QStringLiteral("文件导入"),QStringLiteral("文件路径缺失，请导入所有文件！"));
+	}
+
+	return ;
+}
+
+void outdoorFileDialog::deleteBuilding()
+{
+	O_Scene2DInfoFile_paths.clear();
+	ui.checkBox_2->setChecked(false);
+}
+
+void outdoorFileDialog::deleteHeight()
+{
+	O_SceneHeightInfoFile_paths.clear();
+	ui.checkBox_4->setChecked(false);
+}
+
+void outdoorFileDialog::deletePlane()
+{
+	O_ScenePlaneHeightInfoFile_path.clear();
+	ui.checkBox_3->setChecked(false);
 }
 void outdoorFileDialog::createActions()
 {
-	connect(ui.materialButton,SIGNAL(clicked()),this,SLOT(openMaterialFile()));
+	
 	connect(ui.buildingButton,SIGNAL(clicked()),this,SLOT(openBuildingVector()));
 	connect(ui.heightButton,SIGNAL(clicked()),this,SLOT(openHeight()));
 	connect(ui.altitudeButton,SIGNAL(clicked()),this,SLOT(openPlane()));
+	connect(ui.pushButton_LoadFile,SIGNAL(clicked()),this,SLOT(onOkButton()));
+	connect(ui.pushButton_cancel,SIGNAL(clicked()),this,SLOT(reject()));
+	connect(ui.pushButton_deleteV,SIGNAL(clicked()),this,SLOT(deleteBuilding()));
+	connect(ui.pushButton_deleteH,SIGNAL(clicked()),this,SLOT(deleteHeight()));
+	connect(ui.pushButton_deleteP,SIGNAL(clicked()),this,SLOT(deletePlane()));
 }

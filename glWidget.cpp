@@ -1,130 +1,36 @@
+Ôªø#include <gl/freeglut.h>
 #include "glWidget.h"
-#include <gl/freeglut.h>
-#include "geometry/emxModel.h"
-#include <QMouseEvent>
-#include <iostream>
-#include <sstream>
 #include <string>
+#include <iostream>
 #include <stdlib.h>
-#include <QtWidgets/QToolTip>
-//ππ‘Ï∫Ø ˝
-GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-m_pMesh(NULL),drawscene_flag(0),plane_flag(0),drawantenna_flag(0),
-drawpath_flag(0),is_change_antennapos(0),flag_rightbutton(0),antenna_editNum(-1),drawOBJScene(false),drawVectorScene(false)
+#include <QtWidgets/QMessageBox>
+
+//ÊûÑÈÄ†ÂáΩÊï∞
+GLWidget::GLWidget(QWidget *parent): QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-	m_lightPos = Vector3d(-0.55, 0.55,20);
 	resetRenderColor();
 	// Ground
+	m_lightPos = Vector3d(-0.55, 0.55,20);
+
 	m_groundCenter = Vector3d(0, 0, 0);
-	m_dGroundWidth = 5;
-	m_iGroundGridNum = 20;
+	m_dGroundWidth=5;
+
+	TriangleModel=NULL;
+
+	drawTriangleScene=false;
+	drawVectorScene=false;
 	vis_factor_scence = 0.5;
-	vis_factor_face = 0.5;
-
+	materials.clear();
+	defaultMaterial=-1;
 	setMouseTracking(true);
-
 }
 
-GLWidget::~GLWidget()
-{
-	delete m_pMesh;
-	m_pMesh = NULL;
 
-	vector<vector<EField>>().swap(AP_EPoints);
-
-	vector<building>().swap(m_Buildings);  
-
-	vector<bool>().swap(sceneIsDislpay); 
-}
-
-void GLWidget::initializeGL()
-{
-	//∂®“Â≤ƒ¡œ Ù–‘
-	float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
-	float mat_shininess  [] = { 100.0f };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);  
-	
-	 //¥¥Ω®π‚‘¥
-	// setup light0
-	float light0_position[] = { m_lightPos.x, m_lightPos.y, m_lightPos.z, 0 };
-	float light0_diffuse [] = { m_lightColor.r, m_lightColor.g, m_lightColor.b, 1.0};
-	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);  //π‚‘¥Œª÷√
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);  //…¢…‰π‚
-	
-	//setup light1
-	/*
-	float light1_position[]={2.0,2.0,2.0,1.0};  //Œª÷√–‘π‚‘¥
-	float light1_diffuse[]={1.0,1.0,1.0,1.0};   //…¢…‰π‚
-	float light1_specular[]={1.0,1.0,1.0,1.0};  //æµ√Êπ‚
-	glLightfv(GL_LIGHT1,GL_POSITION,light1_position);
-	glLightfv(GL_LIGHT1,GL_DIFFUSE,light1_diffuse);
-	glLightfv(GL_LIGHT1,GL_SPECULAR,light1_specular);
-	*/
-
-	 //∂®“Âπ‚’’ƒ£–Õ
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE); 
-
-	glEnable(GL_NORMALIZE);
-	glEnable(GL_COLOR_MATERIAL);
-
-
-	glClearColor(m_backGroundColor.r , m_backGroundColor.g, m_backGroundColor.b, 0.0);   //…Ë÷√µ±«∞«Â≥˝—’…´
-	glShadeModel(GL_SMOOTH);  //∆Ωª¨◊≈…´
-
-	//glColor4f(1.0f,1.0f,1.0f,0.5f);			// »´¡¡∂»£¨ 50% Alpha ªÏ∫œ
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);		// ª˘”⁄‘¥œÛÀÿalphaÕ®µ¿÷µµƒ∞ÎÕ∏√˜ªÏ∫œ∫Ø ˝
-
-	
-}
-
-void GLWidget::paintGL()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //”√…Ë∂®µƒµ±«∞«Â≥˝÷µ«Â≥˝÷∏∂®µƒª∫≥Â«¯
-
-	m_camera.setupModelMatrix();
-	
-	//ªÊ÷∆≥°æ∞
-	if(drawscene_flag)	
-		drawScene();
-
-	//ªÊ÷∆ÃÏœﬂ
-	if (drawantenna_flag)
-		drawAntenna();
-
-	//ªÊ÷∆∑¬’Ê√Ê
-	if(plane_flag)
-		drawPlane();
-
-	//ªÊ÷∆◊¯±Í÷·
-	drawCoordinates();
-
-	
-	//ªÊ÷∆¥´≤•¬∑æ∂
-	if (drawpath_flag)
-	{
-		drawPath();
-	}
-}
-
-void GLWidget::resizeGL(int width, int height)
-{
-	m_iWidth = width;
-	m_iHeight = height;
-
-	// set OpenGL viewport
-	glViewport(0, 0, width, height);
-	m_camera.setWindowSize(width, height);
-	m_camera.setPerspectiveProjection();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-
-void  CALLBACK vertexCallback(GLvoid *vertex)  //µ„◊¯±Í–≈œ¢
+//ÁªòÂà∂Â§öËæπÂΩ¢ÁöÑ‰ø°ÊÅØ
+void  CALLBACK vertexCallback(GLvoid *vertex)  //ÁÇπÂùêÊ†á‰ø°ÊÅØ
 {  
 	const GLdouble *pointer = (GLdouble *) vertex;  
-	//glColor3dv(pointer + 3);//‘⁄¥À…Ë÷√—’…´  
+	//glColor3dv(pointer + 3);//Âú®Ê≠§ËÆæÁΩÆÈ¢úËâ≤  
 	glVertex3dv(pointer);  
 }  
 void CALLBACK beginCallback(GLenum which)  
@@ -161,44 +67,86 @@ void CALLBACK combineCallback(GLdouble coords[3],
 	}  
 	*dataOut = vertex;  
 } 
-//ªÊ÷∆≥°æ∞
-void GLWidget::drawScene()
+
+void GLWidget::initializeGL()
 {
-	glEnable(GL_BLEND);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	//glDisable(GL_DEPTH_TEST);
-	glEnable(GL_DEPTH_TEST);
-	glPushMatrix();
+	//ÂÆö‰πâÊùêÊñôÂ±ûÊÄß
+	float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
+	float mat_shininess  [] = { 100.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);  
+	
+	 //ÂàõÂª∫ÂÖâÊ∫ê
+	float light0_position[] = { m_lightPos.x, m_lightPos.y, m_lightPos.z, 0 };
+	float light0_diffuse [] = { m_lightColor.r, m_lightColor.g, m_lightColor.b, 1.0};
+	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);  //ÂÖâÊ∫ê‰ΩçÁΩÆ
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);  //Êï£Â∞ÑÂÖâ
+	
+	 //ÂÆö‰πâÂÖâÁÖßÊ®°Âûã
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE); 
 
-	if (drawOBJScene) //∂¡»°≥°æ∞obj∏Ò ΩŒƒº˛≤¢’π æ
-	{
-		glBegin(GL_TRIANGLES);
-		size_t faceNum = m_pMesh->NumF();
-		for(size_t i = 0; i < faceNum; ++i)
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_COLOR_MATERIAL);
+
+
+	glClearColor(m_backGroundColor.r , m_backGroundColor.g, m_backGroundColor.b, 0.0);   //ËÆæÁΩÆÂΩìÂâçÊ∏ÖÈô§È¢úËâ≤
+	glShadeModel(GL_SMOOTH);  //Âπ≥ÊªëÁùÄËâ≤
+
+	//glColor4f(1.0f,1.0f,1.0f,0.5f);			// ÂÖ®‰∫ÆÂ∫¶Ôºå 50% Alpha Ê∑∑Âêà
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);		// Âü∫‰∫éÊ∫êË±°Á¥†alphaÈÄöÈÅìÂÄºÁöÑÂçäÈÄèÊòéÊ∑∑ÂêàÂáΩÊï∞
+}
+
+
+void GLWidget::paintGL()
+{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //Áî®ËÆæÂÆöÁöÑÂΩìÂâçÊ∏ÖÈô§ÂÄºÊ∏ÖÈô§ÊåáÂÆöÁöÑÁºìÂÜ≤Âå∫
+		m_camera.setupModelMatrix();
+		if (drawTriangleScene)
 		{
-			for(int j = 0;j < materials.size();j++)
-			{
-				if (materials[j].Id == m_pMesh->getMtlId(i))
-				{
-					glColor4d((materials[j].color.r)/256.f, (materials[j].color.g)/256.f, (materials[j].color.b)/256.f, vis_factor_scence);
-				}
-			}
-			Vector3i vertexID = m_pMesh->GetFace(i);
-			Vector3d v0 = m_pMesh->GetVertex(vertexID.x);
-			Vector3d v1 = m_pMesh->GetVertex(vertexID.y);
-			Vector3d v2 = m_pMesh->GetVertex(vertexID.z);
-
-			Vector3d faceNormal = m_pMesh->GetNormal(i);
-			glNormal3d(faceNormal.x, faceNormal.y, faceNormal.z);
-			glVertex3d(v0.x, v0.y, v0.z);
-			glVertex3d(v1.x, v1.y, v1.z);
-			glVertex3d(v2.x, v2.y, v2.z);
+			drawLocalScene();
 		}
-		glEnd();	
-	}
-	if (drawVectorScene) //∂¡»°≥°æ∞vectorŒƒº˛≤¢’π æ
+		if (drawVectorScene)
+		{
+			drawAllScene();
+		}
+}
+
+void GLWidget::resizeGL(int width, int height)
+{
+	m_iWidth = width;
+	m_iHeight = height;
+
+	// set OpenGL viewport
+	glViewport(0, 0, width, height);
+	m_camera.setWindowSize(width, height);
+	m_camera.setPerspectiveProjection();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+GLWidget::~GLWidget()
+{
+
+}
+void GLWidget::resetRenderColor()
+{
+	m_lightColor = Color::LIGHT_GRAY;
+	m_backGroundColor = Color(130/256.f, 130/256.f, 172/256.f);
+	m_groundColor = Color::GRAY;
+}
+
+void GLWidget::drawAllScene()
+{
+	if (drawVectorScene)
 	{
+		glEnable(GL_BLEND);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		//glDisable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
+		glPushMatrix();
+
 		GLUtesselator *tobj = gluNewTess();  
 		if (!tobj) 
 		{   
@@ -209,17 +157,17 @@ void GLWidget::drawScene()
 		gluTessCallback(tobj, GLU_TESS_END, (void (CALLBACK *)())endCallback);  
 		//gluTessCallback(tobj, GLU_TESS_ERROR, (void (CALLBACK *)())errorCallback);  
 		//gluTessCallback(tobj, GLU_TESS_COMBINE, (void (CALLBACK *)())combineCallback);  
-	
-		//glColor4d(128/256.f, 128/256.f, 128/256.f,vis_factor_scence);
+
 		glColor4d(1, 1, 1,vis_factor_scence);
+
 		for(int buildings_id = 0; buildings_id < m_Buildings.size(); buildings_id++)
 		{
-			double building_height = m_Buildings[buildings_id].height; //Ω®÷˛ŒÔµƒ∏ﬂ∂»
+			double building_height = m_Buildings[buildings_id].height; //Âª∫Á≠ëÁâ©ÁöÑÈ´òÂ∫¶
 			gluTessBeginPolygon(tobj, NULL); 
-			//Ω®÷˛ŒÔ…œ∂•√Ê
+			//Âª∫Á≠ëÁâ©‰∏äÈ°∂Èù¢
 			GLdouble (*a)[3] = new GLdouble[m_Buildings[buildings_id].upper_facePoint.size() -1][3];
 			gluTessBeginContour(tobj); 
-			for (int id = 0; id < m_Buildings[buildings_id].upper_facePoint.size()-1; id++) //º«¬ºbuilding∂•√Êµ„◊¯±Í ±£¨ ◊ƒ©µ„÷ÿ∫œ£¨º«¬º¡Ω¥Œ£¨À˘“‘   .size£®£©-1
+			for (int id = 0; id < m_Buildings[buildings_id].upper_facePoint.size()-1; id++) //ËÆ∞ÂΩïbuildingÈ°∂Èù¢ÁÇπÂùêÊ†áÊó∂ÔºåÈ¶ñÊú´ÁÇπÈáçÂêàÔºåËÆ∞ÂΩï‰∏§Ê¨°ÔºåÊâÄ‰ª•   .sizeÔºàÔºâ-1
 			{
 				a[id][0] = m_Buildings[buildings_id].upper_facePoint[id].x;
 				a[id][1] = m_Buildings[buildings_id].upper_facePoint[id].y;
@@ -231,7 +179,7 @@ void GLWidget::drawScene()
 			delete []a;
 
 			gluTessBeginPolygon(tobj, NULL); 
-			//Ω®÷˛ŒÔœ¬µ◊√Ê
+			//Âª∫Á≠ëÁâ©‰∏ãÂ∫ïÈù¢
 			GLdouble (*b)[3] = new GLdouble[m_Buildings[buildings_id].upper_facePoint.size() -1][3];
 			gluTessBeginContour(tobj); 
 			for (int id = 0; id < m_Buildings[buildings_id].upper_facePoint.size()-1; id++)
@@ -245,7 +193,7 @@ void GLWidget::drawScene()
 			gluTessEndPolygon(tobj);
 			delete []b;
 
-			//Ω®÷˛ŒÔ≤‡√Ê
+			//Âª∫Á≠ëÁâ©‰æßÈù¢
 			glBegin(GL_QUADS);
 			for (int id = 0; id < m_Buildings[buildings_id].upper_facePoint.size()-1; id++)
 			{
@@ -256,521 +204,81 @@ void GLWidget::drawScene()
 			}
 			glEnd();
 		}	 
-		gluDeleteTess(tobj);   		
-	}
-	glPopMatrix();
-	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
-	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-}
-//ªÊ÷∆ÃÏœﬂ
-void GLWidget::drawAntenna()
-{
-	glEnable(GL_BLEND);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_DEPTH_TEST);
-	for (int i=0;i<draw_antenna.size();i++)
-	{
-		double length1=maxPos.x-minPos.x;
-		double width1=maxPos.y-minPos.y;
-		glPushMatrix();
-		if (flag_rightbutton && i==antenna_editNum) //»Ù Û±Í”“º¸press£¨‘Úø…“‘Õ®π˝ Û±ÍÕœ∂Ø¿¥∏ƒ±‰ÃÏœﬂŒª÷√£¨∂¯≤ª”√»ÀŒ™ ¬œ»…Ë∂®◊¯±ÍŒª÷√
-		{
-			double scalex=width()/length1;
-			double scaley=height()/width1;
-			double scale=Min(scalex,scaley);
-			antenna_posx=length1/2+(width()/2-currentPos.x())/scale;
-			antenna_posy=width1/2+(height()/2-currentPos.y())/scale;
-			antenna_posz = draw_antenna[i].position.z;
-			glTranslated(antenna_posx,antenna_posy,antenna_posz);
-		}
-		else
-		{
-			glTranslated(draw_antenna[i].position.x,draw_antenna[i].position.y,draw_antenna[i].position.z);
-		}
-		double a_cube=width1/100;  //±Ì æÃÏœﬂµƒcube±ﬂ≥§
-		
-		glColor3d(1.0,1.0,0.0);
-		glBegin(GL_QUADS);	//  ªÊ÷∆’˝∑ΩÃÂ∏˜√Ê
-
-		//…œ∂•√Ê
-		glNormal3d(0.0,0.0,1.0);
-		glVertex3d(a_cube,a_cube,a_cube);					
-		glVertex3d(-a_cube,a_cube,a_cube);					
-		glVertex3d(-a_cube,-a_cube,a_cube);					
-		glVertex3d(a_cube,-a_cube,a_cube);	
-
-		//œ¬µ◊√Ê
-		glNormal3d(0.0,0.0,-1.0);
-		glVertex3d(a_cube,a_cube,-a_cube);					
-		glVertex3d(a_cube,-a_cube,-a_cube );					
-		glVertex3d(-a_cube,-a_cube,-a_cube );					
-		glVertex3d(-a_cube,a_cube,-a_cube);	
-
-		//«∞√Ê
-		glNormal3d(0.0,1.0,0.0);
-		glVertex3d(a_cube,a_cube,a_cube);					
-		glVertex3d(a_cube,a_cube,-a_cube );					
-		glVertex3d(- a_cube,a_cube,-a_cube );					
-		glVertex3d(-a_cube,a_cube,a_cube);
-
-		//∫Û√Ê
-		glNormal3d(0.0,-1.0,0.0);
-		glVertex3d(a_cube,-a_cube,a_cube);					
-		glVertex3d(-a_cube,-a_cube,a_cube );					
-		glVertex3d(-a_cube,-a_cube,-a_cube );					
-		glVertex3d(a_cube,-a_cube,-a_cube);
-
-
-		//◊Û≤‡√Ê
-		glNormal3d(1.0,0.0,0.0);
-		glVertex3d(a_cube,a_cube,a_cube);					
-		glVertex3d(a_cube,-a_cube,a_cube );					
-		glVertex3d(a_cube,-a_cube,-a_cube );					
-		glVertex3d(a_cube,a_cube,-a_cube);
-
-		//”“≤‡√Ê
-		glNormal3d(-1.0,0.0,0.0);
-		glVertex3d(-a_cube,a_cube,a_cube);					
-		glVertex3d(-a_cube,a_cube,-a_cube );					
-		glVertex3d(-a_cube,-a_cube,-a_cube );					
-		glVertex3d(-a_cube,-a_cube,a_cube);
-
-		glEnd();	
+		gluDeleteTess(tobj);   
 		glPopMatrix();
+		glDisable(GL_LIGHTING);
+		glDisable(GL_LIGHT0);
+		glDisable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
 	}
 
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
-	glDisable(GL_BLEND);
-}
-//ªÊ÷∆∑¬’Ê√Ê
-void GLWidget::drawPlane()  //∏˘æ›Ω” ‹µ„¥¶≥°«ø÷µ¥Û–°¿¥…Ë÷√—’…´Ω¯––ªÊ÷∆
-{
-	//int min_id = 0;
-	for (int id=0;id<AP_EPoints.size();id++)
-	{
-		if (sceneIsDislpay[id])  //—°÷–µƒ–°«¯≤≈ƒ‹œ‘ æ∑¬’ÊΩ·π˚
-		{
-			vector<EField> &EPoint = AP_EPoints[id];
-			double emax = EPoint[0].MolStrength;
-			double emin = EPoint[0].MolStrength;
-			for(size_t m = 1; m < EPoint.size(); m++)
-			{
-				if (EPoint[m].Path.size() > 0) //»ÙEPoint[i].Path.size() == 0 Àµ√˜£¨¥ÀΩ” ’µ„√ª”–¬∑æ∂µΩ¥Ô£¨–≈∫≈«ø∂»÷µŒ¥÷™
-				{
-					if(EPoint[m].MolStrength > emax)
-					{
-						emax = EPoint[m].MolStrength;
-					}
-					if(EPoint[m].MolStrength < emin)
-					{
-						emin = EPoint[m].MolStrength;
-					//	min_id = m;
-					}
-				}
-			}
-		//	cout<<"the minimal point id is:"<<min_id<<endl;
-			for (size_t n = 0; n< EPoint.size();n++)
-			{
-				if (EPoint[n].Path.size() == 0) //∂‘”⁄√ª”–¬∑æ∂µΩ¥ÔµƒΩ” ’µ„£¨–≈∫≈«ø∂»…ËŒ™◊Ó–°÷µ
-				{
-					EPoint[n].MolStrength = emin;
-				}
-			}
-			Tmax = emax;
-			Tmin = emin;
-
-			drawColorbar();
-
-			double length = emax - emin;
-
-			glEnable(GL_BLEND); //∆Ù”√ªÏ∫œ
-			glPushMatrix();
-			glBegin(GL_QUADS);
-			for(int i = 0; i < veticalNum-1; i++)
-			{
-				for(int j = 0; j < horizonNum-1; j++)
-				{
-					Vector3d v1 = EPoint[j*veticalNum + i].Position;
-					Vector3d v2 = EPoint[j*veticalNum + i + 1].Position;
-					Vector3d v4 = EPoint[(j+1)*veticalNum + i].Position;
-					Vector3d v3 = EPoint[(j+1)*veticalNum + i + 1].Position;
-					double c1 = (EPoint[j*veticalNum + i].MolStrength - emin)/length;
-					double c2 = (EPoint[j*veticalNum + i +1].MolStrength - emin)/length;
-					double c4 = (EPoint[(j+1)*veticalNum + i].MolStrength - emin)/length;
-					double c3 = (EPoint[(j+1)*veticalNum + i + 1].MolStrength - emin)/length;
-
-					Color result(0.5, 0.0, 0.0); 
-
-					LoadUniformColor(c1,result);
-					glColor4d(result.r, result.g, result.b, vis_factor_face);
-					glVertex3d(v1.x, v1.y, v1.z);
-					LoadUniformColor(c2,result);
-					glColor4d(result.r, result.g, result.b, vis_factor_face);
-					glVertex3d(v2.x, v2.y, v2.z);
-					LoadUniformColor(c3,result);
-					glColor4d(result.r, result.g, result.b, vis_factor_face);
-					glVertex3d(v3.x, v3.y, v3.z);
-					LoadUniformColor(c4,result);
-					glColor4d(result.r, result.g, result.b, vis_factor_face);
-					glVertex3d(v4.x, v4.y, v4.z);
-				}
-			}
-			glEnd();
-			glPopMatrix();
-			glDisable(GL_BLEND);
-		}		
-	}
+	return;
 }
 
-//ªÊ÷∆◊¯±Í÷·
-void GLWidget::drawCoordinates()
-{
-	GLUquadricObj* quadratic=gluNewQuadric(); 
-	gluQuadricNormals(quadratic, GLU_SMOOTH); 
-	gluQuadricTexture(quadratic, GL_FALSE);
 
-	glEnable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST); 
-
-	glMatrixMode(GL_PROJECTION); 
-	glPushMatrix();
-	glLoadIdentity(); 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	int ww = width() / 4;
-	if (ww > 128) ww = 128;
-	glViewport(0, 0, ww + 20, (GLint)ww + 20);
-	glOrtho(-24, 24, -24, 24, -24, 24); 
-
-	//ª≠◊¯±Í÷·
-	glMultMatrixd(m_camera.getRotateMatrix());
-	glColor3f(1.0, 0.0, 0.0);
-	gluCylinder(quadratic, 1.0f, 1.0f, 12.0f ,32, 32);
-	glTranslatef(0.0, 0.0, 12.0f); 
-	gluCylinder(quadratic, 2.0f, 0.0f, 4.0f, 32, 32);
-	glRasterPos3f (0.0, 0.0, 8);
-	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,'z');
-	glTranslatef(0.0, 0.0, -12.0f);
-	glRotated(-90, 1.0, 0.0, 0.0); 
-	glColor3f( 0.0, 1.0, 0.0 );
-	gluCylinder(quadratic, 1.0f, 1.0f, 12.0f ,32, 32); 
-	glTranslatef(0.0, 0.0, 12.0f);
-	gluCylinder(quadratic, 2.0f, 0.0f, 4.0f, 32, 32);
-	glRasterPos3f (0.0, 0.0, 8); 
-	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,'y'); 
-	glTranslatef(0.0, 0.0, -12.0f); 
-	glRotated(90, 0.0, 1.0, 0.0); 
-	glColor3f(0.0, 0.0, 1.0); 
-	gluCylinder(quadratic, 1.0f, 1.0f, 12.0f ,32, 32); 
-	glTranslatef(0.0, 0.0, 12.0f); 
-	gluCylinder(quadratic, 2.0f, 0.0f, 4.0f, 32, 32);
-	glRasterPos3f (0.0, 0.0, 8); 
-	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,'x');
-
-	glMatrixMode(GL_PROJECTION); 
-	glPopMatrix(); 
-	glMatrixMode(GL_MODELVIEW); 
-	glPopMatrix(); 
-
-	glViewport(0, 0, (GLint)width(), (GLint)height());  // ”ø⁄ªπ‘≠Œ™‘≠ ºµƒ’˚∏ˆ∆¡ƒª
-	glDisable(GL_BLEND);
-	gluDeleteQuadric(quadratic); 
-}
-//ªÊ÷∆Colorbar
-void GLWidget::drawColorbar()
-{
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-    
-	int viewWidth = width() / 10;
-	if (viewWidth>80) viewWidth = 80;
-	int viewheight = height() / 2;
-
-	glViewport(width() - viewWidth - 20, height() - viewheight - 20, viewWidth, viewheight);  // ”ø⁄£®¥∞ø⁄£©±‰ªª
-	gluOrtho2D(0, viewWidth, 0, viewheight);  //’˝Õ∂”∞
-
-	int cx = 0,cy = 0,cw = viewWidth / 4,ch = viewheight;
-	
-	// Draw Color Bar 6÷÷—’…´ 
-	cy = ch;
-	ch = - ch;
-
-	glBegin (GL_QUAD_STRIP);      //
-
-	glColor3f( 1.0 ,0.0 ,0.0 ) ;	   //∫Ï 
-	glVertex2i(cx,cy);
-	glVertex2i(cx+cw,cy);
-
-	glColor3f(  1.0 ,0.5 ,0.0 );	   //Ω€ª∆
-	glVertex2i(cx,cy+ch/5);
-	glVertex2i(cx+cw,cy+ch/5);
-
-	glColor3f( 1.0 ,1.0 ,0.0);	   //ª∆
-	glVertex2i(cx,cy+2*ch/5);
-	glVertex2i(cx+cw,cy+2*ch/5);
-
-	glColor3f( 0.0 ,1.0 ,0.0);	   //¬Ã
-	glVertex2i(cx,cy+3*ch/5);
-	glVertex2i(cx+cw,cy+3*ch/5);
-
-	glColor3f( 0.0 ,1.0 ,1.0);	   //«‡ 
-	glVertex2i(cx,cy+4*ch/5);
-	glVertex2i(cx+cw,cy+4*ch/5);
-
-	glColor3f( 0.0 ,0.0 ,1.0);	   //¿∂
-	glVertex2i(cx,cy+5*ch/5);
-	glVertex2i(cx+cw,cy+5*ch/5);
-
-	glEnd(); 
-
-	// Draw the outline of color bar
-	glColor3ub(0,0,0);
-	glBegin(GL_LINE_LOOP);
-	glVertex2i(cx,cy);
-	glVertex2i(cx+cw,cy);
-	glVertex2i(cx+cw,cy+ch);
-	glVertex2i(cx,cy+ch);
-	glEnd();
-
-	// Draw the coordinate values
-	double y;
-	double strength[6];
-	for(int i=0;i<=5;i++)
-	{
-		y=cy+i*ch/5.0;
-		glBegin(GL_LINES);
-		glVertex2i(cx+cw,y);
-		glVertex2i(cx+cw+1,y);
-		glEnd();
-		
-		strength[i] = Tmax - (Tmax - Tmin)*i/5.0;
-
-		char* format;
-		format = new char[30]; 
-		
-		/*
-		∫Ø ˝gcvt(double number,size_t ndigits,char *buf)£¨∞—∏°µ„ ˝number◊™ªª≥…◊÷∑˚¥Æ(∞¸∫¨–° ˝µ„∫Õ’˝∏∫∑˚∫≈)£¨
-		≤Œ ˝ndigits±Ì æ–Ëœ‘ æµƒŒª ˝(Ωˆ∞¸∫¨ ˝◊÷),≤¢∑µªÿ÷∏œÚ∏√◊÷∑˚¥Æµƒ÷∏’Îbuf
-		*/
-		if(strength[i]>=-1000 && strength[i]<-100)
-		{
-			gcvt(strength[i], 5, format);  
-		}
-		else if(strength[i]>=-100 && strength[i]<-10)
-		{
-			gcvt(strength[i], 4, format);
-		}
-		else if (strength[i]>=-10 && strength[i]<10)
-		{
-			gcvt(strength[i], 3, format);
-		}
-		else if (strength[i]>=10 && strength[i]<100)
-		{
-			gcvt(strength[i], 4, format);
-		}
-		else if (strength[i]>=100 && strength[i]<1000)
-		{
-			gcvt(strength[i], 5, format);
-		}
-		else if (strength[i]>=1000 && strength[i]<10000)
-		{
-			gcvt(strength[i], 6, format);
-		}
-		else if (strength[i]>=10000 && strength[i]<100000)
-		{
-			gcvt(strength[i], 7, format);
-		}
-
-		/*va_list args;
-		char buffer[255], *s;
-		va_start(args, format);
-		vsprintf(buffer, format, args);
-		va_end(args);
-		glRasterPos2f(cx+cw+2,y);
-		for(s = buffer; *s; ++s)
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *s);*/
-
-		char *s;
-		glRasterPos2f(cx+cw+2,y);
-		for(s = format; *s; ++s)
-			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *s);
-		delete[] format;
-	}
-	glMatrixMode(GL_PROJECTION); 
-	glPopMatrix(); 
-	glMatrixMode(GL_MODELVIEW); 
-	glPopMatrix();
-	glViewport(0, 0, (GLint)width(), (GLint)height()); // ”ø⁄ªπ‘≠Œ™‘≠ ºµƒ’˚∏ˆ∆¡ƒª
-}
-
-/*
-//ÃÏœﬂŒª÷√”≥…‰∆Ω√Ê
-void GLWidget::drawposplane(double viewlength,double viewwidth)
-{
-	double  a=viewwidth/30;
-
-	//	double x=width()-viewlength-20;
-	double x=20;
-	double y=height()-viewwidth-20;
-
-	double posx=currentPos.x();
-	double posy=currentPos.y();
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-
-	glViewport(x,y,(GLsizei)viewlength,(GLsizei)viewwidth);  // ”ø⁄£®¥∞ø⁄£©±‰ªª
-	gluOrtho2D(0.0, viewlength, 0.0,viewwidth);  //Õ∂”∞±‰ªª
-
-	glBegin(GL_QUADS);
-
-	//ÃÏœﬂŒª÷√”≥…‰∆Ω√Ê
-	glColor3d(0.5,0.5,0.8);
-	glVertex2d(0.0,0.0);
-	glVertex2d(viewlength,0.0);
-	glVertex2d(viewlength,viewwidth);
-	glVertex2d(0.0,viewwidth);
-
-	//ª≠“ª∏ˆ–°’˝∑Ω–Œ”ÎÃÏœﬂœ‡”≥…‰
-	glColor3d(1.0,1.0,1.0);
-	glVertex2d(posx-x-a,posy-y-a);
-	glVertex2d(posx-x+a,posy-y-a);
-	glVertex2d(posx-x+a,posy-y+a);
-	glVertex2d(posx-x-a,posy-y+a);
-
-	glEnd();
-
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-}
+/************************************************************************/
+/*  ÁªòÂà∂Âú∫ÊôØ
+Ê≠§Â§ÑÂú∫ÊôØ‰∏∫Â±ÄÈÉ®
 */
-void GLWidget::resetRenderColor()
-{
-	m_lightColor = Color::LIGHT_GRAY;
-	//m_backGroundColor = Color(0.8, 0.8, 0.8);
-	m_backGroundColor = Color(130/256.f, 130/256.f, 172/256.f);
-	m_groundColor = Color::GRAY;
+/************************************************************************/
+void GLWidget::drawLocalScene(){
+
+	if (drawTriangleScene) //ËØªÂèñÂú∫ÊôØobjÊ†ºÂºèÊñá‰ª∂Âπ∂Â±ïÁ§∫
+	{
+		glEnable(GL_BLEND);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		//glDisable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
+		glPushMatrix();
+		glBegin(GL_TRIANGLES);
+		size_t faceNum = TriangleModel->NumF();
+		for(size_t i = 0; i < faceNum; ++i)
+		{
+			bool materialFindFlag=false;
+			for(int j = 0;j < materials.size();j++)
+			{
+				if (materials[j].Id == TriangleModel->getMtlId(i))
+				{
+					glColor4d((materials[j].color.r)/256.f, (materials[j].color.g)/256.f, (materials[j].color.b)/256.f, vis_factor_scence);
+					materialFindFlag=true;
+					break;//Êúâ‰∏Ä‰∏™Á≠â‰∫éÂç≥ÂèØÔºåÈ¢úËâ≤‰ø°ÊÅØÊòØÁõ∏ÂêåÁöÑ
+				}
+			}
+			if (!materialFindFlag)
+			{
+				glColor4d((materials[defaultMaterial].color.r)/256.f, (materials[defaultMaterial].color.g)/256.f, (materials[defaultMaterial].color.b)/256.f, vis_factor_scence);
+			}
+			Vector3i vertexID = TriangleModel->GetFace(i);
+			Vector3d v0 = TriangleModel->GetVertex(vertexID.x);
+			Vector3d v1 = TriangleModel->GetVertex(vertexID.y);
+			Vector3d v2 = TriangleModel->GetVertex(vertexID.z);
+
+			Vector3d faceNormal = TriangleModel->GetNormal(i);
+			glNormal3d(faceNormal.x, faceNormal.y, faceNormal.z);
+			glVertex3d(v0.x, v0.y, v0.z);
+			glVertex3d(v1.x, v1.y, v1.z);
+			glVertex3d(v2.x, v2.y, v2.z);
+		}
+		glEnd();	
+	}else
+	{
+		QMessageBox::warning(this, QStringLiteral("Âú∫ÊôØÂ±ïÁ§∫"),QStringLiteral("Êó†Ê≥ïÂ±ïÁ§∫Â±ÄÈÉ®Âú∫ÊôØÊàñËÄÖOBJÊ®°ÂûãÔºÅ"));
+		return;
+	}
 }
 
-// void GLWidget::drawPixelBuffer()
-// {
-// 	// Clear color
-// 	glClearColor(0.0, 0.0, 0.0, 0.0);
-// 	// Clear all pixels.
-// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-// 
-// 	m_camera.setupModelMatrix();
-// 
-// 	//drawGround();
-// 	glClearColor(m_backGroundColor.r , m_backGroundColor.g, m_backGroundColor.b, 0.0); 
-// }
-// 
-// 
-// void GLWidget::drawGround()
-// {
-// 	double startX = m_groundCenter.x - m_dGroundWidth / 2;
-// 	double startY = m_groundCenter.y - m_dGroundWidth / 2;
-// 	double endX = m_groundCenter.x + m_dGroundWidth / 2;
-// 	double endY = m_groundCenter.y + m_dGroundWidth / 2;
-// 
-// 	double posX = startX;
-// 	Vector3d vec1(0, startY, m_groundCenter.z);
-// 	Vector3d vec2(0, endY, m_groundCenter.z);
-// 
-// 	double posY = startY;
-// 	Vector3d vec3(startX, 0, m_groundCenter.z);
-// 	Vector3d vec4(endX, 0, m_groundCenter.z);
-// 	double delta = m_dGroundWidth / m_iGroundGridNum;
-// 
-// 	LoadColor(m_groundColor);
-// 	glBegin(GL_LINES);
-// 	for (int i = 0; i <= m_iGroundGridNum; ++i)
-// 	{
-// 		vec1.x = vec2.x = posX;
-// 		LoadVertex(vec1);
-// 		LoadVertex(vec2);
-// 
-// 		vec3.y = vec4.y = posY;
-// 		LoadVertex(vec3);
-// 		LoadVertex(vec4);
-// 
-// 		posX += delta;
-// 		posY += delta;
-// 	}
-// 
-// 	//Draw x axis and y axis
-// 	LoadColor(Color::BLACK);
-// 	delta = m_iGroundGridNum / 2 * delta;
-// 	vec1.x = startX + delta;
-// 	vec2.x = vec1.x;
-// 	vec3.y = startY + delta;
-// 	vec4.y = vec3.y;
-// 	LoadVertex(vec1);
-// 	LoadVertex(vec2);
-// 	LoadVertex(vec3);
-// 	LoadVertex(vec4);
-// 	glEnd();
-// }
-// 
-// 
-//ªÊ÷∆¥´≤•¬∑æ∂
- void GLWidget::drawPath()
- {
-	 for (int id=0;id<AP_EPoints.size();id++)
-	 {
-		 if (sceneIsDislpay[id])  //—°÷–µƒ–°«¯≤≈ƒ‹œ‘ æ∑¬’ÊΩ·π˚
-		 {
-			 vector<EField> &EPoint = AP_EPoints[id];
-			 //for (int i=0;i<1;i++)
-			 for (int i=0;i<EPoint.size();i++)
-			 {
-				 glColor3d(1.0, 0.0, 0.0);
-				 glPushMatrix();
-				 glTranslatef(EPoint[i].Position.x,EPoint[i].Position.y,EPoint[i].Position.z);
-				 //glutSolidSphere(0.1, 16, 16);
-				 glPopMatrix();
-				 for (int j=0;j<EPoint[i].Path.size();j++)
-				 {
-					 vector<Vector3d> &m_point = EPoint[i].Path[j].Path_interPoint;
-					 glPushMatrix();
-					 //glColor3d(0.0, 0.0, 1.0);
-					 glColor3d(1.0, 1.0, 0.0);
-					 glBegin(GL_LINES);
-					 for(int i = 0; i < m_point.size()-1; i++)
-					 {
-						 Vector3d startPos = m_point[i];
-						 Vector3d endPos  = m_point[i+1];
-						 glVertex3d(startPos.x, startPos.y, startPos.z);
-						 glVertex3d(endPos.x, endPos.y, endPos.z);
-					 }
-					 glEnd();
-					 glPopMatrix();
-				 }
-			 }
-		 }
-	 }
-	 
- }
+void GLWidget::updateMesh()
+{
+	m_camera.setSceneBBox(minPos, maxPos);
+	// update ground attribute
+	Vector3d dist = maxPos - minPos;
+	m_groundCenter   = (minPos + maxPos) * .5;
+	m_groundCenter.z = minPos.z;
+	m_dGroundWidth = Max(dist.x, dist.y) * 5;  //‰ΩøÂú∫ÊôØÂíåËÉåÊôØÁöÑÊØî‰æãÊòæÁ§∫ÊÅ∞ÂΩìÔºåËÉåÊôØÂÆΩÂ∫¶ÊòØMax(dist.x, dist.y) ÁöÑ5ÂÄç
+}
 
-// Û±Í∏˙◊Ÿ ¬º˛
+//Èº†Ê†áË∑üË∏™‰∫ã‰ª∂
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
 	lastPos = event->pos();
@@ -809,13 +317,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 		m_camera.mouseMove(event->pos().x(), event->pos().y());
 		updateGL();
 	}
-	else if(is_change_antennapos&&(event->buttons() & Qt::RightButton))
-	{
-		flag_rightbutton=true;
-		currentPos=QPoint(event->pos().x(),height()-event->pos().y());  // Û±ÍªÒ»°µƒ¥∞ø⁄y◊¯±Í”Î µº ¥∞ø⁄y◊¯±Íª•≤π£¨π ”√height()ºı»•ªÒ»°µƒy÷µ£¨¥∞ø⁄◊¯±Í‘≠µ„‘⁄¥∞ø⁄◊Û…œΩ«¥¶
-		updateGL();
-	}
- 	else if(event->buttons() & Qt::MidButton)  //÷ß≥÷Õº–Œ“∆∂Øπ¶ƒ‹
+	//else if(is_change_antennapos&&(event->buttons() & Qt::RightButton))
+	//{
+	//	flag_rightbutton=true;
+	//	currentPos=QPoint(event->pos().x(),height()-event->pos().y());  //Èº†Ê†áËé∑ÂèñÁöÑÁ™óÂè£yÂùêÊ†á‰∏éÂÆûÈôÖÁ™óÂè£yÂùêÊ†á‰∫íË°•ÔºåÊïÖÁî®height()ÂáèÂéªËé∑ÂèñÁöÑyÂÄºÔºåÁ™óÂè£ÂùêÊ†áÂéüÁÇπÂú®Á™óÂè£Â∑¶‰∏äËßíÂ§Ñ
+	//	updateGL();
+	//}
+ 	else if(event->buttons() & Qt::MidButton)  //ÊîØÊåÅÂõæÂΩ¢ÁßªÂä®ÂäüËÉΩ
 	{
 		m_camera.setModelTranslate(event->pos().x() - lastPos.x(), event->pos().y() - lastPos.y());	
 		lastPos = event->pos();
@@ -829,40 +337,14 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 	
 }
 
-//Õ®π˝ Û±Íπˆ¬÷ µœ÷Õº–ŒÀı∑≈
+//ÈÄöËøáÈº†Ê†áÊªöËΩÆÂÆûÁé∞ÂõæÂΩ¢Áº©Êîæ
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
 	double zoomValue = 1.3;
-	//event->delta()µ± Û±Íª¨¬÷‘⁄πˆ∂Ø ±”√”⁄∑µªÿª¨∂Øµƒæ‡¿Î£¨∏√÷µµ»”⁄ Û±Í–˝◊™Ω«∂»µƒ8±∂°£
-	if((event->delta())>0)   //’˝ ˝÷µ±Ì æª¨¬÷œ‡∂‘”⁄”√ªß‘⁄œÚ«∞ª¨∂Ø
+	//event->delta()ÂΩìÈº†Ê†áÊªëËΩÆÂú®ÊªöÂä®Êó∂Áî®‰∫éËøîÂõûÊªëÂä®ÁöÑË∑ùÁ¶ªÔºåËØ•ÂÄºÁ≠â‰∫éÈº†Ê†áÊóãËΩ¨ËßíÂ∫¶ÁöÑ8ÂÄç„ÄÇ
+	if((event->delta())>0)   //Ê≠£Êï∞ÂÄºË°®Á§∫ÊªëËΩÆÁõ∏ÂØπ‰∫éÁî®Êà∑Âú®ÂêëÂâçÊªëÂä®
 		m_camera.zoomIn(zoomValue);
-	else if((event->delta())<0)  //∏∫ ˝÷µ±Ì æª¨¬÷œ‡∂‘”⁄”√ªß «œÚ∫Ûª¨∂Øµƒ°£
+	else if((event->delta())<0)  //Ë¥üÊï∞ÂÄºË°®Á§∫ÊªëËΩÆÁõ∏ÂØπ‰∫éÁî®Êà∑ÊòØÂêëÂêéÊªëÂä®ÁöÑ„ÄÇ
 		m_camera.zoomOut(zoomValue);
  	updateGL();	
 }
-void GLWidget::LoadUniformColor(double currentVaule,Color &result)
-{ 
-	if(currentVaule <= 0.2) 
-		result = Color(0.0,currentVaule * 5,1.0);
-	else if(currentVaule <= 0.4)
-		result = Color(0.0, 1.0, (0.4 - currentVaule) * 5);
-	else if(currentVaule <= 0.6)
-		result = Color((currentVaule - 0.4) * 5,1.0,0.0);
-	else if(currentVaule <= 0.8)
-		result = Color(1.0, (0.8 - currentVaule) * 2.5 + 0.5, 0.0);
-	else if(currentVaule <= 1.0)
-		result = Color(1.0,(1.0 - currentVaule) * 2.5,0.0);
-
-}
-
-void GLWidget::updateMesh()
-{
-	m_camera.setSceneBBox(minPos, maxPos);
-	// update ground attribute
-	Vector3d dist = maxPos - minPos;
-	m_groundCenter   = (minPos + maxPos) * .5;
-	m_groundCenter.z = minPos.z;
-	m_dGroundWidth = Max(dist.x, dist.y) * 5;  // π≥°æ∞∫Õ±≥æ∞µƒ±»¿˝œ‘ æ«°µ±£¨±≥æ∞øÌ∂» «Max(dist.x, dist.y) µƒ5±∂
-}
-
-
