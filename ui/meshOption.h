@@ -1,20 +1,30 @@
-#ifndef  MESHOPTION_H
+﻿#ifndef  MESHOPTION_H
 #define MESHOPTION_H
 #include "util/vector.h"
 #include <QDialog>
+#include <QGroupBox>
+#include <QLineEdit>
 
-class meshOpitionDialog:public QDialog
+class meshOptionDialog:public QDialog
 {
-	meshOpitionDialog(QWidget *parent=0);
-	~meshOpitionDialog();
+	Q_OBJECT
+public:
+	meshOptionDialog(QWidget *parent=0);
+	~meshOptionDialog();
 public:
 	Vector3d center;
 	int range;
 
-	void getValue();
+//	
+public:
+	void setTheLayout();
+	void getValue(Vector3d &_center,int &_range);
+	QGroupBox * firstGroup;
+	QLineEdit *centerXLE;
+	QLineEdit *centerYLE;
+	QLineEdit *centerZLE;
+	QLineEdit *rangeLE;
 
-protected:
-private:
 };
 
 

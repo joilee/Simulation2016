@@ -20,7 +20,7 @@ void MainWindow::init()
 	M_computeroptionDialog=new computerOptionDialog(this);
 	bip=new BuildingInfoPage(this);
 	lpg=new localPage(this);
-
+	mod=new meshOptionDialog(this);
 	//场景数据初始化
 	 MaxPoint=Vector3d(-INFINITY,-INFINITY,-INFINITY);
 	 MinPoint=Vector3d(INFINITY,INFINITY,INFINITY);
@@ -78,6 +78,7 @@ void MainWindow:: createActions()
 		connect(ui.action_9,SIGNAL(triggered()),this,SLOT(setMaterial()));
 		connect(ui.action_matFile,SIGNAL(triggered()),this,SLOT(open_material()));
 		connect(ui.tabWidget_Dispaly,SIGNAL(currentChanged(int)),ui.stackedWidget_Info,SLOT(setCurrentIndex(int)));
+		connect(ui.action_6,SIGNAL(triggered()),this,SLOT(setMeshOption()));
 }
 
 void MainWindow::open_material()
@@ -342,4 +343,13 @@ void MainWindow::loadObj()
 
 	setProgress(100);
 	return;
+}
+
+void MainWindow::setMeshOption()
+{
+	if (mod==NULL)
+	{
+		mod=new meshOptionDialog(this);
+	}
+	mod->exec();
 }

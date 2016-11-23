@@ -7,6 +7,7 @@
 #include "InfoPage.h"
 #include "computerOptionDialog.h"
 #include "geometry/emxModel.h"
+#include "meshOption.h"
 #include <QtWidgets/QMessageBox>
 class QAction; 
 struct building;
@@ -35,6 +36,7 @@ private slots:
 	void loadObj();
 	void setMaterial();
 	void open_material();
+	void setMeshOption();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;
@@ -46,6 +48,7 @@ private:
 	computerOptionDialog* M_computeroptionDialog;
 	BuildingInfoPage * bip;
 	localPage *lpg;
+	meshOptionDialog *mod;
 	//内部变量
  private:
 	 QString material_path;

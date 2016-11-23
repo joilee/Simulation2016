@@ -157,6 +157,15 @@
     <ClCompile Include="ui\InfoPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\meshOption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_meshOption.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_meshOption.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.ui">
@@ -184,6 +193,9 @@
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ui\InfoPage.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ui\meshOption.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -270,9 +282,6 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_outdoorFile.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\meshOption.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
