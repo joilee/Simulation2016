@@ -3,24 +3,33 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QRegExpValidator>
-void meshOptionDialog::getValue(Vector3d &_center,int &_range)
+void meshOptionDialog::getValue(Vector3d &_center,double &_range)
 {
+	_center=center;
+	_range=range;
+}
+void meshOptionDialog::onOkbutton()
+{
+	if (centerXLE->text().isEmpty()||centerYLE->text().isEmpty()||centerZLE->text().isEmpty()||rangeLE->text().isEmpty())
+	{
+		return;
+	}
 	double x=centerXLE->text().toDouble();
 	double y=centerYLE->text().toDouble();
 	double z=centerZLE->text().toDouble();
 	range=rangeLE->text().toDouble();
 	center=Vector3d(x,y,z);
-	_center=center;
-	_range=range;
+	this->close();
 }
-
 
 meshOptionDialog::meshOptionDialog(QWidget *parent): QDialog(parent) 
 {
+
 	QRegExp rx("^[-+]?[0-9]+(\.[0-9]+)?$");  
 	QRegExpValidator *pReg = new QRegExpValidator(rx, this);  
 	center=Vector3d(0,0,0);
 	range=0;
+	inputFlag=false;
 	centerXLE=new QLineEdit;
 	centerXLE->setValidator(pReg);
 	centerYLE=new QLineEdit;
@@ -30,9 +39,19 @@ meshOptionDialog::meshOptionDialog(QWidget *parent): QDialog(parent)
 	rangeLE=new QLineEdit;
 	rangeLE->setValidator(new QIntValidator(0,9999999,this));
 	this->setWindowTitle(QStringLiteral("剖分选项"));
+	okbutton=new QPushButton(QStringLiteral("确定"));
+	
+	exitbutton=new QPushButton(QStringLiteral("取消"));
 	this->setTheLayout();
-}
 
+
+	createActions();
+}
+void meshOptionDialog::createActions()
+{
+	connect(this->okbutton,SIGNAL(clicked()),this,SLOT(onOkbutton()));
+	connect(this->exitbutton,SIGNAL(clicked()),this,SLOT(reject()));
+}
 meshOptionDialog::~meshOptionDialog()
 {
 
@@ -62,7 +81,15 @@ meshOptionDialog::~meshOptionDialog()
 	v1->addLayout(secondLayout);
 	firstGroup->setLayout(v1);
 
+	QHBoxLayout *thirdlayout=new QHBoxLayout;
+	thirdlayout->addWidget(okbutton);
+	thirdlayout->addWidget(exitbutton);
+	thirdlayout->setAlignment(Qt::AlignRight);
+
+
+
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(firstGroup);
+	mainLayout->addLayout(thirdlayout);
 	setLayout(mainLayout);
 }

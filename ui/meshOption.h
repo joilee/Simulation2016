@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QGroupBox>
 #include <QLineEdit>
-
+#include <QPushButton>
 class meshOptionDialog:public QDialog
 {
 	Q_OBJECT
@@ -13,18 +13,22 @@ public:
 	~meshOptionDialog();
 public:
 	Vector3d center;
-	int range;
+	double range;
+	bool inputFlag;
 
-//	
+private slots:
+	void onOkbutton();
 public:
+	void createActions();
 	void setTheLayout();
-	void getValue(Vector3d &_center,int &_range);
+	void getValue(Vector3d &_center,double &_range);
 	QGroupBox * firstGroup;
 	QLineEdit *centerXLE;
 	QLineEdit *centerYLE;
 	QLineEdit *centerZLE;
 	QLineEdit *rangeLE;
-
+	QPushButton *okbutton;
+	QPushButton* exitbutton;
 };
 
 

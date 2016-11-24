@@ -79,6 +79,7 @@ void MainWindow:: createActions()
 		connect(ui.action_matFile,SIGNAL(triggered()),this,SLOT(open_material()));
 		connect(ui.tabWidget_Dispaly,SIGNAL(currentChanged(int)),ui.stackedWidget_Info,SLOT(setCurrentIndex(int)));
 		connect(ui.action_6,SIGNAL(triggered()),this,SLOT(setMeshOption()));
+		connect(ui.action_startMesh,SIGNAL(triggered()),this,SLOT(meshAll()));
 }
 
 void MainWindow::open_material()
@@ -140,6 +141,7 @@ void MainWindow::setMaterial()
 		QStringLiteral("编号:"), 10, 0, 78, 1, &ok);
 	if (ok)
 		material_ID=i;
+	outputLog(QString(QStringLiteral("设置材质编号为：")+QString::number(material_ID,10)));
 }
 
 /************************************************************************/
@@ -185,7 +187,7 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	//cout<<"MinPoint:"<<MinPoint.x<<" "<<MinPoint.y<<" "<<MinPoint.z<<endl;
 	//cout<<"MaxPoint:"<<MaxPoint.x<<" "<<MaxPoint.y<<" "<<MaxPoint.z<<endl;
 	modelFlag=true;
-	setModelName(_name);
+	setModelName(0,_name);
 	outputLog(QStringLiteral("已经导入整个场景"));
 	bip->setValue(total_Buildings.size(),-1,MinPoint,MaxPoint);
 
@@ -196,11 +198,19 @@ void MainWindow::outputLog(QString source)
 {
 	ui.textBrowser->append(source);
 }
-void MainWindow::setModelName(QString name)
+//index==0为城市场景 index==1为obj
+void MainWindow::setModelName(int index,QString name)
 {
 	 QTreeWidgetItem *child;  
 	 QStringList columItemList;
-	 columItemList<<QStringLiteral("城市场景")<<name;
+	 if (index==0)
+	 {
+		 columItemList<<QStringLiteral("城市场景")<<name;
+	 }else if (index==1)
+	 {
+		 columItemList<<QStringLiteral("局部场景")<<name;
+	 }
+	 
 	 child=new QTreeWidgetItem(columItemList);
 	 QTreeWidgetItem* temp=ui.treeWidget_project->itemAt(0,0);
 	 temp->addChild(child);
@@ -340,7 +350,7 @@ void MainWindow::loadObj()
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
 	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
-
+	setModelName(1,OBJFile_path);
 	setProgress(100);
 	return;
 }
@@ -352,4 +362,24 @@ void MainWindow::setMeshOption()
 		mod=new meshOptionDialog(this);
 	}
 	mod->exec();
+}
+/************************************************************************/
+/* 剖分选中的地面和建筑物                                                                     */
+/************************************************************************/
+void MainWindow::meshAll()
+{
+	if (triangleModel->NumF()>0||triangleModel->NumV()>0)
+	{
+		outputLog(QStringLiteral("局部场景已有模型，请先删除。"));
+		return;
+	}
+	Vector3d center;
+	double range;
+	//要不要加一个判断，防止错误？
+	if (mod->inputFlag)
+	{
+		mod->getValue(center,range);
+	}
+	
+
 }

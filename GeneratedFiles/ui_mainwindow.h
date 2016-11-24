@@ -39,7 +39,7 @@ public:
     QAction *action_3;
     QAction *action_5;
     QAction *action_6;
-    QAction *action_7;
+    QAction *action_startMesh;
     QAction *action_9;
     QAction *computerOption;
     QAction *action_8;
@@ -90,8 +90,8 @@ public:
         action_5->setObjectName(QStringLiteral("action_5"));
         action_6 = new QAction(MainWindowClass);
         action_6->setObjectName(QStringLiteral("action_6"));
-        action_7 = new QAction(MainWindowClass);
-        action_7->setObjectName(QStringLiteral("action_7"));
+        action_startMesh = new QAction(MainWindowClass);
+        action_startMesh->setObjectName(QStringLiteral("action_startMesh"));
         action_9 = new QAction(MainWindowClass);
         action_9->setObjectName(QStringLiteral("action_9"));
         computerOption = new QAction(MainWindowClass);
@@ -235,7 +235,7 @@ public:
         menuFILE->addSeparator();
         menuFILE->addAction(action_5);
         menuMesh->addAction(action_6);
-        menuMesh->addAction(action_7);
+        menuMesh->addAction(action_startMesh);
         menuMesh->addSeparator();
         menuMesh->addAction(action_9);
         menuComputer->addAction(computerOption);
@@ -246,7 +246,7 @@ public:
 
         retranslateUi(MainWindowClass);
 
-        tabWidget_Dispaly->setCurrentIndex(0);
+        tabWidget_Dispaly->setCurrentIndex(1);
         stackedWidget_Info->setCurrentIndex(-1);
 
 
@@ -259,8 +259,8 @@ public:
         action->setText(QApplication::translate("MainWindowClass", "\346\226\260\345\273\272", 0));
         action_3->setText(QApplication::translate("MainWindowClass", "\345\257\274\345\205\245\345\256\244\345\244\226\345\234\272\346\231\257", 0));
         action_5->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230\347\273\223\346\236\234", 0));
-        action_6->setText(QApplication::translate("MainWindowClass", "\345\211\226\345\210\206", 0));
-        action_7->setText(QApplication::translate("MainWindowClass", "\345\217\226\346\266\210\345\211\226\345\210\206", 0));
+        action_6->setText(QApplication::translate("MainWindowClass", "\345\211\226\345\210\206\345\217\202\346\225\260", 0));
+        action_startMesh->setText(QApplication::translate("MainWindowClass", "\345\211\226\345\210\206", 0));
         action_9->setText(QApplication::translate("MainWindowClass", "\346\235\220\346\226\231\351\200\211\351\241\271", 0));
         computerOption->setText(QApplication::translate("MainWindowClass", "\351\200\211\351\241\271", 0));
         action_8->setText(QApplication::translate("MainWindowClass", "\345\234\272\347\202\271", 0));

@@ -27,7 +27,7 @@
        <enum>QTabWidget::South</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="GLWidget" name="ModelView">
        <attribute name="title">
@@ -70,7 +70,7 @@
      <string>Mesh</string>
     </property>
     <addaction name="action_6"/>
-    <addaction name="action_7"/>
+    <addaction name="action_startMesh"/>
     <addaction name="separator"/>
     <addaction name="action_9"/>
    </widget>
@@ -228,12 +228,12 @@
   </action>
   <action name="action_6">
    <property name="text">
-    <string>剖分</string>
+    <string>剖分参数</string>
    </property>
   </action>
-  <action name="action_7">
+  <action name="action_startMesh">
    <property name="text">
-    <string>取消剖分</string>
+    <string>剖分</string>
    </property>
   </action>
   <action name="action_9">

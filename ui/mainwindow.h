@@ -23,7 +23,7 @@ public:
 
 public:
 	emxModel* getEmxModel();
-	void setModelName(QString name);//设置treewidget中的名字
+	void setModelName(int id,QString name);//设置treewidget中的名字
 	void outputLog(QString source);
 	void setProgress(int value);
 
@@ -37,6 +37,7 @@ private slots:
 	void setMaterial();
 	void open_material();
 	void setMeshOption();
+	void meshAll();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;
