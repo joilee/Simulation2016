@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QtWidgets/QFileDialog>
 #include <QInputDialog>
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -29,7 +30,7 @@ void MainWindow::init()
 	total_Buildings.clear();
 	modelFlag=false;
 	localFlag=false;
-	material_ID=10;//默认是混凝土文件
+	material_ID=43;//默认是混凝土文件
 
 	//左侧目录
 	ui.treeWidget_project->setHeaderLabels(QStringList()<<QStringLiteral("项目")<<QStringLiteral("属性")); 
@@ -54,6 +55,7 @@ void  MainWindow::openOutdoorFile()
 	M_outdoorFileDialog->exec();
 
 }
+
 void MainWindow::computerOption()
 {
 	if (M_computeroptionDialog==NULL)
@@ -67,6 +69,7 @@ void MainWindow::setProgress(int value)
 {
 	ui.progressBar->setValue(value);
 }
+
 void MainWindow:: createActions()
 {
 		connect(ui.action_3, SIGNAL(triggered()), this, SLOT(openOutdoorFile()));
@@ -134,6 +137,7 @@ void MainWindow::open_material()
 	setProgress(100);
 	outputLog(QStringLiteral("成功加载材质文件!"));
 }
+
 void MainWindow::setMaterial()
 {
 	bool ok;
@@ -368,9 +372,18 @@ void MainWindow::setMeshOption()
 /************************************************************************/
 void MainWindow::meshAll()
 {
-	if (triangleModel->NumF()>0||triangleModel->NumV()>0)
+	setProgress(0);
+	if (triangleModel!=NULL)
 	{
+		if (triangleModel->NumV())
+		{
+			outputLog(QStringLiteral("局部场景已有点集"));
+		}
 		outputLog(QStringLiteral("局部场景已有模型，请先删除。"));
+		return;
+	}else if (total_Buildings.size()==0)
+	{
+		outputLog(QStringLiteral("没有导入建筑物文件，请先导入相关文件。"));
 		return;
 	}
 	Vector3d center;
@@ -379,7 +392,98 @@ void MainWindow::meshAll()
 	if (mod->inputFlag)
 	{
 		mod->getValue(center,range);
+	}else
+	{
+		outputLog(QStringLiteral("没有设置剖分参数"));
+		return;
 	}
-	
+	setProgress(5);
+	vector<building> Local_buildings;
+	LocalBuilding(Local_buildings,center, range);
+	setProgress(30);
+	MESH meshCTX;
+	MESH_PTR ground_pMesh = &meshCTX;
+	LocalGround( ground_pMesh,center,range);
+	setProgress(70);
+	triangleModel = new emxModel(Local_buildings, ground_pMesh);
+	setProgress(90);
+	//右侧边栏显示参数
+	Vector3d MaxPointLocal,MinPointLocal;
+	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
+	localFlag=true;
+	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
+	setProgress(100);
+}
+void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRange)
+{
+	//局部区域的范围 MinPos、MaxPos
+	Vector3d MinPos = AP_position - Vector3d(LocalRange/2, LocalRange/2, 0);
+	Vector3d MaxPos = AP_position + Vector3d(LocalRange/2, LocalRange/2, 0);
 
+	//step0 检测数据有没有读 没读取则报错退出 
+	if(ScenePlaneHeightInfoFile_path.isEmpty())
+	{
+		QMessageBox::warning(this, QString::fromLocal8Bit("场景展示"),QString::fromLocal8Bit("请先导入场景的海拔信息文件"));
+		return;
+	}
+
+	//step1 找到对应的行和列
+	int upRow=(ymax[0]-MaxPos[1])/stdLen[0];
+	int downRow= (ymax[0]-MinPos[1])/stdLen[0]+1;
+	int leftCol=(MinPos[0]-xmin[0])/stdLen[0];
+	int rightCol=(MaxPos[0]-xmin[0])/stdLen[0]+1;
+	int area[4]={upRow,downRow,leftCol,rightCol};
+
+	//step2 进行局部的文件提取 canny算法 剖分 
+	vector<vector<int> > cannyPoint;//从局部点开始的点 不是全局的 
+	int nv=0;
+	int localRow=downRow-upRow+1;
+	int localCol=rightCol-leftCol+1;
+	cannyPoint.resize(localRow,vector<int>(localCol));
+
+	height2canny(heightR[0],cannyPoint,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0],area);
+
+	int  totalVer=getFeaturePoint3(stepLength,localRow,localCol,cannyPoint);
+
+	InitMesh(pMesh, totalVer);
+
+	int amount=setMeshPtr3( pMesh,stepLength,localRow,localCol,cannyPoint,heightR[0],xmin[0],ymax[0],stdLen[0],upRow,leftCol);
+
+	outputLog(QStringLiteral("整张地图共有")+QString::number(nv,10)+QStringLiteral("特征点。"));
+	outputLog(QStringLiteral("本区域插入点数量")+QString::number(amount-3,10));
+	double last_time, this_time;
+	last_time = GetTickCount();
+	IncrementalDelaunay(pMesh);
+	this_time = GetTickCount();
+
+	outputLog(QStringLiteral("局部地面建模共产生点")+QString::number(pMesh->vertex_num,10));
+	outputLog(QStringLiteral("剖分耗时")+QString::number((this_time - last_time)/1000)+QStringLiteral("s"));
+}
+
+void MainWindow::LocalBuilding(vector< building> &Local_buildings, Vector3d AP_position, double LocalRange)
+{
+	//局部区域的范围 MinPos、MaxPos
+	Vector3d MinPos = AP_position - Vector3d(LocalRange/2, LocalRange/2, 0);
+	Vector3d MaxPos = AP_position + Vector3d(LocalRange/2, LocalRange/2, 0);
+	for (int buildings_id = 0; buildings_id < total_Buildings.size(); buildings_id++)
+	{
+		bool in_range = true;
+		for (int id = 0; id < total_Buildings[buildings_id].upper_facePoint.size()-1; id++) //记录building顶面点坐标时，首末点重合，记录两次，所以   .size（）-1
+		{
+			double x1 = total_Buildings[buildings_id].upper_facePoint[id].x - MinPos.x;
+			double x2 = total_Buildings[buildings_id].upper_facePoint[id].x - MaxPos.x;
+			double y1 = total_Buildings[buildings_id].upper_facePoint[id].y - MinPos.y;
+			double y2 = total_Buildings[buildings_id].upper_facePoint[id].y - MaxPos.y;
+			if ( !(x1*x2 < 0 && y1*y2 < 0)) //判断建筑物是否在设定范围内,即使有一个点不在范围内，也判定为不在内部
+			{
+				in_range = false;
+				break;
+			}
+		}
+		if (in_range)
+		{
+			Local_buildings.push_back(total_Buildings[buildings_id]);
+		}		
+	}
+	outputLog(QStringLiteral("建筑物数量为")+QString::number(Local_buildings.size()));
 }

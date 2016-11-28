@@ -1,6 +1,7 @@
+#include <gl/freeglut.h>
 #include "ui/mainwindow.h"
 #include <QtWidgets/QApplication>
-#include <gl/freeglut.h>
+
 #include <QDebug>
 #include <QTextCodec>
 int main(int argc, char *argv[])
@@ -13,4 +14,5 @@ int main(int argc, char *argv[])
 	MainWindow w;
 	w.show();
 	return a.exec();
+
 }

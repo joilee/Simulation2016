@@ -12,6 +12,8 @@
 class QAction; 
 struct building;
 
+using namespace std;
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -38,6 +40,7 @@ private slots:
 	void open_material();
 	void setMeshOption();
 	void meshAll();
+
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;
@@ -63,18 +66,10 @@ private:
 	 vector<building> total_Buildings;  //整体模型
 	 Vector3d MaxPoint,MinPoint;
 	 bool modelFlag;//是否导入建筑物
+
 	 QStringList Scene2DInfoFile_paths;//建筑物地面
 	 QStringList SceneHeightInfoFile_paths;//建筑物高度
 	 QString ScenePlaneHeightInfoFile_path;//地面海拔
-
-	 /************************************************************************/
-	 /* 局部场景 三角面片                                                                     */
-	 /************************************************************************/
-	 QString objName;
-	 QString OBJFile_path;
-	 emxModel * triangleModel;//局部模型，存储obj模型或者建筑物加地面的三角面片,局部模型
-	 bool localFlag;//是否导入局部场景或者生成局部场景
-
 
 	 QString Scene2DInfoFile_path;//临时变量
 	 QString SceneHeightInfoFile_path;//临时变量
@@ -88,17 +83,20 @@ private:
 	 vector<double> xmin;//海拔文件的左上角和右下角。
 	 vector<double> ymax;
 
-private:
 
-	void init();
-	void createActions();
+	 /************************************************************************/
+	 /* 局部场景 三角面片                                                                     */
+	 /************************************************************************/
+	 QString objName;
+	 QString OBJFile_path;
+	 emxModel * triangleModel;//局部模型，存储obj模型或者建筑物加地面的三角面片,局部模型
+	 bool localFlag;//是否导入局部场景或者生成局部场景
 
-
-	//读建筑物以及高度
-	void ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint);
-
-
-
+	 //读建筑物以及高度
+	 void ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint);
+	 void LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRange);//
+	 void LocalBuilding(vector< building> &Local_buildings, Vector3d AP_position, double LocalRange);
+	 void init();
+	 void createActions();
 };
-
 #endif // MAINWINDOW_H

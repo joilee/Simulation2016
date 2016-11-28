@@ -19,6 +19,7 @@ void meshOptionDialog::onOkbutton()
 	double z=centerZLE->text().toDouble();
 	range=rangeLE->text().toDouble();
 	center=Vector3d(x,y,z);
+	inputFlag=true;
 	this->close();
 }
 
@@ -30,6 +31,7 @@ meshOptionDialog::meshOptionDialog(QWidget *parent): QDialog(parent)
 	center=Vector3d(0,0,0);
 	range=0;
 	inputFlag=false;
+
 	centerXLE=new QLineEdit;
 	centerXLE->setValidator(pReg);
 	centerYLE=new QLineEdit;
