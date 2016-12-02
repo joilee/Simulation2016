@@ -37,7 +37,7 @@ class Ui_MainWindowClass
 public:
     QAction *action;
     QAction *action_3;
-    QAction *action_5;
+    QAction *action_saveLocal;
     QAction *action_6;
     QAction *action_startMesh;
     QAction *action_9;
@@ -86,8 +86,8 @@ public:
         action->setObjectName(QStringLiteral("action"));
         action_3 = new QAction(MainWindowClass);
         action_3->setObjectName(QStringLiteral("action_3"));
-        action_5 = new QAction(MainWindowClass);
-        action_5->setObjectName(QStringLiteral("action_5"));
+        action_saveLocal = new QAction(MainWindowClass);
+        action_saveLocal->setObjectName(QStringLiteral("action_saveLocal"));
         action_6 = new QAction(MainWindowClass);
         action_6->setObjectName(QStringLiteral("action_6"));
         action_startMesh = new QAction(MainWindowClass);
@@ -233,7 +233,7 @@ public:
         menuFILE->addAction(action_3);
         menuFILE->addAction(action_obj);
         menuFILE->addSeparator();
-        menuFILE->addAction(action_5);
+        menuFILE->addAction(action_saveLocal);
         menuMesh->addAction(action_6);
         menuMesh->addAction(action_startMesh);
         menuMesh->addSeparator();
@@ -258,7 +258,7 @@ public:
         MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "\345\256\244\345\206\205\344\277\241\345\217\267\344\273\277\347\234\237", 0));
         action->setText(QApplication::translate("MainWindowClass", "\346\226\260\345\273\272", 0));
         action_3->setText(QApplication::translate("MainWindowClass", "\345\257\274\345\205\245\345\256\244\345\244\226\345\234\272\346\231\257", 0));
-        action_5->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230\347\273\223\346\236\234", 0));
+        action_saveLocal->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230\345\261\200\351\203\250\345\234\272\346\231\257", 0));
         action_6->setText(QApplication::translate("MainWindowClass", "\345\211\226\345\210\206\345\217\202\346\225\260", 0));
         action_startMesh->setText(QApplication::translate("MainWindowClass", "\345\211\226\345\210\206", 0));
         action_9->setText(QApplication::translate("MainWindowClass", "\346\235\220\346\226\231\351\200\211\351\241\271", 0));

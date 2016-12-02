@@ -40,7 +40,7 @@ private slots:
 	void open_material();
 	void setMeshOption();
 	void meshAll();
-
+	void saveLocalScene();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;

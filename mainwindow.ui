@@ -63,7 +63,7 @@
     <addaction name="action_3"/>
     <addaction name="action_obj"/>
     <addaction name="separator"/>
-    <addaction name="action_5"/>
+    <addaction name="action_saveLocal"/>
    </widget>
    <widget class="QMenu" name="menuMesh">
     <property name="title">
@@ -221,9 +221,9 @@
     <string>导入室外场景</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="action_saveLocal">
    <property name="text">
-    <string>保存结果</string>
+    <string>保存局部场景</string>
    </property>
   </action>
   <action name="action_6">

@@ -1,7 +1,7 @@
-#include "mainwindow.h"
+ï»¿#include "mainwindow.h"
 #include <QtWidgets/QFileDialog>
 #include <QInputDialog>
-
+#include <QTextStream>
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -22,7 +22,7 @@ void MainWindow::init()
 	bip=new BuildingInfoPage(this);
 	lpg=new localPage(this);
 	mod=new meshOptionDialog(this);
-	//³¡¾°Êı¾İ³õÊ¼»¯
+	//åœºæ™¯æ•°æ®åˆå§‹åŒ–
 	 MaxPoint=Vector3d(-INFINITY,-INFINITY,-INFINITY);
 	 MinPoint=Vector3d(INFINITY,INFINITY,INFINITY);
 
@@ -30,13 +30,13 @@ void MainWindow::init()
 	total_Buildings.clear();
 	modelFlag=false;
 	localFlag=false;
-	material_ID=43;//Ä¬ÈÏÊÇ»ìÄıÍÁÎÄ¼ş
+	material_ID=43;//é»˜è®¤æ˜¯æ··å‡åœŸæ–‡ä»¶
 
-	//×ó²àÄ¿Â¼
-	ui.treeWidget_project->setHeaderLabels(QStringList()<<QStringLiteral("ÏîÄ¿")<<QStringLiteral("ÊôĞÔ")); 
-	modelTW = new QTreeWidgetItem(QStringList()<<QStringLiteral("Ä£ĞÍ"));
-	computeTW = new QTreeWidgetItem(QStringList()<<QStringLiteral("µç´ÅËã·¨"));
-	visualTW = new QTreeWidgetItem(QStringList()<<QStringLiteral("¿ÉÊÓ»¯"));
+	//å·¦ä¾§ç›®å½•
+	ui.treeWidget_project->setHeaderLabels(QStringList()<<QStringLiteral("é¡¹ç›®")<<QStringLiteral("å±æ€§")); 
+	modelTW = new QTreeWidgetItem(QStringList()<<QStringLiteral("æ¨¡å‹"));
+	computeTW = new QTreeWidgetItem(QStringList()<<QStringLiteral("ç”µç£ç®—æ³•"));
+	visualTW = new QTreeWidgetItem(QStringList()<<QStringLiteral("å¯è§†åŒ–"));
 	ui.treeWidget_project->addTopLevelItem(modelTW);
 	ui.treeWidget_project->addTopLevelItem(computeTW);
 	ui.treeWidget_project->addTopLevelItem(visualTW);
@@ -83,19 +83,53 @@ void MainWindow:: createActions()
 		connect(ui.tabWidget_Dispaly,SIGNAL(currentChanged(int)),ui.stackedWidget_Info,SLOT(setCurrentIndex(int)));
 		connect(ui.action_6,SIGNAL(triggered()),this,SLOT(setMeshOption()));
 		connect(ui.action_startMesh,SIGNAL(triggered()),this,SLOT(meshAll()));
+		connect(ui.action_saveLocal,SIGNAL(triggered()),this,SLOT(saveLocalScene()));
 }
 
+void MainWindow::saveLocalScene()
+{
+	QString filepath=QFileDialog::getSaveFileName(this,QStringLiteral("ä¿å­˜ä¸º"),"",tr("*.obj"));
+	if (filepath.isEmpty())
+	{
+		outputLog(QStringLiteral("è·å–ä¿å­˜è·¯å¾„å¤±è´¥ï¼"));
+		return;
+	}
+	if (triangleModel==NULL||!localFlag)
+	{
+		outputLog(QStringLiteral("æ²¡æœ‰å±€éƒ¨åœºæ™¯ç”Ÿæˆï¼"));
+		return;
+	}
+	//objæ–‡ä»¶è¾“å‡º
+	QFile f(filepath);
+	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))  
+	{  
+		  QMessageBox::critical(NULL, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åˆ›å»ºæ–‡ä»¶"));  		
+		  return;  
+	} 
+	QTextStream txtOutput(&f);  
+	//ç‚¹çš„ç¼–å·ä»1å¼€å§‹
+	txtOutput.setRealNumberPrecision(10);
+	for (int i=0;i<triangleModel->NumV();i++)
+	{
+		Vector3d point=triangleModel->GetVertex(i);
+		txtOutput<<"v "<<point.x<<" "<<point.y<<" "<<point.z<<endl;
+	}
+
+	txtOutput.flush();
+	f.close();
+	outputLog(QStringLiteral("ä¿å­˜objæ–‡ä»¶æˆåŠŸ"));
+}
 void MainWindow::open_material()
 {
 	setProgress(0);
-	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("´ò¿ª²ÄÖÊÎÄ¼ş"),"./",QStringLiteral("txt ²ÄÖÊÎÄ¼ş (*.txt)"));
+	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("æ‰“å¼€æè´¨æ–‡ä»¶"),"./",QStringLiteral("txt æè´¨æ–‡ä»¶ (*.txt)"));
 	if (path.isEmpty())
 	{
-		outputLog(QStringLiteral("²ÄÁÏÂ·¾¶´íÎó£¡"));
+		outputLog(QStringLiteral("ææ–™è·¯å¾„é”™è¯¯ï¼"));
 		return;
 	}
 	material_path=path;
-	materialdatabase.clear();  //´æ·Å²ÄÖÊÊôĞÔµÄvectorÈİÆ÷
+	materialdatabase.clear();  //å­˜æ”¾æè´¨å±æ€§çš„vectorå®¹å™¨
 	setProgress(10);
 	ifstream infile((path.toStdString()).c_str(),ios::in|ios::_Nocreate);
 	if(!infile)
@@ -105,7 +139,7 @@ void MainWindow::open_material()
 	string str;
 	getline(infile,str);
 	string unit;
-	string sub_name; //´´½¨String¶ÔÏó£¬µ÷ÓÃÄ¬ÈÏ¹¹Ôìº¯Êı³õÊ¼»¯Îª¿Õ×Ö·û´®
+	string sub_name; //åˆ›å»ºStringå¯¹è±¡ï¼Œè°ƒç”¨é»˜è®¤æ„é€ å‡½æ•°åˆå§‹åŒ–ä¸ºç©ºå­—ç¬¦ä¸²
 	while(getline(infile,str))
 	{
 		material new_material;
@@ -135,21 +169,21 @@ void MainWindow::open_material()
 	}
 	infile.close();
 	setProgress(100);
-	outputLog(QStringLiteral("³É¹¦¼ÓÔØ²ÄÖÊÎÄ¼ş!"));
+	outputLog(QStringLiteral("æˆåŠŸåŠ è½½æè´¨æ–‡ä»¶!"));
 }
 
 void MainWindow::setMaterial()
 {
 	bool ok;
-	int i = QInputDialog::getInt(this, QStringLiteral("²ÄÖÊĞÅÏ¢"),
-		QStringLiteral("±àºÅ:"), 10, 0, 78, 1, &ok);
+	int i = QInputDialog::getInt(this, QStringLiteral("æè´¨ä¿¡æ¯"),
+		QStringLiteral("ç¼–å·:"), 10, 0, 78, 1, &ok);
 	if (ok)
 		material_ID=i;
-	outputLog(QString(QStringLiteral("ÉèÖÃ²ÄÖÊ±àºÅÎª£º")+QString::number(material_ID,10)));
+	outputLog(QString(QStringLiteral("è®¾ç½®æè´¨ç¼–å·ä¸ºï¼š")+QString::number(material_ID,10)));
 }
 
 /************************************************************************/
-/* ¸ù¾İÂ·¾¶£¬¶ÁÈ¡ÎÄ¼ş£¬´æ·Åµ½¶ÔÓ¦µÄ±äÁ¿ÖĞ                                                                     */
+/* æ ¹æ®è·¯å¾„ï¼Œè¯»å–æ–‡ä»¶ï¼Œå­˜æ”¾åˆ°å¯¹åº”çš„å˜é‡ä¸­                                                                     */
 /************************************************************************/
 void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString _p){
 	setProgress(0);
@@ -159,25 +193,25 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	ScenePlaneHeightInfoFile_path=_p;
 	if (ScenePlaneHeightInfoFile_path.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÎÄ¼şµ¼Èë"), QStringLiteral("ÇëÏÈµ¼Èëº£°ÎĞÅÏ¢ÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æ–‡ä»¶å¯¼å…¥"), QStringLiteral("è¯·å…ˆå¯¼å…¥æµ·æ‹”ä¿¡æ¯æ–‡ä»¶"));
 		return;
 	}
 	if (Scene2DInfoFile_paths.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÎÄ¼şµ¼Èë"),QStringLiteral("ÇëÏÈµ¼Èë½¨ÖşÎï¶şÎ¬ĞÅÏ¢ÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æ–‡ä»¶å¯¼å…¥"),QStringLiteral("è¯·å…ˆå¯¼å…¥å»ºç­‘ç‰©äºŒç»´ä¿¡æ¯æ–‡ä»¶"));
 		return;
 	}
 	if (SceneHeightInfoFile_paths.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÎÄ¼şµ¼Èë"),QStringLiteral("ÇëÏÈµ¼Èë½¨ÖşÎï¸ß¶ÈĞÅÏ¢ÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æ–‡ä»¶å¯¼å…¥"),QStringLiteral("è¯·å…ˆå¯¼å…¥å»ºç­‘ç‰©é«˜åº¦ä¿¡æ¯æ–‡ä»¶"));
 		return;
 	}
 	setProgress(10);
-	//³¡¾°µØÃæº£°ÎÎÄ¼ş¶ÁÈ¡
+	//åœºæ™¯åœ°é¢æµ·æ‹”æ–‡ä»¶è¯»å–
 	readHeightGrid(ScenePlaneHeightInfoFile_path.toStdString(),heightR,rowNum,colNum,stdLen,xmin,ymax);
 	setProgress(50);
 #ifdef PRINT_MODE
-	cout<<"¶Áº£°ÎÎÄ¼şÍê±Ï"<<endl;
+	cout<<"è¯»æµ·æ‹”æ–‡ä»¶å®Œæ¯•"<<endl;
 #endif
 
 	for (int i = 0; i < Scene2DInfoFile_paths.size();i++)
@@ -192,7 +226,7 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	//cout<<"MaxPoint:"<<MaxPoint.x<<" "<<MaxPoint.y<<" "<<MaxPoint.z<<endl;
 	modelFlag=true;
 	setModelName(0,_name);
-	outputLog(QStringLiteral("ÒÑ¾­µ¼ÈëÕû¸ö³¡¾°"));
+	outputLog(QStringLiteral("å·²ç»å¯¼å…¥æ•´ä¸ªåœºæ™¯"));
 	bip->setValue(total_Buildings.size(),-1,MinPoint,MaxPoint);
 
 	setProgress(100);
@@ -202,17 +236,17 @@ void MainWindow::outputLog(QString source)
 {
 	ui.textBrowser->append(source);
 }
-//index==0Îª³ÇÊĞ³¡¾° index==1Îªobj
+//index==0ä¸ºåŸå¸‚åœºæ™¯ index==1ä¸ºobj
 void MainWindow::setModelName(int index,QString name)
 {
 	 QTreeWidgetItem *child;  
 	 QStringList columItemList;
 	 if (index==0)
 	 {
-		 columItemList<<QStringLiteral("³ÇÊĞ³¡¾°")<<name;
+		 columItemList<<QStringLiteral("åŸå¸‚åœºæ™¯")<<name;
 	 }else if (index==1)
 	 {
-		 columItemList<<QStringLiteral("¾Ö²¿³¡¾°")<<name;
+		 columItemList<<QStringLiteral("å±€éƒ¨åœºæ™¯")<<name;
 	 }
 	 
 	 child=new QTreeWidgetItem(columItemList);
@@ -220,9 +254,9 @@ void MainWindow::setModelName(int index,QString name)
 	 temp->addChild(child);
 }
 
-void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint)  //filename_2DÎª¶şÎ¬ĞÅÏ¢ÎÄ¼ş£¬filename_HeightÎª¸ß¶ÈĞÅÏ¢ÎÄ¼ş;filename_altitudeÎªº£°ÎĞÅÏ¢ÎÄ¼ş£¬MaxPointÎª³¡¾°ÖĞ×î´óµã×ø±ê£¬MinPointÎª³¡¾°ÖĞ×îĞ¡µã×ø±ê
+void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint)  //filename_2Dä¸ºäºŒç»´ä¿¡æ¯æ–‡ä»¶ï¼Œfilename_Heightä¸ºé«˜åº¦ä¿¡æ¯æ–‡ä»¶;filename_altitudeä¸ºæµ·æ‹”ä¿¡æ¯æ–‡ä»¶ï¼ŒMaxPointä¸ºåœºæ™¯ä¸­æœ€å¤§ç‚¹åæ ‡ï¼ŒMinPointä¸ºåœºæ™¯ä¸­æœ€å°ç‚¹åæ ‡
 {
-	//³¡¾°vector¸ñÊ½ÎÄ¼ş¶ÁÈ¡
+	//åœºæ™¯vectoræ ¼å¼æ–‡ä»¶è¯»å–
 	ifstream infile1(filename_2D,ios::in|ios::_Nocreate);  
 	if(!infile1)
 	{
@@ -265,7 +299,7 @@ void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename
 				istringstream linestream4(str1);
 				linestream4>>x>>y;
 
-				double building_altitude = getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);; //½¨ÖşÎï¸÷¸öµã°´ÕÕÊµ¼Ê»ñÈ¡¶ÔÓ¦º£°ÎÖµ
+				double building_altitude = getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);; //å»ºç­‘ç‰©å„ä¸ªç‚¹æŒ‰ç…§å®é™…è·å–å¯¹åº”æµ·æ‹”å€¼
 				double upper_height = height+building_altitude;
 				double under_height = building_altitude;
 				building_info.upper_facePoint.push_back(Vector3d(x,y,upper_height));
@@ -280,23 +314,23 @@ void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename
 }
 
 /************************************************************************/
-/*    Õ¹Ê¾È«²¿³¡¾°                                                                  */
+/*    å±•ç¤ºå…¨éƒ¨åœºæ™¯                                                                  */
 /************************************************************************/
 void MainWindow::showAll()
 {
 	setProgress(0);
 	if (!modelFlag)
 	{
-		QMessageBox::warning(this, QStringLiteral("³¡¾°Õ¹Ê¾"),QStringLiteral("ÇëÏÈµ¼ÈëÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("åœºæ™¯å±•ç¤º"),QStringLiteral("è¯·å…ˆå¯¼å…¥æ–‡ä»¶"));
 		return;
 	}
-	outputLog(QStringLiteral("Å¬Á¦¼ÓÔØÕû¸ö³¡¾°ÖĞ......"));
+	outputLog(QStringLiteral("åŠªåŠ›åŠ è½½æ•´ä¸ªåœºæ™¯ä¸­......"));
 	ui.ModelView->setMaterial(materialdatabase);
 	ui.ModelView->setBuilding(total_Buildings,MaxPoint,MinPoint);
 	ui.ModelView->updateMesh();
 	ui.ModelView->updateGL();
 	setProgress(20);
-	outputLog(QStringLiteral("ÒÑ¾­ÏÔÊ¾½¨ÖşÎï³¡¾°."));
+	outputLog(QStringLiteral("å·²ç»æ˜¾ç¤ºå»ºç­‘ç‰©åœºæ™¯."));
 	setProgress(100);
 }
 
@@ -305,15 +339,15 @@ void MainWindow::showLocal()
 	setProgress(0);
 	if (materialdatabase.size()==0)
 	{
-		QMessageBox::warning(this,  QStringLiteral("³¡¾°Õ¹Ê¾"), QStringLiteral("ÇëÏÈµ¼Èë²¢±à¼­Éú³É×îÖÕ³¡¾°ÖĞËùĞè²ÄÖÊÊôĞÔ"));
+		QMessageBox::warning(this,  QStringLiteral("åœºæ™¯å±•ç¤º"), QStringLiteral("è¯·å…ˆå¯¼å…¥å¹¶ç¼–è¾‘ç”Ÿæˆæœ€ç»ˆåœºæ™¯ä¸­æ‰€éœ€æè´¨å±æ€§"));
 		return;
 	}
 	if (!localFlag)
 	{
-		QMessageBox::warning(this, QStringLiteral("¾Ö²¿³¡¾°Õ¹Ê¾"),QStringLiteral("ÇëÏÈµ¼ÈëÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("å±€éƒ¨åœºæ™¯å±•ç¤º"),QStringLiteral("è¯·å…ˆå¯¼å…¥æ–‡ä»¶"));
 		return;
 	}
-	outputLog(QStringLiteral("Å¬Á¦¼ÓÔØ¾Ö²¿³¡¾°ÖĞ......"));
+	outputLog(QStringLiteral("åŠªåŠ›åŠ è½½å±€éƒ¨åœºæ™¯ä¸­......"));
 	setProgress(0);
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
@@ -322,18 +356,18 @@ void MainWindow::showLocal()
 	ui.simuArea->updateMesh();
 	ui.simuArea->drawTriangleScene=1;
 	ui.simuArea->defaultMaterial=material_ID;
-	ui.simuArea->updateGL();  //º¯ÊıupdateGLÊÇQT×Ô´øµÄº¯Êı
-	outputLog(QStringLiteral("ÒÑ¾­ÏÔÊ¾·ÂÕæÇøÓò"));
+	ui.simuArea->updateGL();  //å‡½æ•°updateGLæ˜¯QTè‡ªå¸¦çš„å‡½æ•°
+	outputLog(QStringLiteral("å·²ç»æ˜¾ç¤ºä»¿çœŸåŒºåŸŸ"));
 }
 
 
 /************************************************************************/
-/* µ¼ÈëobjÎÄ¼ş                                                                     */
+/* å¯¼å…¥objæ–‡ä»¶                                                                     */
 /************************************************************************/
 void MainWindow::loadObj()
 {
 	setProgress(0);
-	 OBJFile_path = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("´ò¿ªobjÎÄ¼ş"),"./",QString::fromLocal8Bit("obj ÎÄ¼ş (*.obj)"));
+	 OBJFile_path = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("æ‰“å¼€objæ–‡ä»¶"),"./",QString::fromLocal8Bit("obj æ–‡ä»¶ (*.obj)"));
 	if (OBJFile_path.isEmpty())
 		return;
 	if (triangleModel)
@@ -343,14 +377,14 @@ void MainWindow::loadObj()
 	setProgress(10);
 	triangleModel = new emxModel(OBJFile_path.toStdString().c_str());
 	setProgress(90);
-	outputLog(QStringLiteral("³É¹¦¶ÁÈ¡objÎÄ¼ş"));
+	outputLog(QStringLiteral("æˆåŠŸè¯»å–objæ–‡ä»¶"));
 	if (triangleModel->NumF()>triangleModel->NumMaterialF())
 	{
-		outputLog(QStringLiteral("²ÄÖÊĞÅÏ¢²»ÍêÕû£¬ÇëÔÚÆÊ·ÖÑ¡ÏîÖĞÖ¸¶¨Í³Ò»²ÄÁÏ±àºÅ"));
+		outputLog(QStringLiteral("æè´¨ä¿¡æ¯ä¸å®Œæ•´ï¼Œè¯·åœ¨å‰–åˆ†é€‰é¡¹ä¸­æŒ‡å®šç»Ÿä¸€ææ–™ç¼–å·"));
 	}
 	localFlag=true;
 
-	//ÓÒ²à±ßÀ¸ÏÔÊ¾²ÎÊı
+	//å³ä¾§è¾¹æ æ˜¾ç¤ºå‚æ•°
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
 	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
@@ -368,7 +402,7 @@ void MainWindow::setMeshOption()
 	mod->exec();
 }
 /************************************************************************/
-/* ÆÊ·ÖÑ¡ÖĞµÄµØÃæºÍ½¨ÖşÎï                                                                     */
+/* å‰–åˆ†é€‰ä¸­çš„åœ°é¢å’Œå»ºç­‘ç‰©                                                                     */
 /************************************************************************/
 void MainWindow::meshAll()
 {
@@ -377,24 +411,24 @@ void MainWindow::meshAll()
 	{
 		if (triangleModel->NumV())
 		{
-			outputLog(QStringLiteral("¾Ö²¿³¡¾°ÒÑÓĞµã¼¯"));
+			outputLog(QStringLiteral("å±€éƒ¨åœºæ™¯å·²æœ‰ç‚¹é›†"));
 		}
-		outputLog(QStringLiteral("¾Ö²¿³¡¾°ÒÑÓĞÄ£ĞÍ£¬ÇëÏÈÉ¾³ı¡£"));
+		outputLog(QStringLiteral("å±€éƒ¨åœºæ™¯å·²æœ‰æ¨¡å‹ï¼Œè¯·å…ˆåˆ é™¤ã€‚"));
 		return;
 	}else if (total_Buildings.size()==0)
 	{
-		outputLog(QStringLiteral("Ã»ÓĞµ¼Èë½¨ÖşÎïÎÄ¼ş£¬ÇëÏÈµ¼ÈëÏà¹ØÎÄ¼ş¡£"));
+		outputLog(QStringLiteral("æ²¡æœ‰å¯¼å…¥å»ºç­‘ç‰©æ–‡ä»¶ï¼Œè¯·å…ˆå¯¼å…¥ç›¸å…³æ–‡ä»¶ã€‚"));
 		return;
 	}
 	Vector3d center;
 	double range;
-	//Òª²»Òª¼ÓÒ»¸öÅĞ¶Ï£¬·ÀÖ¹´íÎó£¿
+	//è¦ä¸è¦åŠ ä¸€ä¸ªåˆ¤æ–­ï¼Œé˜²æ­¢é”™è¯¯ï¼Ÿ
 	if (mod->inputFlag)
 	{
 		mod->getValue(center,range);
 	}else
 	{
-		outputLog(QStringLiteral("Ã»ÓĞÉèÖÃÆÊ·Ö²ÎÊı"));
+		outputLog(QStringLiteral("æ²¡æœ‰è®¾ç½®å‰–åˆ†å‚æ•°"));
 		return;
 	}
 	setProgress(5);
@@ -407,7 +441,7 @@ void MainWindow::meshAll()
 	setProgress(70);
 	triangleModel = new emxModel(Local_buildings, ground_pMesh);
 	setProgress(90);
-	//ÓÒ²à±ßÀ¸ÏÔÊ¾²ÎÊı
+	//å³ä¾§è¾¹æ æ˜¾ç¤ºå‚æ•°
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
 	localFlag=true;
@@ -416,26 +450,26 @@ void MainWindow::meshAll()
 }
 void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRange)
 {
-	//¾Ö²¿ÇøÓòµÄ·¶Î§ MinPos¡¢MaxPos
+	//å±€éƒ¨åŒºåŸŸçš„èŒƒå›´ MinPosã€MaxPos
 	Vector3d MinPos = AP_position - Vector3d(LocalRange/2, LocalRange/2, 0);
 	Vector3d MaxPos = AP_position + Vector3d(LocalRange/2, LocalRange/2, 0);
 
-	//step0 ¼ì²âÊı¾İÓĞÃ»ÓĞ¶Á Ã»¶ÁÈ¡Ôò±¨´íÍË³ö 
+	//step0 æ£€æµ‹æ•°æ®æœ‰æ²¡æœ‰è¯» æ²¡è¯»å–åˆ™æŠ¥é”™é€€å‡º 
 	if(ScenePlaneHeightInfoFile_path.isEmpty())
 	{
-		QMessageBox::warning(this, QString::fromLocal8Bit("³¡¾°Õ¹Ê¾"),QString::fromLocal8Bit("ÇëÏÈµ¼Èë³¡¾°µÄº£°ÎĞÅÏ¢ÎÄ¼ş"));
+		QMessageBox::warning(this, QString::fromLocal8Bit("åœºæ™¯å±•ç¤º"),QString::fromLocal8Bit("è¯·å…ˆå¯¼å…¥åœºæ™¯çš„æµ·æ‹”ä¿¡æ¯æ–‡ä»¶"));
 		return;
 	}
 
-	//step1 ÕÒµ½¶ÔÓ¦µÄĞĞºÍÁĞ
+	//step1 æ‰¾åˆ°å¯¹åº”çš„è¡Œå’Œåˆ—
 	int upRow=(ymax[0]-MaxPos[1])/stdLen[0];
 	int downRow= (ymax[0]-MinPos[1])/stdLen[0]+1;
 	int leftCol=(MinPos[0]-xmin[0])/stdLen[0];
 	int rightCol=(MaxPos[0]-xmin[0])/stdLen[0]+1;
 	int area[4]={upRow,downRow,leftCol,rightCol};
 
-	//step2 ½øĞĞ¾Ö²¿µÄÎÄ¼şÌáÈ¡ cannyËã·¨ ÆÊ·Ö 
-	vector<vector<int> > cannyPoint;//´Ó¾Ö²¿µã¿ªÊ¼µÄµã ²»ÊÇÈ«¾ÖµÄ 
+	//step2 è¿›è¡Œå±€éƒ¨çš„æ–‡ä»¶æå– cannyç®—æ³• å‰–åˆ† 
+	vector<vector<int> > cannyPoint;//ä»å±€éƒ¨ç‚¹å¼€å§‹çš„ç‚¹ ä¸æ˜¯å…¨å±€çš„ 
 	int nv=0;
 	int localRow=downRow-upRow+1;
 	int localCol=rightCol-leftCol+1;
@@ -449,32 +483,32 @@ void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRa
 
 	int amount=setMeshPtr3( pMesh,stepLength,localRow,localCol,cannyPoint,heightR[0],xmin[0],ymax[0],stdLen[0],upRow,leftCol);
 
-	outputLog(QStringLiteral("ÕûÕÅµØÍ¼¹²ÓĞ")+QString::number(nv,10)+QStringLiteral("ÌØÕ÷µã¡£"));
-	outputLog(QStringLiteral("±¾ÇøÓò²åÈëµãÊıÁ¿")+QString::number(amount-3,10));
+	outputLog(QStringLiteral("æ•´å¼ åœ°å›¾å…±æœ‰")+QString::number(nv,10)+QStringLiteral("ç‰¹å¾ç‚¹ã€‚"));
+	outputLog(QStringLiteral("æœ¬åŒºåŸŸæ’å…¥ç‚¹æ•°é‡")+QString::number(amount-3,10));
 	double last_time, this_time;
 	last_time = GetTickCount();
 	IncrementalDelaunay(pMesh);
 	this_time = GetTickCount();
 
-	outputLog(QStringLiteral("¾Ö²¿µØÃæ½¨Ä£¹²²úÉúµã")+QString::number(pMesh->vertex_num,10));
-	outputLog(QStringLiteral("ÆÊ·ÖºÄÊ±")+QString::number((this_time - last_time)/1000)+QStringLiteral("s"));
+	outputLog(QStringLiteral("å±€éƒ¨åœ°é¢å»ºæ¨¡å…±äº§ç”Ÿç‚¹")+QString::number(pMesh->vertex_num,10));
+	outputLog(QStringLiteral("å‰–åˆ†è€—æ—¶")+QString::number((this_time - last_time)/1000)+QStringLiteral("s"));
 }
 
 void MainWindow::LocalBuilding(vector< building> &Local_buildings, Vector3d AP_position, double LocalRange)
 {
-	//¾Ö²¿ÇøÓòµÄ·¶Î§ MinPos¡¢MaxPos
+	//å±€éƒ¨åŒºåŸŸçš„èŒƒå›´ MinPosã€MaxPos
 	Vector3d MinPos = AP_position - Vector3d(LocalRange/2, LocalRange/2, 0);
 	Vector3d MaxPos = AP_position + Vector3d(LocalRange/2, LocalRange/2, 0);
 	for (int buildings_id = 0; buildings_id < total_Buildings.size(); buildings_id++)
 	{
 		bool in_range = true;
-		for (int id = 0; id < total_Buildings[buildings_id].upper_facePoint.size()-1; id++) //¼ÇÂ¼building¶¥Ãæµã×ø±êÊ±£¬Ê×Ä©µãÖØºÏ£¬¼ÇÂ¼Á½´Î£¬ËùÒÔ   .size£¨£©-1
+		for (int id = 0; id < total_Buildings[buildings_id].upper_facePoint.size()-1; id++) //è®°å½•buildingé¡¶é¢ç‚¹åæ ‡æ—¶ï¼Œé¦–æœ«ç‚¹é‡åˆï¼Œè®°å½•ä¸¤æ¬¡ï¼Œæ‰€ä»¥   .sizeï¼ˆï¼‰-1
 		{
 			double x1 = total_Buildings[buildings_id].upper_facePoint[id].x - MinPos.x;
 			double x2 = total_Buildings[buildings_id].upper_facePoint[id].x - MaxPos.x;
 			double y1 = total_Buildings[buildings_id].upper_facePoint[id].y - MinPos.y;
 			double y2 = total_Buildings[buildings_id].upper_facePoint[id].y - MaxPos.y;
-			if ( !(x1*x2 < 0 && y1*y2 < 0)) //ÅĞ¶Ï½¨ÖşÎïÊÇ·ñÔÚÉè¶¨·¶Î§ÄÚ,¼´Ê¹ÓĞÒ»¸öµã²»ÔÚ·¶Î§ÄÚ£¬Ò²ÅĞ¶¨Îª²»ÔÚÄÚ²¿
+			if ( !(x1*x2 < 0 && y1*y2 < 0)) //åˆ¤æ–­å»ºç­‘ç‰©æ˜¯å¦åœ¨è®¾å®šèŒƒå›´å†…,å³ä½¿æœ‰ä¸€ä¸ªç‚¹ä¸åœ¨èŒƒå›´å†…ï¼Œä¹Ÿåˆ¤å®šä¸ºä¸åœ¨å†…éƒ¨
 			{
 				in_range = false;
 				break;
@@ -485,5 +519,5 @@ void MainWindow::LocalBuilding(vector< building> &Local_buildings, Vector3d AP_p
 			Local_buildings.push_back(total_Buildings[buildings_id]);
 		}		
 	}
-	outputLog(QStringLiteral("½¨ÖşÎïÊıÁ¿Îª")+QString::number(Local_buildings.size()));
+	outputLog(QStringLiteral("å»ºç­‘ç‰©æ•°é‡ä¸º")+QString::number(Local_buildings.size()));
 }
