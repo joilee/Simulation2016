@@ -58,7 +58,7 @@ private:
 	 QString material_path;
 	 vector<material> materialdatabase;
 	 int material_ID;
-
+	 int getDefaultMaterial();
 	 /************************************************************************/
 	 /* 整个场景 建筑物                                                                     */
 	 /************************************************************************/

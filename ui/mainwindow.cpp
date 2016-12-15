@@ -181,7 +181,9 @@ void MainWindow::setMaterial()
 		material_ID=i;
 	outputLog(QString(QStringLiteral("设置材质编号为：")+QString::number(material_ID,10)));
 }
-
+int  MainWindow::getDefaultMaterial(){
+	return material_ID;
+}
 /************************************************************************/
 /* 根据路径，读取文件，存放到对应的变量中                                                                     */
 /************************************************************************/
@@ -352,10 +354,10 @@ void MainWindow::showLocal()
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
 	ui.simuArea->setMaterial(materialdatabase);
-	ui.simuArea->setTriangleModel(triangleModel);
-	ui.simuArea->updateMesh();
 	ui.simuArea->drawTriangleScene=1;
 	ui.simuArea->defaultMaterial=material_ID;
+	ui.simuArea->setTriangleModel(triangleModel);
+	ui.simuArea->updateMesh();
 	ui.simuArea->updateGL();  //函数updateGL是QT自带的函数
 	outputLog(QStringLiteral("已经显示仿真区域"));
 }

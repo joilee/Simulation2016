@@ -17,7 +17,8 @@
 #include <fstream>
 #include <sstream>
 #include <exception>
-#include <cmath>
+#define _USE_MATH_DEFINES
+//#include <cmath>
 #include <ctime>
 #include <cfloat>
 #include <malloc.h>

@@ -12,13 +12,14 @@
 #include "geometry/dataStruct.h"
 #include <QPoint>
 #include <QMouseEvent>
+#include <QOpenGLFunctions_4_3_Core>
 struct material;
 struct building;
 class emxModel;
 class QMouseEvent;
 class QWheelEvent;
 
-class GLWidget: public QGLWidget
+class GLWidget: public QGLWidget, protected QOpenGLFunctions_4_3_Core
 {
 	Q_OBJECT
 public:
@@ -26,7 +27,10 @@ public:
 	~GLWidget();
 
 public:
-
+	vector<GLfloat> vertices;
+	vector<GLfloat>colorVector;
+	vector<GLint> indices;
+	GLuint  vertexBufferID, colorBufferID,indexBufferID;  
 	//
 	int m_iWidth;	/**< the width of the canvas */
 	int m_iHeight;	/**< the height of the canvas */
@@ -76,12 +80,8 @@ public:
 
 	void wheelEvent(QWheelEvent *event);
 
-	void setTriangleModel(emxModel* TriangleData)
-	{
-		TriangleModel = TriangleData; 
-		drawTriangleScene = true;
-		TriangleData->GetBBox(minPos,maxPos);
-	}
+	void setTriangleModel(emxModel* TriangleData);
+	
 	void removeTriangleModel()
 	{
 		delete TriangleModel;

@@ -3,7 +3,9 @@
 #include <string>
 #include <iostream>
 #include <stdlib.h>
+#include <map>
 #include <QtWidgets/QMessageBox>
+
 
 //构造函数
 GLWidget::GLWidget(QWidget *parent): QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
@@ -70,6 +72,8 @@ void CALLBACK combineCallback(GLdouble coords[3],
 
 void GLWidget::initializeGL()
 {
+	initializeOpenGLFunctions();
+
 	//定义材料属性
 	float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
 	float mat_shininess  [] = { 100.0f };
@@ -88,11 +92,8 @@ void GLWidget::initializeGL()
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
 
-
 	glClearColor(m_backGroundColor.r , m_backGroundColor.g, m_backGroundColor.b, 0.0);   //设置当前清除颜色
 	glShadeModel(GL_SMOOTH);  //平滑着色
-
-	//glColor4f(1.0f,1.0f,1.0f,0.5f);			// 全亮度， 50% Alpha 混合
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);		// 基于源象素alpha通道值的半透明混合函数
 }
 
@@ -228,39 +229,24 @@ void GLWidget::drawLocalScene(){
 		glEnable(GL_BLEND);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
-		//glDisable(GL_DEPTH_TEST);
 		glEnable(GL_DEPTH_TEST);
-		glPushMatrix();
-		glBegin(GL_TRIANGLES);
-		size_t faceNum = TriangleModel->NumF();
-		for(size_t i = 0; i < faceNum; ++i)
-		{
-			bool materialFindFlag=false;
-			for(int j = 0;j < materials.size();j++)
-			{
-				if (materials[j].Id == TriangleModel->getMtlId(i))
-				{
-					glColor4d((materials[j].color.r)/256.f, (materials[j].color.g)/256.f, (materials[j].color.b)/256.f, vis_factor_scence);
-					materialFindFlag=true;
-					break;//有一个等于即可，颜色信息是相同的
-				}
-			}
-			if (!materialFindFlag)
-			{
-				glColor4d((materials[defaultMaterial].color.r)/256.f, (materials[defaultMaterial].color.g)/256.f, (materials[defaultMaterial].color.b)/256.f, vis_factor_scence);
-			}
-			Vector3i vertexID = TriangleModel->GetFace(i);
-			Vector3d v0 = TriangleModel->GetVertex(vertexID.x);
-			Vector3d v1 = TriangleModel->GetVertex(vertexID.y);
-			Vector3d v2 = TriangleModel->GetVertex(vertexID.z);
 
-			Vector3d faceNormal = TriangleModel->GetNormal(i);
-			glNormal3d(faceNormal.x, faceNormal.y, faceNormal.z);
-			glVertex3d(v0.x, v0.y, v0.z);
-			glVertex3d(v1.x, v1.y, v1.z);
-			glVertex3d(v2.x, v2.y, v2.z);
-		}
-		glEnd();	
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);  
+		glEnableClientState(GL_VERTEX_ARRAY);    
+		glVertexPointer(3, GL_FLOAT, 0, 0);  
+
+		glEnableClientState(GL_COLOR_ARRAY);  
+		glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);  
+		glColorPointer(4, GL_FLOAT, 0, 0);  
+
+		glDrawElements(GL_TRIANGLES,indices.size(), GL_UNSIGNED_INT, &indices[0]);
+		
+
+		glDisableClientState(GL_VERTEX_ARRAY);  
+		glDisableClientState(GL_COLOR_ARRAY);  
+		glBindBuffer(GL_ARRAY_BUFFER, 0); 
 	}else
 	{
 		QMessageBox::warning(this, QStringLiteral("场景展示"),QStringLiteral("无法展示局部场景或者OBJ模型！"));
@@ -347,4 +333,87 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 	else if((event->delta())<0)  //负数值表示滑轮相对于用户是向后滑动的。
 		m_camera.zoomOut(zoomValue);
  	updateGL();	
+}
+
+/************************************************************************/
+/* 设置顶点数组、颜色数组、法向量数组                                                     */
+/************************************************************************/
+
+void GLWidget::setTriangleModel(emxModel* TriangleData)
+{
+	TriangleModel = TriangleData; 
+
+	TriangleData->GetBBox(minPos,maxPos);
+	//added by ligen  2016/12/12
+	//根据材质信息来确定颜色数组
+		bool materialFindFlag=false;
+		int faceNum=TriangleData->NumF();
+
+		indices.clear();
+		colorVector.clear();
+		vertices.clear();
+	
+
+
+		//设置点
+		 for (int i=0;i<TriangleData->NumV();i++)
+		 {
+			Vector3d tmp = TriangleModel->GetVertex(i);
+			vertices.push_back(tmp[0]);
+			vertices.push_back(tmp[1]);
+			vertices.push_back(tmp[2]);
+		 }
+
+
+		map<int,int>vertex2material;
+		for (int i=0;i<TriangleData->NumV();i++)
+		{
+			 vertex2material.insert(make_pair(i,defaultMaterial));
+		}
+		//两层循环，设置颜色和索引
+		for (size_t i = 0; i < faceNum; ++i)
+		{
+			Vector3i f=TriangleData->GetFace(i);
+			indices.push_back(f[0]);
+			indices.push_back(f[1]);
+			indices.push_back(f[2]);
+
+
+			for(int j = 0;j < materials.size();j++)
+			{
+				if (materials[j].Id == TriangleModel->getMtlId(i))
+				{
+				   vertex2material[f[0]]=j;
+				   vertex2material[f[1]]=j;
+				   vertex2material[f[2]]=j;
+
+					materialFindFlag=true;
+					break;//有一个等于即可，颜色信息是相同的
+				}
+			}
+
+		}
+	  if (vertex2material.size()!=TriangleData->NumV())
+	  {
+		  return;
+	  }
+	  map<int,int>::iterator it=vertex2material.begin();
+	  for (;it!=vertex2material.end();it++)
+	  {
+		  colorVector.push_back(materials[it->second].color.r/256.f);
+		  colorVector.push_back(materials[it->second].color.g/256.f);
+		  colorVector.push_back(materials[it->second].color.b/256.f);
+		  colorVector.push_back(vis_factor_scence);
+	  }
+	  glGenBuffers(1, &vertexBufferID);  
+	  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);  
+	  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vertices.size(), &vertices[0], GL_STATIC_DRAW); 
+	  glGenBuffers(1, &colorBufferID);
+	  glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
+	  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*colorVector.size(), &colorVector[0], GL_STATIC_DRAW); 
+	
+
+
+
+	  drawTriangleScene = true;
 }

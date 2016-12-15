@@ -53,7 +53,7 @@ public:
     QCheckBox *checkBox_3;
     QPushButton *altitudeButton;
     QPushButton *pushButton_deleteP;
-    QWidget *layoutWidget1;
+    QWidget *layoutWidget2;
     QHBoxLayout *horizontalLayout_4;
     QPushButton *pushButton_LoadFile;
     QSpacerItem *horizontalSpacer_4;
@@ -169,13 +169,13 @@ public:
 
         verticalLayout->addWidget(groupBox_2);
 
-        layoutWidget1 = new QWidget(outdoorFile);
-        layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(130, 310, 164, 31));
-        horizontalLayout_4 = new QHBoxLayout(layoutWidget1);
+        layoutWidget2 = new QWidget(outdoorFile);
+        layoutWidget2->setObjectName(QStringLiteral("layoutWidget2"));
+        layoutWidget2->setGeometry(QRect(130, 310, 164, 31));
+        horizontalLayout_4 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
         horizontalLayout_4->setContentsMargins(0, 0, 0, 0);
-        pushButton_LoadFile = new QPushButton(layoutWidget1);
+        pushButton_LoadFile = new QPushButton(layoutWidget2);
         pushButton_LoadFile->setObjectName(QStringLiteral("pushButton_LoadFile"));
         pushButton_LoadFile->setCheckable(false);
         pushButton_LoadFile->setDefault(false);
@@ -186,7 +186,7 @@ public:
 
         horizontalLayout_4->addItem(horizontalSpacer_4);
 
-        pushButton_cancel = new QPushButton(layoutWidget1);
+        pushButton_cancel = new QPushButton(layoutWidget2);
         pushButton_cancel->setObjectName(QStringLiteral("pushButton_cancel"));
 
         horizontalLayout_4->addWidget(pushButton_cancel);
