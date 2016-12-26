@@ -9,6 +9,7 @@
 #include "geometry/emxModel.h"
 #include "meshOption.h"
 #include <QtWidgets/QMessageBox>
+#include "Context/context.h"
 class QAction; 
 struct building;
 
@@ -35,6 +36,9 @@ private slots:
 	void loadAllFile(QString _name,QStringList _v,QStringList _h,QString _p);
 	void showAll();
 	void showLocal();
+	void openTransAntenna_ParamFile();
+	void openTransAntennas_DirGain();
+	void openNo_SimplaneReceiverFile();
 	void loadObj();
 	void setMaterial();
 	void open_material();
@@ -47,6 +51,9 @@ private:
 	QTreeWidgetItem* modelTW;
 	QTreeWidgetItem* computeTW;
 	QTreeWidgetItem* visualTW;
+
+	vector <QTreeWidgetItem*> site_roots1;
+	vector <QTreeWidgetItem*> site_roots2;
 
 	outdoorFileDialog*  M_outdoorFileDialog;
 	computerOptionDialog* M_computeroptionDialog;
@@ -65,7 +72,7 @@ private:
 	 QString buildingName;
 	 vector<building> total_Buildings;  //整体模型
 	 Vector3d MaxPoint,MinPoint;
-	 bool modelFlag;//是否导入建筑物
+	
 
 	 QStringList Scene2DInfoFile_paths;//建筑物地面
 	 QStringList SceneHeightInfoFile_paths;//建筑物高度
@@ -90,7 +97,7 @@ private:
 	 QString objName;
 	 QString OBJFile_path;
 	 emxModel * triangleModel;//局部模型，存储obj模型或者建筑物加地面的三角面片,局部模型
-	 bool localFlag;//是否导入局部场景或者生成局部场景
+	 
 
 	 //读建筑物以及高度
 	 void ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint);

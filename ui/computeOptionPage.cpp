@@ -62,7 +62,7 @@ double emitSource::getAngle()
 	return angleOfNorth;
 }
 
-fieldpoint::fieldpoint(QWidget* parent):fieldXmin(0),fieldXmax(0),fieldYmin(0),fieldYmax(0),fieldZmin(0),fieldZmax(0)
+fieldpoint::fieldpoint(QWidget* parent)
 {
 	//初始化成员变量
 	RecePoint="";
@@ -75,24 +75,24 @@ fieldpoint::fieldpoint(QWidget* parent):fieldXmin(0),fieldXmax(0),fieldYmin(0),f
 
 	//布局
 	QGroupBox *firstgroupbox=new QGroupBox(QStringLiteral("仿真区域（单位：m）"));
-	QLabel* label1=new QLabel(QStringLiteral("场景（Xmin，Xmax）"));
-	QLabel* label2=new QLabel(QStringLiteral("场景（Ymin，Ymax）"));
-	QLabel* label3=new QLabel(QStringLiteral("场景（Zmin，Zmax）"));
+	//QLabel* label1=new QLabel(QStringLiteral("场景（Xmin，Xmax）"));
+	//QLabel* label2=new QLabel(QStringLiteral("场景（Ymin，Ymax）"));
+	//QLabel* label3=new QLabel(QStringLiteral("场景（Zmin，Zmax）"));
 
-	Xmin=new QLineEdit;
-	Xmin->setText(0);
-	Xmax=new QLineEdit;
-	Xmax->setText(0);
-	Ymin=new QLineEdit;
-	Ymin->setText(0);
-	Ymax=new QLineEdit;
-	Ymax->setText(0);
-	Zmin=new QLineEdit;
-	Zmin->setText(0);
-	Zmax=new QLineEdit;
-	Zmax->setText(0);
+	//Xmin=new QLineEdit;
+	//Xmin->setText(0);
+	//Xmax=new QLineEdit;
+	//Xmax->setText(0);
+	//Ymin=new QLineEdit;
+	//Ymin->setText(0);
+	//Ymax=new QLineEdit;
+	//Ymax->setText(0);
+	//Zmin=new QLineEdit;
+	//Zmin->setText(0);
+	//Zmax=new QLineEdit;
+	//Zmax->setText(0);
 
-	QHBoxLayout *h1=new QHBoxLayout;
+	/*QHBoxLayout *h1=new QHBoxLayout;
 	h1->addWidget(label1);
 	h1->addWidget(Xmin);
 	h1->addWidget(Xmax);
@@ -105,7 +105,7 @@ fieldpoint::fieldpoint(QWidget* parent):fieldXmin(0),fieldXmax(0),fieldYmin(0),f
 	QHBoxLayout *h3=new QHBoxLayout;
 	h3->addWidget(label3);
 	h3->addWidget(Zmin);
-	h3->addWidget(Zmax);
+	h3->addWidget(Zmax);*/
 
 	QLabel* label4=new QLabel(QStringLiteral("导入非仿真面接收点位置"));
 	QHBoxLayout *h4=new QHBoxLayout;
@@ -144,9 +144,9 @@ fieldpoint::fieldpoint(QWidget* parent):fieldXmin(0),fieldXmax(0),fieldYmin(0),f
 	h8->addWidget(Altitudeinput);
 
 	QVBoxLayout *total=new QVBoxLayout;
-	total->addLayout(h1);
+	/*total->addLayout(h1);
 	total->addLayout(h2);
-	total->addLayout(h3);
+	total->addLayout(h3);*/
 	total->addLayout(h4);
 	total->addLayout(h5);
 	total->addLayout(h6);

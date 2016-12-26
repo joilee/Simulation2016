@@ -7,18 +7,22 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QStackedWidget>
-
-
-
-
+#include "Context/context.h"
+#include "computeOptionPage.h"
+#include <QtWidgets/QFileDialog>
+using namespace std;
 class computerOptionDialog : public QDialog
 {
 	Q_OBJECT
 public:
 	computerOptionDialog(QWidget *parent = 0);
 
+	emitSource* es;
+	fieldpoint *fp;
+	simuArgument *sa;
 	public slots:
 			void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+
 private:
 	QListWidget *contentsWidget;
 	QStackedWidget *pagesWidget;

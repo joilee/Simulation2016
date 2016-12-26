@@ -166,6 +166,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_meshOption.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Context\context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\antenna.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.ui">
@@ -282,6 +288,15 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_outdoorFile.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Context\context.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\antenna.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\receiver.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

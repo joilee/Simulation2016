@@ -139,6 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Antenna\antenna.cpp" />
+    <ClCompile Include="Context\context.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_computeOptionPage.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -255,6 +257,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Antenna\antenna.h" />
+    <ClInclude Include="Antenna\receiver.h" />
+    <ClInclude Include="Context\context.h" />
     <ClInclude Include="GeneratedFiles\ui_mainwindow.h" />
     <ClInclude Include="GeneratedFiles\ui_outdoorFile.h" />
     <ClInclude Include="geometry\dataStruct.h" />

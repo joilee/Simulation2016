@@ -24,17 +24,18 @@ class emitSource:public QWidget
 	public:
 		emitSource(QWidget* parent =0);		
 		double getAngle();
-		
+		QPushButton *loadSitesButton;
+		QPushButton *loadTransAntennaButton;
+		QTreeWidget *sitesTreewidget;
+		QListWidget * AntennaList;
 	protected:
 
 	private:
 		double angleOfNorth;//正北方向在场景坐标系中的phi角度
 		QGroupBox *firstGroup;
 		QLineEdit * angleEdit;
-		QPushButton *loadSitesButton; 
-		QTreeWidget *sitesTreewidget;
-		QPushButton *loadTransAntennaButton;
-		QListWidget * AntennaList;
+	
+
 };
 
 class fieldpoint:public QWidget
@@ -42,11 +43,13 @@ class fieldpoint:public QWidget
 	Q_OBJECT
 public:
 	fieldpoint(QWidget* parent=0);
-
+	QPushButton * loadReceieverPointFile;
 private:
 	//数据
 	//场景的范围，单位为m
-	double fieldXmin,fieldXmax,fieldYmin,fieldYmax,fieldZmin,fieldZmax;
+//	double fieldXmin,fieldXmax,fieldYmin,fieldYmax,fieldZmin,fieldZmax;
+
+
 
 	string RecePoint;
 
@@ -59,9 +62,9 @@ private:
 
 	//布局
 	//
-	QLineEdit *Xmin,*Xmax,*Ymin,*Ymax,*Zmin,*Zmax;
+//	QLineEdit *Xmin,*Xmax,*Ymin,*Ymax,*Zmin,*Zmax;
 	QLineEdit *filePath;
-	QPushButton * loadReceieverPointFile;
+
 	QLineEdit* leftupXinput,*leftupYinput;
 	QLineEdit* rightbottomXinput,*rightbottomYinput;
 	QLineEdit* Precisioninput,*Altitudeinput;

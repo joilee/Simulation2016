@@ -1,10 +1,16 @@
 ﻿#include "computerOptionDialog.h"
-#include "computeOptionPage.h"
+#include <iostream>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include<QListWidget>
-
+#include <QMessageBox>
+#include <fstream>
 computerOptionDialog::computerOptionDialog(QWidget *parent){
+
+	es=new emitSource;
+	fp=new fieldpoint;
+	sa=new simuArgument;
+
 
 	contentsWidget = new QListWidget;
 	//layout
@@ -13,9 +19,9 @@ computerOptionDialog::computerOptionDialog(QWidget *parent){
 	contentsWidget->setSpacing(12);
 	//
 	 pagesWidget = new QStackedWidget;
-	 pagesWidget->addWidget(new emitSource);
-	 pagesWidget->addWidget(new fieldpoint);
-	 pagesWidget->addWidget(new simuArgument);
+	 pagesWidget->addWidget(es);
+	 pagesWidget->addWidget(fp);
+	 pagesWidget->addWidget(sa);
 
 	 //左边的三个list
 	 QListWidgetItem *emitSourceList = new QListWidgetItem(contentsWidget);
@@ -61,3 +67,6 @@ void computerOptionDialog::changePage(QListWidgetItem *current, QListWidgetItem 
 
 	return;
 }
+
+
+

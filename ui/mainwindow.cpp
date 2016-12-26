@@ -2,6 +2,8 @@
 #include <QtWidgets/QFileDialog>
 #include <QInputDialog>
 #include <QTextStream>
+#include "Antenna/receiver.h"
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -28,8 +30,7 @@ void MainWindow::init()
 
 	triangleModel=NULL;
 	total_Buildings.clear();
-	modelFlag=false;
-	localFlag=false;
+
 	material_ID=43;//默认是混凝土文件
 
 	//左侧目录
@@ -40,6 +41,10 @@ void MainWindow::init()
 	ui.treeWidget_project->addTopLevelItem(modelTW);
 	ui.treeWidget_project->addTopLevelItem(computeTW);
 	ui.treeWidget_project->addTopLevelItem(visualTW);
+
+	ui.treeWidget_para->setHeaderLabels(QStringList()<<QStringLiteral("站点")); 
+
+
 
 	ui.stackedWidget_Info->addWidget(bip);
 	ui.stackedWidget_Info->addWidget(lpg);
@@ -84,6 +89,9 @@ void MainWindow:: createActions()
 		connect(ui.action_6,SIGNAL(triggered()),this,SLOT(setMeshOption()));
 		connect(ui.action_startMesh,SIGNAL(triggered()),this,SLOT(meshAll()));
 		connect(ui.action_saveLocal,SIGNAL(triggered()),this,SLOT(saveLocalScene()));
+		connect(M_computeroptionDialog->es->loadSitesButton,SIGNAL(clicked()),this,SLOT(openTransAntenna_ParamFile()));
+		connect(M_computeroptionDialog->es->loadTransAntennaButton,SIGNAL(clicked()),this,SLOT(openTransAntennas_DirGain()));
+		connect(M_computeroptionDialog->fp->loadReceieverPointFile,SIGNAL(clicked()),this,SLOT(openNo_SimplaneReceiverFile()));
 }
 
 void MainWindow::saveLocalScene()
@@ -94,7 +102,8 @@ void MainWindow::saveLocalScene()
 		outputLog(QStringLiteral("获取保存路径失败！"));
 		return;
 	}
-	if (triangleModel==NULL||!localFlag)
+	globalContext *globalCtx=globalContext::GetInstance();
+	if (triangleModel==NULL||!globalCtx->localexist)
 	{
 		outputLog(QStringLiteral("没有局部场景生成！"));
 		return;
@@ -119,6 +128,7 @@ void MainWindow::saveLocalScene()
 	f.close();
 	outputLog(QStringLiteral("保存obj文件成功"));
 }
+
 void MainWindow::open_material()
 {
 	setProgress(0);
@@ -181,11 +191,13 @@ void MainWindow::setMaterial()
 		material_ID=i;
 	outputLog(QString(QStringLiteral("设置材质编号为：")+QString::number(material_ID,10)));
 }
+
 int  MainWindow::getDefaultMaterial(){
 	return material_ID;
 }
+
 /************************************************************************/
-/* 根据路径，读取文件，存放到对应的变量中                                                                     */
+/* 根据路径，读取文件，存放到对应的变量中                                              */
 /************************************************************************/
 void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString _p){
 	setProgress(0);
@@ -226,7 +238,9 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	//cout<<"buildings num:"<<total_Buildings.size()<<endl;
 	//cout<<"MinPoint:"<<MinPoint.x<<" "<<MinPoint.y<<" "<<MinPoint.z<<endl;
 	//cout<<"MaxPoint:"<<MaxPoint.x<<" "<<MaxPoint.y<<" "<<MaxPoint.z<<endl;
-	modelFlag=true;
+
+	globalContext *globalCtx=globalContext::GetInstance();
+	globalCtx->modelexist=true;
 	setModelName(0,_name);
 	outputLog(QStringLiteral("已经导入整个场景"));
 	bip->setValue(total_Buildings.size(),-1,MinPoint,MaxPoint);
@@ -238,6 +252,7 @@ void MainWindow::outputLog(QString source)
 {
 	ui.textBrowser->append(source);
 }
+
 //index==0为城市场景 index==1为obj
 void MainWindow::setModelName(int index,QString name)
 {
@@ -254,6 +269,250 @@ void MainWindow::setModelName(int index,QString name)
 	 child=new QTreeWidgetItem(columItemList);
 	 QTreeWidgetItem* temp=ui.treeWidget_project->itemAt(0,0);
 	 temp->addChild(child);
+}
+
+string Trim(string &str)   //提取不包含空格、制表符、回车、换行符的字符串
+{
+	str.erase(0,str.find_first_not_of(" \t\n\r"));    
+
+	str.erase(str.find_last_not_of(" \t\n\r") + 1);
+
+	return str;
+}
+
+void MainWindow::openTransAntennas_DirGain()
+{
+	QStringList paths = QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("批量导入天线方向增益文件"),"./",QString::fromLocal8Bit("txt  天线方向增益文件 (*.txt)"));
+	if (paths.isEmpty())
+		return;
+	globalContext *glbctx=globalContext::GetInstance();
+	for (int i=0;i<glbctx->Sites.size();i++)
+	{
+		for (int j=0;j<glbctx->Sites[i].Site_Antennas.size();j++)
+		{
+			//对每个site中每个cell从批量导入的方向增益文件中找到匹配的增益文件
+			string cell_name = glbctx->Sites[i].Site_Antennas[j].Cell_Name + ".txt";
+			for (int path_id =0; path_id<paths.size();path_id++)
+			{
+				string path = paths[path_id].toStdString();
+				if (path.find(cell_name) != std::string::npos)
+				{
+					//打开发射天线方向增益文件，读取各方向增益
+					ifstream infile(path.c_str(),ios::in|ios::_Nocreate);  
+					if(!infile)
+					{
+						cout << "can not open file!" << endl;
+						return ;
+					}
+
+					string str,str_flag;
+					getline(infile,str);
+					istringstream linestream(str);
+					linestream >> str_flag;
+					if (str_flag == "NAME" )
+					{
+						getline(infile,str);
+						getline(infile,str);
+					}
+					getline(infile,str);
+					istringstream linestream1(str);
+					linestream1 >> str_flag;
+					if (str_flag == "Gain")
+					{
+						getline(infile,str);
+						istringstream linestream2(str);
+						linestream2 >> str_flag;
+						glbctx->Sites[i].Site_Antennas[j].initial_Gain = atof(str_flag.c_str());
+						getline(infile,str);
+						getline(infile,str);
+						getline(infile,str);
+					}
+					while(getline(infile,str))
+					{
+						istringstream linestream3(str);
+						linestream3 >> str_flag;
+						vector<double> antenna_property(3); // V_angle  H_angle  attenuation
+						antenna_property[0] = atof(str_flag.c_str());
+						linestream3 >> antenna_property[1] >> antenna_property[2];
+						glbctx->Sites[i].Site_Antennas[j].direction_Gain.push_back(antenna_property);	
+					}
+					infile.close();
+
+					break;
+				}
+			}
+		}
+	}
+	QMessageBox::warning(this, QString::fromLocal8Bit("多个站点方向增益文件"), QString::fromLocal8Bit("加载成功"));
+}
+
+void MainWindow::openTransAntenna_ParamFile()
+{
+	globalContext *globalCtx=globalContext::GetInstance();
+	globalCtx->Sites.clear();
+
+	site_roots1.clear();
+	site_roots2.clear();
+	ui.treeWidget_para->clear();
+	M_computeroptionDialog->es->sitesTreewidget->clear();
+
+	//检测是否导入场景
+	if (!globalCtx->localexist&&!globalCtx->modelexist)
+	{
+		QMessageBox::warning(this, QStringLiteral("发射天线设置"), QStringLiteral("请先加载场景"));
+		return;
+	}
+	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("导入发射天线（站点）参数信息文件"),"./",QStringLiteral("csv 发射天线（站点）参数信息文件 (*.csv)"));
+	if (path.isEmpty())
+		return;
+
+	//打开发射天线(站点)参数信息文件
+	ifstream infile((path.toStdString()).c_str(),ios::in|ios::_Nocreate);  
+	if(!infile)
+	{
+		cout << "can not open file!" << endl;
+		return ;
+	}
+
+	string str,str_flag;
+	getline(infile,str);//跳过第一行
+	while(getline(infile,str))
+	{
+		istringstream linestream(str);
+		vector<string>parameters;
+		string parameter;
+		while (getline(linestream,parameter,','))
+		{
+			parameters.push_back(parameter);
+		}
+		string SiteName = Trim(parameters[0]);
+		string CellName = Trim(parameters[1]);
+		string PCI = Trim(parameters[3]);
+		string height = Trim(parameters[8]);
+		string str_x = Trim(parameters[14]);
+		string str_y = Trim(parameters[15]);
+		double x = atof(str_x.c_str());
+		double y = atof(str_y.c_str());
+		double z = atof(height.c_str()) + getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);
+
+		TransAntenna new_antenna;
+		new_antenna.Cell_Name = CellName;
+		new_antenna.PCI = atoi(PCI.c_str());
+		new_antenna.frequency = 1750; //单位为MHZ，设置了一个默认
+		new_antenna.trans_power = 12.2; //单位为dBm
+		new_antenna.wire_loss = 0.5;
+		new_antenna.enlarge_power = 0;
+		new_antenna.position = Vector3d(x,y,z);
+		new_antenna.polor_direction = Vector3d(0,0,1);
+
+		new_antenna.phi = 0;
+		new_antenna.theta = 0;
+
+		if(new_antenna.polor_direction.norm() < 1e-10)
+		{
+			QMessageBox::warning(this, QStringLiteral("发射天线属性设置"), QStringLiteral("请输入正确的极化方向"));
+			return;
+		}
+
+		QTreeWidgetItem * site_root1, *cell_leaf1,*site_root2, *cell_leaf2;
+		int current_sitename = stof(SiteName.c_str());
+
+		//针对新获得的cell，检测是否存在一个已知的site中，如果是，则插入，否则新建
+		bool newsite = true;   //是否需要新建一个site
+		for (int i=0;i<globalCtx->Sites.size();i++)
+		{
+			if (current_sitename==globalCtx->Sites[i].Site_Name)
+			{
+				newsite=false;
+				globalCtx->Sites[i].Site_Antennas.push_back(new_antenna);
+				string cell_name = "Cell"+CellName;
+
+				cell_leaf1 = new QTreeWidgetItem(site_roots1[i],QStringList(QString::fromStdString(cell_name)));
+				site_roots1[i]->addChild(cell_leaf1);
+
+				cell_leaf2 = new QTreeWidgetItem(site_roots2[i],QStringList(QString::fromStdString(cell_name)));
+				cell_leaf2->setCheckState(0,Qt::Unchecked);
+				site_roots2[i]->addChild(cell_leaf2);
+				break;
+			}
+		}
+		if (newsite)
+		{
+			Site new_site;
+			new_site.Site_Name = current_sitename;
+			new_site.Site_Antennas.push_back(new_antenna);	
+			globalCtx->Sites.push_back(new_site);		
+			string site_name = "Site"+SiteName;
+			string cell_name = "Cell"+CellName;
+
+			site_root1 = new QTreeWidgetItem(ui.treeWidget_para,QStringList(QString::fromStdString(site_name)));
+			cell_leaf1 = new QTreeWidgetItem(site_root1,QStringList(QString::fromStdString(cell_name)));		
+			site_root1->addChild(cell_leaf1);
+			site_roots1.push_back(site_root1);
+
+			site_root2 = new QTreeWidgetItem(M_computeroptionDialog->es->sitesTreewidget,QStringList(QString::fromStdString(site_name)));
+			cell_leaf2 = new QTreeWidgetItem(site_root2,QStringList(QString::fromStdString(cell_name)));
+			cell_leaf2->setCheckState(0,Qt::Unchecked);
+			site_root2->addChild(cell_leaf2);
+			site_roots2.push_back(site_root2);
+
+			ui.treeWidget_para->addTopLevelItem(site_root1);
+			M_computeroptionDialog->es->sitesTreewidget->addTopLevelItem(site_root2);
+		}
+
+	}
+	infile.close();
+	outputLog(QStringLiteral("加载站点数据成功！"));
+}
+
+void MainWindow::openNo_SimplaneReceiverFile()
+{
+	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("打开非仿真面设置的接收点文件"),"./",QStringLiteral("csv 非仿真面接收点文件 (*.csv)"));
+	if (path.isEmpty())
+		return;
+
+	globalContext *glbctx=globalContext::GetInstance();
+
+	glbctx->No_SimPlanePoint.clear();  //存放接收点信息的vector容器
+
+	ifstream infile((path.toStdString()).c_str(),ios::in|ios::_Nocreate);
+	if(!infile)
+	{
+		cout << "can not open file!" << endl;
+		return ;
+	}
+
+	string str;
+	getline(infile,str);
+	while(getline(infile,str))
+	{
+		istringstream linestream(str);
+		vector<string>parameters;
+		string parameter;
+		while (getline(linestream,parameter,','))
+		{
+			parameters.push_back(parameter);
+		}
+		string str_x = Trim(parameters[0]);
+		string str_y = Trim(parameters[1]);
+		string str_z = Trim(parameters[2]);
+		string PCI = Trim(parameters[3]);
+		double x = atof(str_x.c_str());
+		double y = atof(str_y.c_str());
+		double z = atof(str_z.c_str()) + getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);
+		no_simplaneReceiver receiver;
+		receiver.position = Vector3d(x,y,z);
+		receiver.PCI = atoi(PCI.c_str());
+		glbctx->No_SimPlanePoint.push_back(receiver);
+	}
+	infile.close();
+
+	glbctx->no_simplane=true;
+
+	outputLog(QStringLiteral("非仿真面接收点位置设置文件加载成功。共")+QString::number(glbctx->No_SimPlanePoint.size())+QStringLiteral("个接收点"));
+	QMessageBox::warning(this, QStringLiteral("非仿真面接收点位置设置文件"), QStringLiteral("加载成功"));
+
+	return;
 }
 
 void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint)  //filename_2D为二维信息文件，filename_Height为高度信息文件;filename_altitude为海拔信息文件，MaxPoint为场景中最大点坐标，MinPoint为场景中最小点坐标
@@ -316,12 +575,13 @@ void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename
 }
 
 /************************************************************************/
-/*    展示全部场景                                                                  */
+/*    展示全部场景                                                                                       */
 /************************************************************************/
 void MainWindow::showAll()
 {
 	setProgress(0);
-	if (!modelFlag)
+	globalContext *globalCtx=globalContext::GetInstance();
+	if (!globalCtx->modelexist)
 	{
 		QMessageBox::warning(this, QStringLiteral("场景展示"),QStringLiteral("请先导入文件"));
 		return;
@@ -344,7 +604,8 @@ void MainWindow::showLocal()
 		QMessageBox::warning(this,  QStringLiteral("场景展示"), QStringLiteral("请先导入并编辑生成最终场景中所需材质属性"));
 		return;
 	}
-	if (!localFlag)
+	globalContext *globalCtx=globalContext::GetInstance();
+	if (!globalCtx->localexist)
 	{
 		QMessageBox::warning(this, QStringLiteral("局部场景展示"),QStringLiteral("请先导入文件"));
 		return;
@@ -361,7 +622,6 @@ void MainWindow::showLocal()
 	ui.simuArea->updateGL();  //函数updateGL是QT自带的函数
 	outputLog(QStringLiteral("已经显示仿真区域"));
 }
-
 
 /************************************************************************/
 /* 导入obj文件                                                                     */
@@ -384,7 +644,8 @@ void MainWindow::loadObj()
 	{
 		outputLog(QStringLiteral("材质信息不完整，请在剖分选项中指定统一材料编号"));
 	}
-	localFlag=true;
+	globalContext *globalCtx=globalContext::GetInstance();
+	globalCtx->localexist=true;
 
 	//右侧边栏显示参数
 	Vector3d MaxPointLocal,MinPointLocal;
@@ -403,6 +664,7 @@ void MainWindow::setMeshOption()
 	}
 	mod->exec();
 }
+
 /************************************************************************/
 /* 剖分选中的地面和建筑物                                                                     */
 /************************************************************************/
@@ -446,10 +708,12 @@ void MainWindow::meshAll()
 	//右侧边栏显示参数
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
-	localFlag=true;
+	globalContext *globalCtx=globalContext::GetInstance();
+	globalCtx->localexist=true;
 	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
 	setProgress(100);
 }
+
 void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRange)
 {
 	//局部区域的范围 MinPos、MaxPos

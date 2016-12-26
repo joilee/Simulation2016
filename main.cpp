@@ -4,6 +4,9 @@
 
 #include <QDebug>
 #include <QTextCodec>
+
+globalContext *globalContext::ctx=NULL;
+
 int main(int argc, char *argv[])
 {
 	glutInit(&argc,argv);
