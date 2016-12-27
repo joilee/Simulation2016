@@ -85,10 +85,14 @@ private:
 	double  diffractionNum;
 	bool isDiffraction;
 
+public:
 	QLineEdit* lineEdit_RT_ReflectCount;
 	QLineEdit* lineEdit_RT_RefractCount;
 	QComboBox * comboBox_diffraction;
 	QLineEdit* lineEdit_RT_Diffraction;
+	QLineEdit * lineEdit_RT_sample;
+	QLineEdit*lineEdit_RT_sample_radius;
+	QLineEdit*lineEdit_RT_sampleBeamNum;
 
 };
 

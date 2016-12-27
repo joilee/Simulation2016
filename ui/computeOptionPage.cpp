@@ -172,11 +172,18 @@ simuArgument::simuArgument(QWidget* parent)
 	QLabel*label2=new QLabel(QStringLiteral("透射次数"));
 	QLabel*label3=new QLabel(QStringLiteral("绕射"));
 	QLabel*label4=new QLabel(QStringLiteral("绕射次数"));
+	QLabel*label5=new QLabel(QStringLiteral("采样密度"));
+	QLabel*label6=new QLabel(QStringLiteral("采样球半径"));
+	QLabel*label7=new QLabel(QStringLiteral("Beam数量"));
 
 	lineEdit_RT_ReflectCount=new QLineEdit;
 	lineEdit_RT_RefractCount=new QLineEdit;
 	lineEdit_RT_Diffraction=new QLineEdit;
 	comboBox_diffraction=new QComboBox;
+	lineEdit_RT_sample=new QLineEdit;
+	lineEdit_RT_sample_radius=new QLineEdit;
+	lineEdit_RT_sampleBeamNum=new QLineEdit;
+
 
 	comboBox_diffraction->insertItem(0,QStringLiteral("不考虑绕射"));
 	comboBox_diffraction->insertItem(1,QStringLiteral("考虑绕射"));
@@ -197,11 +204,26 @@ simuArgument::simuArgument(QWidget* parent)
 	h4->addWidget(label4);
 	h4->addWidget(lineEdit_RT_Diffraction);
 
+	QHBoxLayout*h5=new QHBoxLayout;
+	h5->addWidget(label5);
+	h5->addWidget(lineEdit_RT_sample);
+
+	QHBoxLayout*h6=new QHBoxLayout;
+	h6->addWidget(label6);
+	h6->addWidget(lineEdit_RT_sample_radius);
+
+	QHBoxLayout*h7=new QHBoxLayout;
+	h7->addWidget(label7);
+	h7->addWidget(lineEdit_RT_sampleBeamNum);
+
 	QVBoxLayout *total=new QVBoxLayout;
 	total->addLayout(h1);
 	total->addLayout(h2);
 	total->addLayout(h3);
 	total->addLayout(h4);
+	total->addLayout(h5);
+	total->addLayout(h6);
+	total->addLayout(h7);
 
 	firstgroupbox->setLayout(total);
 	QVBoxLayout *mainLayout = new QVBoxLayout;

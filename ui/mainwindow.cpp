@@ -49,6 +49,13 @@ void MainWindow::init()
 	ui.stackedWidget_Info->addWidget(bip);
 	ui.stackedWidget_Info->addWidget(lpg);
 	ui.progressBar->setRange(0,100);
+
+	//设置对话框的默认数据
+	M_computeroptionDialog->sa->lineEdit_RT_ReflectCount->setText(QString::number(2));
+	M_computeroptionDialog->sa->lineEdit_RT_RefractCount->setText(QString::number(1));
+	M_computeroptionDialog->sa->lineEdit_RT_RefractCount->setReadOnly(true);
+	M_computeroptionDialog->sa->lineEdit_RT_sample->setText(QString::number(1));
+	M_computeroptionDialog->sa->lineEdit_RT_sample_radius->setText(QString::number(1.0));
 }
 
 void  MainWindow::openOutdoorFile()
