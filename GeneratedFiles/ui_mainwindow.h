@@ -48,6 +48,9 @@ public:
     QAction *action_obj;
     QAction *action_matFile;
     QAction *action_localscene;
+    QAction *action_loadPlugin;
+    QAction *action_deletePlugin;
+    QAction *action_run;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget_Dispaly;
@@ -113,6 +116,12 @@ public:
         action_matFile->setObjectName(QStringLiteral("action_matFile"));
         action_localscene = new QAction(MainWindowClass);
         action_localscene->setObjectName(QStringLiteral("action_localscene"));
+        action_loadPlugin = new QAction(MainWindowClass);
+        action_loadPlugin->setObjectName(QStringLiteral("action_loadPlugin"));
+        action_deletePlugin = new QAction(MainWindowClass);
+        action_deletePlugin->setObjectName(QStringLiteral("action_deletePlugin"));
+        action_run = new QAction(MainWindowClass);
+        action_run->setObjectName(QStringLiteral("action_run"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -271,7 +280,10 @@ public:
         menuMesh->addAction(action_9);
         menuComputer->addAction(computerOption);
         menuComputer->addSeparator();
+        menuComputer->addAction(action_loadPlugin);
+        menuComputer->addAction(action_deletePlugin);
         menuComputer->addSeparator();
+        menuComputer->addAction(action_run);
         menuVisualize->addAction(action_ShowAll);
         menuVisualize->addAction(action_localscene);
 
@@ -300,6 +312,9 @@ public:
         action_obj->setText(QApplication::translate("MainWindowClass", "\345\257\274\345\205\245obj\346\250\241\345\236\213", 0));
         action_matFile->setText(QApplication::translate("MainWindowClass", "\345\257\274\345\205\245\346\235\220\346\226\231\346\226\207\344\273\266", 0));
         action_localscene->setText(QApplication::translate("MainWindowClass", "\344\273\277\347\234\237\345\214\272\345\237\237\345\261\225\347\244\272", 0));
+        action_loadPlugin->setText(QApplication::translate("MainWindowClass", "\345\212\240\350\275\275\347\256\227\346\263\225", 0));
+        action_deletePlugin->setText(QApplication::translate("MainWindowClass", "\345\215\270\350\275\275\347\256\227\346\263\225", 0));
+        action_run->setText(QApplication::translate("MainWindowClass", "\350\256\241\347\256\227", 0));
         tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(ModelView), QApplication::translate("MainWindowClass", "\346\250\241\345\236\213\345\234\272\346\231\257", 0));
         tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(simuArea), QApplication::translate("MainWindowClass", "\344\273\277\347\234\237\345\234\272\346\231\257", 0));
         menuFILE->setTitle(QApplication::translate("MainWindowClass", "File", 0));

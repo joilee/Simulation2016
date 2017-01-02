@@ -80,7 +80,10 @@
     </property>
     <addaction name="computerOption"/>
     <addaction name="separator"/>
+    <addaction name="action_loadPlugin"/>
+    <addaction name="action_deletePlugin"/>
     <addaction name="separator"/>
+    <addaction name="action_run"/>
    </widget>
    <widget class="QMenu" name="menuVisualize">
     <property name="title">
@@ -308,6 +311,21 @@
   <action name="action_localscene">
    <property name="text">
     <string>仿真区域展示</string>
+   </property>
+  </action>
+  <action name="action_loadPlugin">
+   <property name="text">
+    <string>加载算法</string>
+   </property>
+  </action>
+  <action name="action_deletePlugin">
+   <property name="text">
+    <string>卸载算法</string>
+   </property>
+  </action>
+  <action name="action_run">
+   <property name="text">
+    <string>计算</string>
    </property>
   </action>
  </widget>

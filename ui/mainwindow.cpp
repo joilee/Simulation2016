@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QTextStream>
 #include "Antenna/receiver.h"
+#include <QObject>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -27,6 +28,8 @@ void MainWindow::init()
 	//场景数据初始化
 	 MaxPoint=Vector3d(-INFINITY,-INFINITY,-INFINITY);
 	 MinPoint=Vector3d(INFINITY,INFINITY,INFINITY);
+
+	 plugin_file_path="";
 
 	triangleModel=NULL;
 	total_Buildings.clear();
@@ -99,6 +102,8 @@ void MainWindow:: createActions()
 		connect(M_computeroptionDialog->es->loadSitesButton,SIGNAL(clicked()),this,SLOT(openTransAntenna_ParamFile()));
 		connect(M_computeroptionDialog->es->loadTransAntennaButton,SIGNAL(clicked()),this,SLOT(openTransAntennas_DirGain()));
 		connect(M_computeroptionDialog->fp->loadReceieverPointFile,SIGNAL(clicked()),this,SLOT(openNo_SimplaneReceiverFile()));
+       	connect(ui.action_loadPlugin,SIGNAL(triggered()),this,SLOT(loadPlugin()));
+		connect(ui.action_run,SIGNAL(triggered()),this,SLOT(run()));
 }
 
 void MainWindow::saveLocalScene()
@@ -793,4 +798,40 @@ void MainWindow::LocalBuilding(vector< building> &Local_buildings, Vector3d AP_p
 		}		
 	}
 	outputLog(QStringLiteral("建筑物数量为")+QString::number(Local_buildings.size()));
+}
+
+
+void MainWindow::loadPlugin()
+{
+	plugin_file_path = QFileDialog::getOpenFileName(this,QStringLiteral("加载算法插件"),"./dll_plugins/","*.dll");  
+	if (!plugin_file_path.isEmpty())
+	{
+		outputLog(QStringLiteral("插件加载成功"));
+	}else
+	{
+		outputLog(QStringLiteral("插件加载失败"));
+	}
+}
+
+void MainWindow::deletePlugin()
+{
+	
+}
+
+void MainWindow::run()
+{
+	QObject* object ;
+	QPluginLoader loader( plugin_file_path); 
+
+
+	if ((object=loader.instance())!=NULL)
+	{
+		ComputeInterface * pluginTemp=qobject_cast<ComputeInterface*>(object);
+		if (pluginTemp)
+		{
+			outputLog(QStringLiteral("开始运行计算函数"));
+			pluginTemp->runAlgorithm();
+		    outputLog(QStringLiteral("结束计算"));
+		}
+	}
 }

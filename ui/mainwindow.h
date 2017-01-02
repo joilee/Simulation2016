@@ -8,6 +8,7 @@
 #include "computerOptionDialog.h"
 #include "geometry/emxModel.h"
 #include "meshOption.h"
+#include "plugin/PluginInterface.h"
 #include <QtWidgets/QMessageBox>
 #include "Context/context.h"
 class QAction; 
@@ -45,6 +46,9 @@ private slots:
 	void setMeshOption();
 	void meshAll();
 	void saveLocalScene();
+	void loadPlugin();
+	void deletePlugin();
+	void run();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;
@@ -98,6 +102,11 @@ private:
 	 QString OBJFile_path;
 	 emxModel * triangleModel;//局部模型，存储obj模型或者建筑物加地面的三角面片,局部模型
 	 
+	 /************************************************************************/
+	 /* plugin 参数                                                                     */
+	 /************************************************************************/
+	 QString plugin_file_path;
+
 
 	 //读建筑物以及高度
 	 void ReadScenePlanetFile(const char*filename_2D, const char*filename_Height, string filename_altitude, Vector3d& MaxPoint, Vector3d& MinPoint);

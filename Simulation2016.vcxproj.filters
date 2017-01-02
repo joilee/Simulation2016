@@ -299,5 +299,8 @@
     <ClInclude Include="Antenna\receiver.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="plugin\PluginInterface.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
