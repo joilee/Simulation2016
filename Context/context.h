@@ -3,6 +3,7 @@
 #define CONTEXT_H
 #include <iostream>
 #include "Antenna/antenna.h"
+#include "para/modelPara.h"
 #include "Antenna/receiver.h"
 /************************************************************************/
 /* 单例模式                                                                     */
@@ -11,13 +12,12 @@ class globalContext
 {
 public:	
 
+	//
+	ModelPara * modelPara;
 
 
-	//建筑物 模型 全局设置
-	bool modelexist;//全局模型存在
-	bool localexist;//局部模型存在
 	bool no_simplane;
-
+	
 
 	//
 	vector<Site> Sites;  //多个小区

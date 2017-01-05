@@ -172,6 +172,9 @@
     <ClCompile Include="Antenna\antenna.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="para\modelPara.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.ui">
@@ -300,6 +303,12 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="plugin\PluginInterface.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="para\modelPara.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\meshStruct.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

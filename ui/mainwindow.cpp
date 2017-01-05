@@ -115,7 +115,7 @@ void MainWindow::saveLocalScene()
 		return;
 	}
 	globalContext *globalCtx=globalContext::GetInstance();
-	if (triangleModel==NULL||!globalCtx->localexist)
+	if (triangleModel==NULL||!globalCtx->modelPara->localexist)
 	{
 		outputLog(QStringLiteral("没有局部场景生成！"));
 		return;
@@ -252,7 +252,7 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	//cout<<"MaxPoint:"<<MaxPoint.x<<" "<<MaxPoint.y<<" "<<MaxPoint.z<<endl;
 
 	globalContext *globalCtx=globalContext::GetInstance();
-	globalCtx->modelexist=true;
+	globalCtx->modelPara->modelexist=true;
 	setModelName(0,_name);
 	outputLog(QStringLiteral("已经导入整个场景"));
 	bip->setValue(total_Buildings.size(),-1,MinPoint,MaxPoint);
@@ -369,7 +369,7 @@ void MainWindow::openTransAntenna_ParamFile()
 	M_computeroptionDialog->es->sitesTreewidget->clear();
 
 	//检测是否导入场景
-	if (!globalCtx->localexist&&!globalCtx->modelexist)
+	if (!globalCtx->modelPara->localexist&&!globalCtx->modelPara->modelexist)
 	{
 		QMessageBox::warning(this, QStringLiteral("发射天线设置"), QStringLiteral("请先加载场景"));
 		return;
@@ -593,7 +593,7 @@ void MainWindow::showAll()
 {
 	setProgress(0);
 	globalContext *globalCtx=globalContext::GetInstance();
-	if (!globalCtx->modelexist)
+	if (!globalCtx->modelPara->modelexist)
 	{
 		QMessageBox::warning(this, QStringLiteral("场景展示"),QStringLiteral("请先导入文件"));
 		return;
@@ -617,7 +617,7 @@ void MainWindow::showLocal()
 		return;
 	}
 	globalContext *globalCtx=globalContext::GetInstance();
-	if (!globalCtx->localexist)
+	if (!globalCtx->modelPara->localexist)
 	{
 		QMessageBox::warning(this, QStringLiteral("局部场景展示"),QStringLiteral("请先导入文件"));
 		return;
@@ -657,7 +657,7 @@ void MainWindow::loadObj()
 		outputLog(QStringLiteral("材质信息不完整，请在剖分选项中指定统一材料编号"));
 	}
 	globalContext *globalCtx=globalContext::GetInstance();
-	globalCtx->localexist=true;
+	globalCtx->modelPara->localexist=true;
 
 	//右侧边栏显示参数
 	Vector3d MaxPointLocal,MinPointLocal;
@@ -721,7 +721,7 @@ void MainWindow::meshAll()
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
 	globalContext *globalCtx=globalContext::GetInstance();
-	globalCtx->localexist=true;
+	globalCtx->modelPara->localexist=true;
 	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
 	setProgress(100);
 }
@@ -829,7 +829,7 @@ void MainWindow::run()
 		ComputeInterface * pluginTemp=qobject_cast<ComputeInterface*>(object);
 		if (pluginTemp)
 		{
-			outputLog(QStringLiteral("开始运行计算函数"));
+			outputLog(QStringLiteral("开始运行计算函数"));	
 			pluginTemp->runAlgorithm();
 		    outputLog(QStringLiteral("结束计算"));
 		}

@@ -7,6 +7,8 @@
 #include "InfoPage.h"
 #include "computerOptionDialog.h"
 #include "geometry/emxModel.h"
+#include "rasterHeight/Mesh.h"
+#include "rasterHeight/TriMesh.h"
 #include "meshOption.h"
 #include "plugin/PluginInterface.h"
 #include <QtWidgets/QMessageBox>

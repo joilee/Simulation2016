@@ -6,7 +6,7 @@
 class ComputeInterface
 {
 public:
-	virtual void runAlgorithm()=0;
+#include "para/modelPara.h"
 
 private:
 

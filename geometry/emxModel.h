@@ -11,7 +11,7 @@
 #include "util\emxUtilityInc.h"
 #include "emxVertex.h"
 #include "emxFace.h"
-#include "rasterHeight/TriMesh.h"
+#include "meshStruct.h"
 
 class emxVertex;
 class emxFace;

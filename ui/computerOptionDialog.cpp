@@ -5,6 +5,7 @@
 #include<QListWidget>
 #include <QMessageBox>
 #include <fstream>
+
 computerOptionDialog::computerOptionDialog(QWidget *parent){
 
 	es=new emitSource;
