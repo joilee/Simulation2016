@@ -2,11 +2,12 @@
 #define PLUGININTERFACE_H
 
 #include <QtPlugin>
+#include "para/modelPara.h"
 #define QtPlugin_iid "com.Plugin.Computation"  
 class ComputeInterface
 {
 public:
-#include "para/modelPara.h"
+	virtual void runAlgorithm(ModelPara *modelParameter=0)=0;
 
 private:
 

@@ -209,7 +209,6 @@
     </ClCompile>
     <ClCompile Include="geometry\emxBBoxD.cpp" />
     <ClCompile Include="geometry\emxFace.cpp" />
-    <ClCompile Include="geometry\emxKdTreeD.cpp" />
     <ClCompile Include="geometry\emxModel.cpp" />
     <ClCompile Include="geometry\emxVertex.cpp" />
     <ClCompile Include="geometry\SphereBeam.cpp" />
@@ -266,7 +265,6 @@
     <ClInclude Include="geometry\dataStruct.h" />
     <ClInclude Include="geometry\emxBBoxD.h" />
     <ClInclude Include="geometry\emxFace.h" />
-    <ClInclude Include="geometry\emxKdTreeD.h" />
     <ClInclude Include="geometry\emxModel.h" />
     <ClInclude Include="geometry\emxPoint.h" />
     <ClInclude Include="geometry\emxRayD.h" />

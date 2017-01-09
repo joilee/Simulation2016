@@ -76,9 +76,6 @@
     <ClCompile Include="geometry\emxFace.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
-    <ClCompile Include="geometry\emxKdTreeD.cpp">
-      <Filter>geometry</Filter>
-    </ClCompile>
     <ClCompile Include="geometry\emxModel.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
@@ -240,9 +237,6 @@
       <Filter>geometry</Filter>
     </ClInclude>
     <ClInclude Include="geometry\emxFace.h">
-      <Filter>geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="geometry\emxKdTreeD.h">
       <Filter>geometry</Filter>
     </ClInclude>
     <ClInclude Include="geometry\emxModel.h">
