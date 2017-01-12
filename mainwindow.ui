@@ -63,7 +63,10 @@
     <addaction name="action_3"/>
     <addaction name="action_obj"/>
     <addaction name="separator"/>
+    <addaction name="action_json"/>
+    <addaction name="separator"/>
     <addaction name="action_saveLocal"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuMesh">
     <property name="title">
@@ -326,6 +329,11 @@
   <action name="action_run">
    <property name="text">
     <string>计算</string>
+   </property>
+  </action>
+  <action name="action_json">
+   <property name="text">
+    <string>快速导入场景(.json)</string>
    </property>
   </action>
  </widget>

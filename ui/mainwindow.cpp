@@ -104,6 +104,7 @@ void MainWindow:: createActions()
 		connect(M_computeroptionDialog->fp->loadReceieverPointFile,SIGNAL(clicked()),this,SLOT(openNo_SimplaneReceiverFile()));
        	connect(ui.action_loadPlugin,SIGNAL(triggered()),this,SLOT(loadPlugin()));
 		connect(ui.action_run,SIGNAL(triggered()),this,SLOT(run()));
+		connect(ui.action_json,SIGNAL(triggered()),this,SLOT(quickLoadJson()));
 }
 
 void MainWindow::saveLocalScene()
@@ -298,12 +299,12 @@ void MainWindow::openTransAntennas_DirGain()
 	if (paths.isEmpty())
 		return;
 	globalContext *glbctx=globalContext::GetInstance();
-	for (int i=0;i<glbctx->Sites.size();i++)
+	for (int i=0;i<glbctx->cptPara->Sites.size();i++)
 	{
-		for (int j=0;j<glbctx->Sites[i].Site_Antennas.size();j++)
+		for (int j=0;j<glbctx->cptPara->Sites[i].Site_Antennas.size();j++)
 		{
 			//对每个site中每个cell从批量导入的方向增益文件中找到匹配的增益文件
-			string cell_name = glbctx->Sites[i].Site_Antennas[j].Cell_Name + ".txt";
+			string cell_name = glbctx->cptPara->Sites[i].Site_Antennas[j].Cell_Name + ".txt";
 			for (int path_id =0; path_id<paths.size();path_id++)
 			{
 				string path = paths[path_id].toStdString();
@@ -334,7 +335,7 @@ void MainWindow::openTransAntennas_DirGain()
 						getline(infile,str);
 						istringstream linestream2(str);
 						linestream2 >> str_flag;
-						glbctx->Sites[i].Site_Antennas[j].initial_Gain = atof(str_flag.c_str());
+						glbctx->cptPara->Sites[i].Site_Antennas[j].initial_Gain = atof(str_flag.c_str());
 						getline(infile,str);
 						getline(infile,str);
 						getline(infile,str);
@@ -346,7 +347,7 @@ void MainWindow::openTransAntennas_DirGain()
 						vector<double> antenna_property(3); // V_angle  H_angle  attenuation
 						antenna_property[0] = atof(str_flag.c_str());
 						linestream3 >> antenna_property[1] >> antenna_property[2];
-						glbctx->Sites[i].Site_Antennas[j].direction_Gain.push_back(antenna_property);	
+						glbctx->cptPara->Sites[i].Site_Antennas[j].direction_Gain.push_back(antenna_property);	
 					}
 					infile.close();
 
@@ -361,7 +362,7 @@ void MainWindow::openTransAntennas_DirGain()
 void MainWindow::openTransAntenna_ParamFile()
 {
 	globalContext *globalCtx=globalContext::GetInstance();
-	globalCtx->Sites.clear();
+	globalCtx->cptPara->Sites.clear();
 
 	site_roots1.clear();
 	site_roots2.clear();
@@ -431,12 +432,12 @@ void MainWindow::openTransAntenna_ParamFile()
 
 		//针对新获得的cell，检测是否存在一个已知的site中，如果是，则插入，否则新建
 		bool newsite = true;   //是否需要新建一个site
-		for (int i=0;i<globalCtx->Sites.size();i++)
+		for (int i=0;i<globalCtx->cptPara->Sites.size();i++)
 		{
-			if (current_sitename==globalCtx->Sites[i].Site_Name)
+			if (current_sitename==globalCtx->cptPara->Sites[i].Site_Name)
 			{
 				newsite=false;
-				globalCtx->Sites[i].Site_Antennas.push_back(new_antenna);
+				globalCtx->cptPara->Sites[i].Site_Antennas.push_back(new_antenna);
 				string cell_name = "Cell"+CellName;
 
 				cell_leaf1 = new QTreeWidgetItem(site_roots1[i],QStringList(QString::fromStdString(cell_name)));
@@ -453,7 +454,7 @@ void MainWindow::openTransAntenna_ParamFile()
 			Site new_site;
 			new_site.Site_Name = current_sitename;
 			new_site.Site_Antennas.push_back(new_antenna);	
-			globalCtx->Sites.push_back(new_site);		
+			globalCtx->cptPara->Sites.push_back(new_site);		
 			string site_name = "Site"+SiteName;
 			string cell_name = "Cell"+CellName;
 
@@ -485,7 +486,7 @@ void MainWindow::openNo_SimplaneReceiverFile()
 
 	globalContext *glbctx=globalContext::GetInstance();
 
-	glbctx->No_SimPlanePoint.clear();  //存放接收点信息的vector容器
+	glbctx->cptPara->No_SimPlanePoint.clear();  //存放接收点信息的vector容器
 
 	ifstream infile((path.toStdString()).c_str(),ios::in|ios::_Nocreate);
 	if(!infile)
@@ -515,13 +516,13 @@ void MainWindow::openNo_SimplaneReceiverFile()
 		no_simplaneReceiver receiver;
 		receiver.position = Vector3d(x,y,z);
 		receiver.PCI = atoi(PCI.c_str());
-		glbctx->No_SimPlanePoint.push_back(receiver);
+		glbctx->cptPara->No_SimPlanePoint.push_back(receiver);
 	}
 	infile.close();
 
-	glbctx->no_simplane=true;
+	glbctx->cptPara->no_simplane=true;
 
-	outputLog(QStringLiteral("非仿真面接收点位置设置文件加载成功。共")+QString::number(glbctx->No_SimPlanePoint.size())+QStringLiteral("个接收点"));
+	outputLog(QStringLiteral("非仿真面接收点位置设置文件加载成功。共")+QString::number(glbctx->cptPara->No_SimPlanePoint.size())+QStringLiteral("个接收点"));
 	QMessageBox::warning(this, QStringLiteral("非仿真面接收点位置设置文件"), QStringLiteral("加载成功"));
 
 	return;
@@ -834,4 +835,10 @@ void MainWindow::run()
 		    outputLog(QStringLiteral("结束计算"));
 		}
 	}
+}
+
+void MainWindow::quickLoadJson()
+{
+	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("快速导入场景"),"./",QStringLiteral("场景文件 (*.json)"));
+
 }

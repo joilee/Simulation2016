@@ -51,6 +51,7 @@ public:
     QAction *action_loadPlugin;
     QAction *action_deletePlugin;
     QAction *action_run;
+    QAction *action_json;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget_Dispaly;
@@ -122,6 +123,8 @@ public:
         action_deletePlugin->setObjectName(QStringLiteral("action_deletePlugin"));
         action_run = new QAction(MainWindowClass);
         action_run->setObjectName(QStringLiteral("action_run"));
+        action_json = new QAction(MainWindowClass);
+        action_json->setObjectName(QStringLiteral("action_json"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -273,7 +276,10 @@ public:
         menuFILE->addAction(action_3);
         menuFILE->addAction(action_obj);
         menuFILE->addSeparator();
+        menuFILE->addAction(action_json);
+        menuFILE->addSeparator();
         menuFILE->addAction(action_saveLocal);
+        menuFILE->addSeparator();
         menuMesh->addAction(action_6);
         menuMesh->addAction(action_startMesh);
         menuMesh->addSeparator();
@@ -315,6 +321,7 @@ public:
         action_loadPlugin->setText(QApplication::translate("MainWindowClass", "\345\212\240\350\275\275\347\256\227\346\263\225", 0));
         action_deletePlugin->setText(QApplication::translate("MainWindowClass", "\345\215\270\350\275\275\347\256\227\346\263\225", 0));
         action_run->setText(QApplication::translate("MainWindowClass", "\350\256\241\347\256\227", 0));
+        action_json->setText(QApplication::translate("MainWindowClass", "\345\277\253\351\200\237\345\257\274\345\205\245\345\234\272\346\231\257(.json)", 0));
         tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(ModelView), QApplication::translate("MainWindowClass", "\346\250\241\345\236\213\345\234\272\346\231\257", 0));
         tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(simuArea), QApplication::translate("MainWindowClass", "\344\273\277\347\234\237\345\234\272\346\231\257", 0));
         menuFILE->setTitle(QApplication::translate("MainWindowClass", "File", 0));

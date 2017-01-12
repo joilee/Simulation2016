@@ -22,11 +22,11 @@ public:
 	simuArgument *sa;
 	public slots:
 			void changePage(QListWidgetItem *current, QListWidgetItem *previous);
-
+			void getPara();
 private:
 	QListWidget *contentsWidget;
 	QStackedWidget *pagesWidget;
-
+	QPushButton *okButton;
 };
 
 #endif

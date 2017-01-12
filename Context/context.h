@@ -2,9 +2,9 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 #include <iostream>
-#include "Antenna/antenna.h"
+
 #include "para/modelPara.h"
-#include "Antenna/receiver.h"
+#include "para/computePara.h"
 /************************************************************************/
 /* 单例模式                                                                     */
 /************************************************************************/
@@ -14,15 +14,9 @@ public:
 
 	//
 	ModelPara * modelPara;
+	ComputePara* cptPara;
 
-
-	bool no_simplane;
 	
-
-	//
-	vector<Site> Sites;  //多个小区
-
-	vector<no_simplaneReceiver> No_SimPlanePoint; //非仿真面设置的接收点信息
 
 
 	~globalContext();

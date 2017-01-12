@@ -172,6 +172,9 @@
     <ClCompile Include="para\modelPara.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="para\computePara.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.ui">
@@ -305,5 +308,14 @@
     <ClInclude Include="geometry\meshStruct.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="para\computePara.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\ICO\main.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\ICO\main.rc" />
   </ItemGroup>
 </Project>

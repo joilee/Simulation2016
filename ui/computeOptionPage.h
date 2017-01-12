@@ -61,13 +61,13 @@ private:
 	double predictPrecision,predictAltitude;
 
 	//布局
-	//
-//	QLineEdit *Xmin,*Xmax,*Ymin,*Ymax,*Zmin,*Zmax;
 	QLineEdit *filePath;
-
 	QLineEdit* leftupXinput,*leftupYinput;
 	QLineEdit* rightbottomXinput,*rightbottomYinput;
 	QLineEdit* Precisioninput,*Altitudeinput;
+public:
+	//获得参数
+	void getFieldPoint(double &lx,double &ly,double &rx,double &ry,double &pre,double &alti);
 };
 
 class simuArgument:public QWidget
@@ -85,6 +85,10 @@ private:
 	double  diffractionNum;
 	bool isDiffraction;
 
+	double RT_sample;//采样球密度
+	double RT_radius;//采样球半径
+	double RT_BeamNum;//beam数量
+
 public:
 	QLineEdit* lineEdit_RT_ReflectCount;
 	QLineEdit* lineEdit_RT_RefractCount;
@@ -93,7 +97,7 @@ public:
 	QLineEdit * lineEdit_RT_sample;
 	QLineEdit*lineEdit_RT_sample_radius;
 	QLineEdit*lineEdit_RT_sampleBeamNum;
-
+	void getSimuArgu(double &reflect,double &refract,double &diffract,bool &isDiff,double &sample,double &radius,double &beamNum);
 };
 
 #endif

@@ -62,6 +62,15 @@ double emitSource::getAngle()
 	return angleOfNorth;
 }
 
+void fieldpoint::getFieldPoint(double &lx,double &ly,double &rx,double &ry,double &pre,double &alti)
+{
+	lx=leftupXinput->text().toDouble();
+	ly=leftupYinput->text().toDouble();
+	rx=rightbottomXinput->text().toDouble();
+	ry=rightbottomYinput->text().toDouble();
+	pre=Precisioninput->text().toDouble();
+	alti=Altitudeinput->text().toDouble();
+}
 fieldpoint::fieldpoint(QWidget* parent)
 {
 	//初始化成员变量
@@ -158,6 +167,13 @@ fieldpoint::fieldpoint(QWidget* parent)
 	mainLayout->addWidget(firstgroupbox);
 	mainLayout->addStretch(1);
 	setLayout(mainLayout);
+
+	leftupXinput->setText("0");
+	leftupYinput->setText("0");
+	rightbottomXinput->setText("0");
+	rightbottomYinput->setText("0");
+	Precisioninput->setText("0");
+	Altitudeinput->setText("0");
 }
 
 simuArgument::simuArgument(QWidget* parent)
@@ -229,5 +245,25 @@ simuArgument::simuArgument(QWidget* parent)
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(firstgroupbox);
 	mainLayout->addStretch(1);
+
+
+	lineEdit_RT_Diffraction->setText("0");
+	lineEdit_RT_sampleBeamNum->setText("0");
+
 	setLayout(mainLayout);
+}
+
+void simuArgument::getSimuArgu(double &reflect,double &refract,double &diffract,bool &isDiff,double &sample,double &radius,double &beamNum)
+{
+	refract=lineEdit_RT_ReflectCount->text().toDouble();
+	refract=lineEdit_RT_ReflectCount->text().toDouble();
+	diffract=lineEdit_RT_RefractCount->text().toDouble();
+	if (comboBox_diffraction->currentIndex()==0)
+	{
+		isDiff=false;
+	}else
+		isDiff=true;
+	sample=lineEdit_RT_sample->text().toDouble();
+	radius=lineEdit_RT_sample_radius->text().toDouble();
+	beamNum=lineEdit_RT_sampleBeamNum->text().toDouble();
 }

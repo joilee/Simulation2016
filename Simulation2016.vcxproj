@@ -216,6 +216,7 @@
       <UseMSVC Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseMSVC>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="para\computePara.cpp" />
     <ClCompile Include="para\modelPara.cpp" />
     <ClCompile Include="rasterHeight\canny.cpp" />
     <ClCompile Include="rasterHeight\IO_obj.cpp" />
@@ -289,6 +290,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\Visual Leak Detector\include"</Command>
     </CustomBuild>
+    <ClInclude Include="para\computePara.h" />
     <ClInclude Include="para\modelPara.h" />
     <ClInclude Include="plugin\PluginInterface.h" />
     <ClInclude Include="rasterHeight\canny.h" />
@@ -456,6 +458,12 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\ICO\main.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\ICO\main.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

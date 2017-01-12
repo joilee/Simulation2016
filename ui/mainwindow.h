@@ -51,6 +51,7 @@ private slots:
 	void loadPlugin();
 	void deletePlugin();
 	void run();
+	void quickLoadJson();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;

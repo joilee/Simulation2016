@@ -11,7 +11,10 @@ computerOptionDialog::computerOptionDialog(QWidget *parent){
 	es=new emitSource;
 	fp=new fieldpoint;
 	sa=new simuArgument;
-
+	 QPushButton *closeButton = new QPushButton(tr("Close"));
+	 okButton=new QPushButton(tr("OK"));
+	 connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+	 connect(okButton,SIGNAL(clicked()),this,SLOT(getPara()));
 
 	contentsWidget = new QListWidget;
 	//layout
@@ -51,8 +54,14 @@ computerOptionDialog::computerOptionDialog(QWidget *parent){
 	  horizontalLayout->addWidget(contentsWidget);
 	  horizontalLayout->addWidget(pagesWidget, 1);
 
+	  QHBoxLayout *buttonsLayout = new QHBoxLayout;
+	  buttonsLayout->addStretch(1);
+	   buttonsLayout->addWidget(okButton);
+	  buttonsLayout->addWidget(closeButton);
+
 	   QVBoxLayout *mainLayout = new QVBoxLayout;
 	   mainLayout->addLayout(horizontalLayout);
+	   mainLayout->addLayout(buttonsLayout);
 	    setLayout(mainLayout);
 		setWindowTitle(tr("Option"));
 }
@@ -69,5 +78,13 @@ void computerOptionDialog::changePage(QListWidgetItem *current, QListWidgetItem 
 	return;
 }
 
+void computerOptionDialog::getPara()
+{
+	globalContext *gctx=globalContext::GetInstance();
+	gctx->cptPara->phi=es->getAngle();
+	fp->getFieldPoint(gctx->cptPara->leftUpX,gctx->cptPara->leftUpY,gctx->cptPara->rightDownX,gctx->cptPara->rightDownY,gctx->cptPara->precision,gctx->cptPara->altitude);
+	sa->getSimuArgu(gctx->cptPara->reflectNumPara,gctx->cptPara->refractNumPara,gctx->cptPara->diffractionNumPara,gctx->cptPara->isDiffractionPara,gctx->cptPara->RT_sample,gctx->cptPara->RT_radius,gctx->cptPara->RT_BeamNum);
+	QMessageBox::information(this, QStringLiteral("计算参数"), QStringLiteral("参数设置成功"), QMessageBox::Yes , QMessageBox::Yes);
+}
 
 

@@ -3,11 +3,12 @@
 
 #include <QtPlugin>
 #include "para/modelPara.h"
+#include "para/computePara.h"
 #define QtPlugin_iid "com.Plugin.Computation"  
 class ComputeInterface
 {
 public:
-	virtual void runAlgorithm(ModelPara *modelParameter=0)=0;
+	virtual void runAlgorithm(ModelPara *modelParameter=0,ComputePara *cptPara=0)=0;
 
 private:
 

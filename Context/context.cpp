@@ -3,14 +3,13 @@
 
 globalContext::globalContext()
 {
-	Sites.clear();
-	no_simplane = false;
+	cptPara=new ComputePara;
 	modelPara=new ModelPara;
 }
 
 globalContext::~globalContext()
 {
-	 vector<Site>().swap(Sites);
+	
 	 if (modelPara!=NULL)
 	 {
 		 delete modelPara;
