@@ -4,8 +4,9 @@
   此程序目的在于提供一个信号仿真的平台，包含模型导入、剖分、展示，以及结果可视化，仿真的算法将会以plugin的形式加入其中。
   
   
-  #项目界面
-  ![image](https://github.com//joilee/Simulation2016/ImageFIle/ReadMD/UI.png)
+## 项目界面
+
+  ![image](https://github.com/joilee/Simulation2016/ImageFIle/ReadMD/UI.png)
   
   
   代码将会持续改进，直到完整的推出1.0版本。
