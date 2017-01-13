@@ -142,10 +142,9 @@ void MainWindow::saveLocalScene()
 	outputLog(QStringLiteral("保存obj文件成功"));
 }
 
-void MainWindow::open_material()
+void MainWindow::loadMaterial(QString path)
 {
 	setProgress(0);
-	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("打开材质文件"),"./",QStringLiteral("txt 材质文件 (*.txt)"));
 	if (path.isEmpty())
 	{
 		outputLog(QStringLiteral("材料路径错误！"));
@@ -195,6 +194,14 @@ void MainWindow::open_material()
 	outputLog(QStringLiteral("成功加载材质文件!"));
 }
 
+void MainWindow::open_material()
+{
+	
+	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("打开材质文件"),"./",QStringLiteral("txt 材质文件 (*.txt)"));
+	loadMaterial(path);
+	
+}
+
 void MainWindow::setMaterial()
 {
 	bool ok;
@@ -233,10 +240,10 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 		QMessageBox::warning(this, QStringLiteral("文件导入"),QStringLiteral("请先导入建筑物高度信息文件"));
 		return;
 	}
-	setProgress(10);
+	setProgress(20);
 	//场景地面海拔文件读取
 	readHeightGrid(ScenePlaneHeightInfoFile_path.toStdString(),heightR,rowNum,colNum,stdLen,xmin,ymax);
-	setProgress(50);
+	setProgress(60);
 #ifdef PRINT_MODE
 	cout<<"读海拔文件完毕"<<endl;
 #endif
@@ -837,8 +844,99 @@ void MainWindow::run()
 	}
 }
 
+
+/************************************************************************/
+/* 读取json文件    参考 http://bbs.itheima.com/thread-331656-1-1.html */
+/************************************************************************/
 void MainWindow::quickLoadJson()
 {
 	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("快速导入场景"),"./",QStringLiteral("场景文件 (*.json)"));
+
+	//获取json文件所在文件夹的目录
+	QDir jsonPath(path);
+	 jsonPath.cdUp();
+	QString fatherDirectory=jsonPath.path();	
+	fatherDirectory.append("/");
+	//outputLog(fatherDirectory);
+	
+	QFile file(path);
+	file.open(QIODevice::ReadWrite);
+	QByteArray json = file.readAll();
+	QJsonDocument jsDoc;
+	jsDoc = QJsonDocument::fromJson(json);
+
+	QString _name;
+	QString _m;
+	QStringList _v;//vector
+	QStringList _h;//height
+	QString _p;//plane
+	bool flag1=false,flag2=false,flag3=false,flag4=false,flag5=false;
+	if (jsDoc.isObject())
+	{
+		QJsonObject obj = jsDoc.object();
+		
+		//检测名字
+		if (obj.contains("Name"))
+		{
+			  QJsonValue name_value=obj["Name"];
+			  if (name_value.isString())
+			  {
+				  _name=name_value.toString();
+				  flag1=true;
+			  }
+		}
+
+		//检测材料
+		if (obj.contains("Material"))
+		{
+			 QJsonValue name_value=obj["Material"];
+			 if (name_value.isString())
+			 {
+				 _m=fatherDirectory+name_value.toString();
+				 flag2=true;
+			 }
+		}
+
+		//检测vector
+		if (obj.contains("Building"))
+		{
+			QVariantMap result=jsDoc.toVariant().toMap();
+			foreach (QVariant build, result["Building"].toList())
+			{
+				QString fileName=fatherDirectory+build.toString();
+				_v.append(fileName);
+				flag3=true;
+			}
+		}
+
+		//检测高度
+		if (obj.contains("Height"))
+		{
+			QVariantMap result=jsDoc.toVariant().toMap();
+			foreach(QVariant heightVar,result["Height"].toList())
+			{
+				QString fileName=fatherDirectory+heightVar.toString();
+				_h.append(fileName);
+				flag4=true;
+			}
+		}
+
+		//检测地面海拔
+		if (obj.contains("Plane"))
+		{
+			 QJsonValue plane_value=obj["Plane"];
+			 if (plane_value.isString())
+			 {
+				 _p=fatherDirectory+plane_value.toString();
+				 flag5=true;
+			 }
+		}
+
+	}
+	if (flag1&&flag2&&flag3&&flag4&&flag5)
+	{
+		loadMaterial( _m);
+		loadAllFile(_name,_v,_h,_p);
+	}
 
 }

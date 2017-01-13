@@ -73,6 +73,7 @@ private:
 	 vector<material> materialdatabase;
 	 int material_ID;
 	 int getDefaultMaterial();
+	 void loadMaterial(QString path);
 	 /************************************************************************/
 	 /* 整个场景 建筑物                                                                     */
 	 /************************************************************************/
