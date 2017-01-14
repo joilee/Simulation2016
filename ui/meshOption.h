@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QComboBox>
 class meshOptionDialog:public QDialog
 {
 	Q_OBJECT
@@ -18,10 +19,15 @@ public:
 
 private slots:
 	void onOkbutton();
+	void onRefreshButton();
+	void dynamicLoadSite(int);
 public:
 	void createActions();
 	void setTheLayout();
 	void getValue(Vector3d &_center,double &_range);
+
+
+	QComboBox * cbo_XYZ;
 	QGroupBox * firstGroup;
 	QLineEdit *centerXLE;
 	QLineEdit *centerYLE;
@@ -29,6 +35,7 @@ public:
 	QLineEdit *rangeLE;
 	QPushButton *okbutton;
 	QPushButton* exitbutton;
+	QPushButton* refreshButton;
 };
 
 
