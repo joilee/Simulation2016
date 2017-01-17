@@ -21,7 +21,7 @@ GLWidget::GLWidget(QWidget *parent): QGLWidget(QGLFormat(QGL::SampleBuffers), pa
 
 	drawTriangleScene=false;
 	drawVectorScene=false;
-	vis_factor_scence = 0.5;
+	vis_factor_scence =0.8;
 	materials.clear();
 	defaultMaterial=-1;
 	setMouseTracking(true);
@@ -75,9 +75,9 @@ void GLWidget::initializeGL()
 	initializeOpenGLFunctions();
 
 	//定义材料属性
-	float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
-	float mat_shininess  [] = { 100.0f };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
+	//float mat_specular   [] = {0.0f, 0.0f, 0.0f, 1.0f };
+	float mat_shininess  [] = { 120.0f };
+	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);  
 	
 	 //创建光源
@@ -132,7 +132,7 @@ GLWidget::~GLWidget()
 }
 void GLWidget::resetRenderColor()
 {
-	m_lightColor = Color::LIGHT_GRAY;
+	m_lightColor = Color:: LIGHT_GRAY;
 	m_backGroundColor = Color(130/256.f, 130/256.f, 172/256.f);
 	m_groundColor = Color::GRAY;
 }

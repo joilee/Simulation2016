@@ -136,7 +136,11 @@ void MainWindow::saveLocalScene()
 		Vector3d point=triangleModel->GetVertex(i);
 		txtOutput<<"v "<<point.x<<" "<<point.y<<" "<<point.z<<endl;
 	}
-
+	for (int i=0;i<triangleModel->NumF();i++)
+	{
+		Vector3i tri=triangleModel->GetFace(i);
+		txtOutput<<"f "<<tri.x+1<<" "<<tri.y+1<<" "<<tri.z+1<<endl;
+	}
 	txtOutput.flush();
 	f.close();
 	outputLog(QStringLiteral("保存obj文件成功"));
@@ -151,7 +155,9 @@ void MainWindow::loadMaterial(QString path)
 		return;
 	}
 	material_path=path;
-	materialdatabase.clear();  //存放材质属性的vector容器
+	globalContext *globalCtx=globalContext::GetInstance();
+
+	globalCtx->modelPara->materialdatabase.clear();  //存放材质属性的vector容器
 	setProgress(10);
 	ifstream infile((path.toStdString()).c_str(),ios::in|ios::_Nocreate);
 	if(!infile)
@@ -186,7 +192,7 @@ void MainWindow::loadMaterial(QString path)
 		{
 			new_material.thickness/=1000;
 		}
-		materialdatabase.push_back(new_material);
+		globalCtx->modelPara->materialdatabase.push_back(new_material);
 		setProgress(70);
 	}
 	infile.close();
@@ -263,7 +269,7 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	globalCtx->modelPara->modelexist=true;
 	setModelName(0,_name);
 	outputLog(QStringLiteral("已经导入整个场景"));
-	bip->setValue(total_Buildings.size(),-1,MinPoint,MaxPoint);
+	bip->setValue(-1,total_Buildings.size(),MinPoint,MaxPoint);
 
 	setProgress(100);
 }
@@ -606,8 +612,8 @@ void MainWindow::showAll()
 		QMessageBox::warning(this, QStringLiteral("场景展示"),QStringLiteral("请先导入文件"));
 		return;
 	}
-	outputLog(QStringLiteral("努力加载整个场景中......"));
-	ui.ModelView->setMaterial(materialdatabase);
+	outputLog(QStringLiteral("努力加载整个场景中......"));	
+	ui.ModelView->setMaterial(globalCtx->modelPara->materialdatabase);
 	ui.ModelView->setBuilding(total_Buildings,MaxPoint,MinPoint);
 	ui.ModelView->updateMesh();
 	ui.ModelView->updateGL();
@@ -619,12 +625,13 @@ void MainWindow::showAll()
 void MainWindow::showLocal()
 {
 	setProgress(0);
-	if (materialdatabase.size()==0)
+		globalContext *globalCtx=globalContext::GetInstance();
+	if (globalCtx->modelPara->materialdatabase.size()==0)
 	{
 		QMessageBox::warning(this,  QStringLiteral("场景展示"), QStringLiteral("请先导入并编辑生成最终场景中所需材质属性"));
 		return;
 	}
-	globalContext *globalCtx=globalContext::GetInstance();
+
 	if (!globalCtx->modelPara->localexist)
 	{
 		QMessageBox::warning(this, QStringLiteral("局部场景展示"),QStringLiteral("请先导入文件"));
@@ -634,7 +641,9 @@ void MainWindow::showLocal()
 	setProgress(0);
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
-	ui.simuArea->setMaterial(materialdatabase);
+	
+
+	ui.simuArea->setMaterial(globalCtx->modelPara->materialdatabase);
 	ui.simuArea->drawTriangleScene=1;
 	ui.simuArea->defaultMaterial=material_ID;
 	ui.simuArea->setTriangleModel(triangleModel);
@@ -718,13 +727,17 @@ void MainWindow::meshAll()
 	setProgress(5);
 	vector<building> Local_buildings;
 	LocalBuilding(Local_buildings,center, range);
-	setProgress(30);
+	outputLog(QStringLiteral("选定区域内建筑物数量：")+QString::number(Local_buildings.size()));
+
+	setProgress(50);
 	MESH meshCTX;
 	MESH_PTR ground_pMesh = &meshCTX;
 	LocalGround( ground_pMesh,center,range);
 	setProgress(70);
 	triangleModel = new emxModel(Local_buildings, ground_pMesh);
+	triangleModel->GenerateEdge(Local_buildings);
 	setProgress(90);
+
 	//右侧边栏显示参数
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
@@ -780,6 +793,9 @@ void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRa
 	outputLog(QStringLiteral("剖分耗时")+QString::number((this_time - last_time)/1000)+QStringLiteral("s"));
 }
 
+/************************************************************************/
+/* 返回选定范围内的建筑物                                                                          */
+/************************************************************************/
 void MainWindow::LocalBuilding(vector< building> &Local_buildings, Vector3d AP_position, double LocalRange)
 {
 	//局部区域的范围 MinPos、MaxPos

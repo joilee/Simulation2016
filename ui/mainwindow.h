@@ -70,7 +70,6 @@ private:
 	//内部变量
  private:
 	 QString material_path;
-	 vector<material> materialdatabase;
 	 int material_ID;
 	 int getDefaultMaterial();
 	 void loadMaterial(QString path);

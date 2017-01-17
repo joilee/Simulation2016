@@ -12,7 +12,7 @@
 #include "emxVertex.h"
 #include "emxFace.h"
 #include "meshStruct.h"
-
+#include "dataStruct.h"
 class emxVertex;
 class emxFace;
 
@@ -53,6 +53,11 @@ public:
 
   // bounding box
   void GetBBox (Vector3d& min, Vector3d& max) const { min = minPos; max = maxPos; }
+
+
+  vector<Vedge> AP_Edge_list;
+  //找出局部场景中所有的棱边，以便于考虑绕射时所需，实际上仅考虑建筑物棱边
+  void GenerateEdge(vector< building > &Local_buildings);
 
   Vector3d minPos, maxPos;	 //所有点中的最大最小点
 
