@@ -728,17 +728,18 @@ void MainWindow::meshAll()
 		return;
 	}
 	setProgress(5);
-	vector<building> Local_buildings;
-	LocalBuilding(Local_buildings,center, range);
-	outputLog(QStringLiteral("选定区域内建筑物数量：")+QString::number(Local_buildings.size()));
+	globalContext *gctx=globalContext::GetInstance();
+
+	LocalBuilding(gctx->modelPara->Local_buildings,center, range);
+	outputLog(QStringLiteral("选定区域内建筑物数量：")+QString::number(gctx->modelPara->Local_buildings.size()));
 
 	setProgress(50);
 	MESH meshCTX;
 	MESH_PTR ground_pMesh = &meshCTX;
 	LocalGround( ground_pMesh,center,range);
 	setProgress(70);
-	triangleModel = new emxModel(Local_buildings, ground_pMesh);
-	triangleModel->GenerateEdge(Local_buildings);
+	triangleModel = new emxModel(gctx->modelPara->Local_buildings, ground_pMesh);
+	triangleModel->GenerateEdge(gctx->modelPara->Local_buildings);
 	setProgress(90);
 
 	//右侧边栏显示参数

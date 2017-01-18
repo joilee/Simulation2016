@@ -17,6 +17,7 @@ public:
 	emxModel *  trianglePara;
 	double LocalScene_range;
 	vector<material> materialdatabase;
+	vector<building> Local_buildings;
 
 	//海拔数据处理
 	//bool heightLoaded;  //海拔数据是否已经导入
@@ -26,6 +27,11 @@ public:
 	vector<double> stdLen;//海拔文件的间隔
 	vector<double> xmin;//海拔文件的左上角和右下角。
 	vector<double> ymax;
+
+	/************************************************************************/
+	/* 得到一个点对应的高度                                                                     */
+	/************************************************************************/
+	double getPointAltitude(double x,double y);
 private:
 
 };
