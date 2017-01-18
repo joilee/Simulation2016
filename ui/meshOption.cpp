@@ -21,6 +21,9 @@ void meshOptionDialog::onOkbutton()
 	range=rangeLE->text().toDouble();
 	center=Vector3d(x,y,z);
 	inputFlag=true;
+	globalContext *globalCtx=globalContext::GetInstance();
+	globalCtx->modelPara->LocalScene_range=range;
+
 	this->close();
 }
 

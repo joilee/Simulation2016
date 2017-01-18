@@ -36,25 +36,21 @@ void emxModel:: GenerateEdge(vector< building > &Local_buildings)
 			Vector3d b=VectorCross((edge_now1.end - edge_now1.start),(point1 - point3));
 			Vector3d c=VectorCross((point1 - point3),(edge_now2.end-edge_now2.start));
 
-
-
 			if (a!=0&&b!=0&&c!=0)
 			{
 				edge_now1.normal_front = a.normalize();  
 				edge_now1.normal_back = b.normalize();
 				edge_now2.normal_front =c.normalize(); 
 				edge_now2.normal_back = edge_now1.normal_front;  
+				edge_now1.materialId = 11;
+				edge_now2.materialId = 11;
+
+				AP_Edge_list.push_back(edge_now1);
+				AP_Edge_list.push_back(edge_now2);	
 			}else
 			{
 				cout<<"something wrong!"<<endl;
-			}
-
-
-			edge_now1.materialId = 11;
-			edge_now2.materialId = 11;
-
-			AP_Edge_list.push_back(edge_now1);
-			AP_Edge_list.push_back(edge_now2);	
+			}	
 		}		
 	}
 

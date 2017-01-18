@@ -248,7 +248,8 @@ void MainWindow::loadAllFile(QString _name,QStringList _v,QStringList _h,QString
 	}
 	setProgress(20);
 	//场景地面海拔文件读取
-	readHeightGrid(ScenePlaneHeightInfoFile_path.toStdString(),heightR,rowNum,colNum,stdLen,xmin,ymax);
+	globalContext *gctx=globalContext::GetInstance();
+	readHeightGrid(ScenePlaneHeightInfoFile_path.toStdString(),gctx->modelPara->heightR,gctx->modelPara->rowNum,gctx->modelPara->colNum,gctx->modelPara->stdLen,gctx->modelPara->xmin,gctx->modelPara->ymax);
 	setProgress(60);
 #ifdef PRINT_MODE
 	cout<<"读海拔文件完毕"<<endl;
@@ -399,7 +400,7 @@ void MainWindow::openTransAntenna_ParamFile()
 		cout << "can not open file!" << endl;
 		return ;
 	}
-
+	globalContext *gctx=globalContext::GetInstance();
 	string str,str_flag;
 	getline(infile,str);//跳过第一行
 	while(getline(infile,str))
@@ -419,7 +420,7 @@ void MainWindow::openTransAntenna_ParamFile()
 		string str_y = Trim(parameters[15]);
 		double x = atof(str_x.c_str());
 		double y = atof(str_y.c_str());
-		double z = atof(height.c_str()) + getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);
+		double z = atof(height.c_str()) + getPointAltitude(gctx->modelPara->heightR[0],x,y,gctx->modelPara->rowNum[0],gctx->modelPara->colNum[0],gctx->modelPara->stdLen[0],gctx->modelPara->xmin[0],gctx->modelPara->ymax[0]);
 
 		TransAntenna new_antenna;
 		new_antenna.Cell_Name = CellName;
@@ -510,6 +511,7 @@ void MainWindow::openNo_SimplaneReceiverFile()
 
 	string str;
 	getline(infile,str);
+	globalContext *gctx=globalContext::GetInstance();
 	while(getline(infile,str))
 	{
 		istringstream linestream(str);
@@ -525,7 +527,7 @@ void MainWindow::openNo_SimplaneReceiverFile()
 		string PCI = Trim(parameters[3]);
 		double x = atof(str_x.c_str());
 		double y = atof(str_y.c_str());
-		double z = atof(str_z.c_str()) + getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);
+		double z = atof(str_z.c_str()) + getPointAltitude(gctx->modelPara->heightR[0],x,y,gctx->modelPara->rowNum[0],gctx->modelPara->colNum[0],gctx->modelPara->stdLen[0],gctx->modelPara->xmin[0],gctx->modelPara->ymax[0]);
 		no_simplaneReceiver receiver;
 		receiver.position = Vector3d(x,y,z);
 		receiver.PCI = atoi(PCI.c_str());
@@ -556,6 +558,7 @@ void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename
 		cout << "can not open file2!" << endl;
 		return ;
 	}
+	globalContext *gctx=globalContext::GetInstance();
 	string str1,str2;
 	infile1.seekg(4,ios::beg);
 	infile2.seekg(3,ios::beg);
@@ -586,7 +589,7 @@ void MainWindow::ReadScenePlanetFile(const char*filename_2D, const char*filename
 				istringstream linestream4(str1);
 				linestream4>>x>>y;
 
-				double building_altitude = getPointAltitude(heightR[0],x,y,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0]);; //建筑物各个点按照实际获取对应海拔值
+				double building_altitude = getPointAltitude(gctx->modelPara->heightR[0],x,y,gctx->modelPara->rowNum[0],gctx->modelPara->colNum[0],gctx->modelPara->stdLen[0],gctx->modelPara->xmin[0],gctx->modelPara->ymax[0]);; //建筑物各个点按照实际获取对应海拔值
 				double upper_height = height+building_altitude;
 				double under_height = building_altitude;
 				building_info.upper_facePoint.push_back(Vector3d(x,y,upper_height));
@@ -759,12 +762,12 @@ void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRa
 		QMessageBox::warning(this, QString::fromLocal8Bit("场景展示"),QString::fromLocal8Bit("请先导入场景的海拔信息文件"));
 		return;
 	}
-
+	globalContext *gctx=globalContext::GetInstance();
 	//step1 找到对应的行和列
-	int upRow=(ymax[0]-MaxPos[1])/stdLen[0];
-	int downRow= (ymax[0]-MinPos[1])/stdLen[0]+1;
-	int leftCol=(MinPos[0]-xmin[0])/stdLen[0];
-	int rightCol=(MaxPos[0]-xmin[0])/stdLen[0]+1;
+	int upRow=(gctx->modelPara->ymax[0]-MaxPos[1])/gctx->modelPara->stdLen[0];
+	int downRow= (gctx->modelPara->ymax[0]-MinPos[1])/gctx->modelPara->stdLen[0]+1;
+	int leftCol=(MinPos[0]-gctx->modelPara->xmin[0])/gctx->modelPara->stdLen[0];
+	int rightCol=(MaxPos[0]-gctx->modelPara->xmin[0])/gctx->modelPara->stdLen[0]+1;
 	int area[4]={upRow,downRow,leftCol,rightCol};
 
 	//step2 进行局部的文件提取 canny算法 剖分 
@@ -774,13 +777,13 @@ void MainWindow::LocalGround(MESH_PTR pMesh,Vector3d AP_position, double LocalRa
 	int localCol=rightCol-leftCol+1;
 	cannyPoint.resize(localRow,vector<int>(localCol));
 
-	height2canny(heightR[0],cannyPoint,rowNum[0],colNum[0],stdLen[0],xmin[0],ymax[0],area);
+	height2canny(gctx->modelPara->heightR[0],cannyPoint,gctx->modelPara->rowNum[0],gctx->modelPara->colNum[0],gctx->modelPara->stdLen[0],gctx->modelPara->xmin[0],gctx->modelPara->ymax[0],area);
 
 	int  totalVer=getFeaturePoint3(stepLength,localRow,localCol,cannyPoint);
 
 	InitMesh(pMesh, totalVer);
 
-	int amount=setMeshPtr3( pMesh,stepLength,localRow,localCol,cannyPoint,heightR[0],xmin[0],ymax[0],stdLen[0],upRow,leftCol);
+	int amount=setMeshPtr3( pMesh,stepLength,localRow,localCol,cannyPoint,gctx->modelPara->heightR[0],gctx->modelPara->xmin[0],gctx->modelPara->ymax[0],gctx->modelPara->stdLen[0],upRow,leftCol);
 
 	outputLog(QStringLiteral("整张地图共有")+QString::number(nv,10)+QStringLiteral("特征点。"));
 	outputLog(QStringLiteral("本区域插入点数量")+QString::number(amount-3,10));

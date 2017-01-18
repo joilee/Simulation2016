@@ -4,6 +4,7 @@ ModelPara::ModelPara()
 	modelexist=false;
 	localexist=false;
 	trianglePara=NULL;
+	LocalScene_range=2000;
 }
 
 ModelPara::~ModelPara()
