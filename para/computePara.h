@@ -19,7 +19,7 @@ public:
 	double  refractNumPara;
 	double  diffractionNumPara;
 	bool isDiffractionPara;
-
+	int transIndex;
 	double RT_sample;//采样球密度
 	double RT_radius;//采样球半径
 	double RT_BeamNum;//beam数量

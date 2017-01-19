@@ -93,11 +93,12 @@ public:
 	QLineEdit* lineEdit_RT_ReflectCount;
 	QLineEdit* lineEdit_RT_RefractCount;
 	QComboBox * comboBox_diffraction;
+	QComboBox* comboBox_transmission;
 	QLineEdit* lineEdit_RT_Diffraction;
 	QLineEdit * lineEdit_RT_sample;
 	QLineEdit*lineEdit_RT_sample_radius;
 	QLineEdit*lineEdit_RT_sampleBeamNum;
-	void getSimuArgu(double &reflect,double &refract,double &diffract,bool &isDiff,double &sample,double &radius,double &beamNum);
+	void getSimuArgu(double &reflect,double &refract,double &diffract,bool &isDiff,int transIndex,double &sample,double &radius,double &beamNum);
 };
 
 #endif

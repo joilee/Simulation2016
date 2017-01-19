@@ -746,10 +746,10 @@ void MainWindow::meshAll()
 	LocalGround( ground_pMesh,center,range);
 	setProgress(70);
 	triangleModel = new emxModel(gctx->modelPara->Local_buildings, ground_pMesh);
+	setProgress(80);
 	triangleModel->GenerateEdge(gctx->modelPara->Local_buildings);
-
 	setProgress(90);
-
+	gctx->modelPara->groundMesh=meshCTX;
 	//右侧边栏显示参数
 	Vector3d MaxPointLocal,MinPointLocal;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);

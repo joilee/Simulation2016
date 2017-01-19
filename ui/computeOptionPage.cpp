@@ -186,6 +186,7 @@ simuArgument::simuArgument(QWidget* parent)
 	QGroupBox *firstgroupbox=new QGroupBox(QStringLiteral("仿真参数"));
 	QLabel *label1=new QLabel(QStringLiteral("反射次数"));
 	QLabel*label2=new QLabel(QStringLiteral("透射次数"));
+	QLabel*label2_5=new QLabel(QStringLiteral("透射损耗"));
 	QLabel*label3=new QLabel(QStringLiteral("绕射"));
 	QLabel*label4=new QLabel(QStringLiteral("绕射次数"));
 	QLabel*label5=new QLabel(QStringLiteral("采样密度"));
@@ -195,6 +196,7 @@ simuArgument::simuArgument(QWidget* parent)
 	lineEdit_RT_ReflectCount=new QLineEdit;
 	lineEdit_RT_RefractCount=new QLineEdit;
 	lineEdit_RT_Diffraction=new QLineEdit;
+	comboBox_transmission=new QComboBox;
 	comboBox_diffraction=new QComboBox;
 	lineEdit_RT_sample=new QLineEdit;
 	lineEdit_RT_sample_radius=new QLineEdit;
@@ -204,6 +206,9 @@ simuArgument::simuArgument(QWidget* parent)
 	comboBox_diffraction->insertItem(0,QStringLiteral("不考虑绕射"));
 	comboBox_diffraction->insertItem(1,QStringLiteral("考虑绕射"));
 
+	comboBox_transmission->insertItem(0,QStringLiteral("经验值"));
+	comboBox_transmission->insertItem(1,QStringLiteral("理论公式计算"));
+
 	QHBoxLayout* h1=new QHBoxLayout;
 	h1->addWidget(label1);
 	h1->addWidget(lineEdit_RT_ReflectCount);
@@ -211,6 +216,10 @@ simuArgument::simuArgument(QWidget* parent)
 	QHBoxLayout* h2=new QHBoxLayout;
 	h2->addWidget(label2);
 	h2->addWidget(lineEdit_RT_RefractCount);
+
+	QHBoxLayout *h2_5=new QHBoxLayout;
+	h2_5->addWidget(label2_5);
+	h2_5->addWidget(comboBox_transmission);
 
 	QHBoxLayout *h3=new QHBoxLayout;
 	h3->addWidget(label3);
@@ -235,6 +244,7 @@ simuArgument::simuArgument(QWidget* parent)
 	QVBoxLayout *total=new QVBoxLayout;
 	total->addLayout(h1);
 	total->addLayout(h2);
+	total->addLayout(h2_5);
 	total->addLayout(h3);
 	total->addLayout(h4);
 	total->addLayout(h5);
@@ -253,7 +263,7 @@ simuArgument::simuArgument(QWidget* parent)
 	setLayout(mainLayout);
 }
 
-void simuArgument::getSimuArgu(double &reflect,double &refract,double &diffract,bool &isDiff,double &sample,double &radius,double &beamNum)
+void simuArgument::getSimuArgu(double &reflect,double &refract,double &diffract,bool &isDiff,int transIndex,double &sample,double &radius,double &beamNum)
 {
 	refract=lineEdit_RT_ReflectCount->text().toDouble();
 	refract=lineEdit_RT_ReflectCount->text().toDouble();
@@ -263,6 +273,7 @@ void simuArgument::getSimuArgu(double &reflect,double &refract,double &diffract,
 		isDiff=false;
 	}else
 		isDiff=true;
+	transIndex=comboBox_transmission->currentIndex();
 	sample=lineEdit_RT_sample->text().toDouble();
 	radius=lineEdit_RT_sample_radius->text().toDouble();
 	beamNum=lineEdit_RT_sampleBeamNum->text().toDouble();
