@@ -31,7 +31,7 @@ void MainWindow::init()
 
 	 plugin_file_path="";
 
-	triangleModel=NULL;
+	//triangleModel=NULL;
 	total_Buildings.clear();
 
 	material_ID=43;//默认是混凝土文件
@@ -116,7 +116,7 @@ void MainWindow::saveLocalScene()
 		return;
 	}
 	globalContext *globalCtx=globalContext::GetInstance();
-	if (triangleModel==NULL||!globalCtx->modelPara->localexist)
+	if (globalCtx->modelPara->trianglePara==NULL||!globalCtx->modelPara->localexist)
 	{
 		outputLog(QStringLiteral("没有局部场景生成！"));
 		return;
@@ -131,6 +131,8 @@ void MainWindow::saveLocalScene()
 	QTextStream txtOutput(&f);  
 	//点的编号从1开始
 	txtOutput.setRealNumberPrecision(10);
+	
+	emxModel *triangleModel=globalCtx->modelPara->trianglePara;
 	for (int i=0;i<triangleModel->NumV();i++)
 	{
 		Vector3d point=triangleModel->GetVertex(i);
@@ -643,6 +645,8 @@ void MainWindow::showLocal()
 	outputLog(QStringLiteral("努力加载局部场景中......"));
 	setProgress(0);
 	Vector3d MaxPointLocal,MinPointLocal;
+	globalContext *gctx=globalContext::GetInstance();
+	emxModel *triangleModel=gctx->modelPara->trianglePara;
 	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
 	
 
@@ -664,6 +668,8 @@ void MainWindow::loadObj()
 	 OBJFile_path = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开obj文件"),"./",QString::fromLocal8Bit("obj 文件 (*.obj)"));
 	if (OBJFile_path.isEmpty())
 		return;
+	globalContext *gctx=globalContext::GetInstance();
+	emxModel* triangleModel=gctx->modelPara->trianglePara;
 	if (triangleModel)
 	{
 		delete triangleModel;
@@ -703,6 +709,8 @@ void MainWindow::setMeshOption()
 void MainWindow::meshAll()
 {
 	setProgress(0);
+	globalContext *gctx=globalContext::GetInstance();
+	emxModel *triangleModel=gctx->modelPara->trianglePara;
 	if (triangleModel!=NULL)
 	{
 		if (triangleModel->NumV())
@@ -728,7 +736,6 @@ void MainWindow::meshAll()
 		return;
 	}
 	setProgress(5);
-	globalContext *gctx=globalContext::GetInstance();
 
 	LocalBuilding(gctx->modelPara->Local_buildings,center, range);
 	outputLog(QStringLiteral("选定区域内建筑物数量：")+QString::number(gctx->modelPara->Local_buildings.size()));
@@ -740,6 +747,7 @@ void MainWindow::meshAll()
 	setProgress(70);
 	triangleModel = new emxModel(gctx->modelPara->Local_buildings, ground_pMesh);
 	triangleModel->GenerateEdge(gctx->modelPara->Local_buildings);
+
 	setProgress(90);
 
 	//右侧边栏显示参数

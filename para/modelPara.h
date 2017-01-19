@@ -15,6 +15,8 @@ public:
 	bool modelexist;//全局模型存在
 	bool localexist;//局部模型存在
 	emxModel *  trianglePara;
+	emxModel * LocalVirtualSimPlane;//虚拟仿真面
+
 	double LocalScene_range;
 	vector<material> materialdatabase;
 	vector<building> Local_buildings;

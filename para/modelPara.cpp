@@ -5,6 +5,7 @@ ModelPara::ModelPara()
 	localexist=false;
 	trianglePara=NULL;
 	LocalScene_range=2000;
+	LocalVirtualSimPlane=NULL;
 }
 
 ModelPara::~ModelPara()
@@ -12,6 +13,10 @@ ModelPara::~ModelPara()
 	if (trianglePara!=NULL)
 	{
 		delete trianglePara;
+	}
+	if (LocalVirtualSimPlane!=NULL)
+	{
+		delete LocalVirtualSimPlane;
 	}
 }
 
