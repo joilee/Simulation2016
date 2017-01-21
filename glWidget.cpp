@@ -18,7 +18,7 @@ GLWidget::GLWidget(QWidget *parent): QGLWidget(QGLFormat(QGL::SampleBuffers), pa
 	m_dGroundWidth=5;
 
 	TriangleModel=NULL;
-
+	vis_factor_face=0.9;
 	drawTriangleScene=false;
 	drawVectorScene=false;
 	drawSimplaneFlag=false;
