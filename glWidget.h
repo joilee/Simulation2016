@@ -10,6 +10,7 @@
 #include "util/emxCamera.h"
 #include "geometry/emxModel.h"
 #include "geometry/dataStruct.h"
+#include "util/EField.h"
 #include <QPoint>
 #include <QMouseEvent>
 #include <QOpenGLFunctions_4_3_Core>
@@ -65,11 +66,24 @@ public:
 	bool drawVectorScene;  //vector文件场景绘制
 	double vis_factor_scence;//场景的透明度
 
+	bool drawSimplaneFlag;
+	double vis_factor_face;
+	int horizonNum;
+	int veticalNum;
+	double Tmax;
+	double Tmin;
+	vector<vector<EField>> AP_EPoints;  //记录接收点处相关信息，以便仿真面的绘制
+	 vector<bool> sceneIsDislpay;   //是否显示场景仿真面结果
+
 public:
 	void updateMesh();
+
 	void drawAllScene();//全局，建筑物展示，无地面，建筑物本身有海拔
+
 	void drawLocalScene();//局部信息，只有三角面片
+
 	void setMaterial(vector<material> &materialdatabase){materials = materialdatabase;}
+	
 	void resetRenderColor();
 
 	void mousePressEvent(QMouseEvent *event);
@@ -81,11 +95,17 @@ public:
 	void wheelEvent(QWheelEvent *event);
 
 	void setTriangleModel(emxModel* TriangleData);
-	
+
+	void drawPlane();
+
+	void drawColorbar();
+
+	void LoadUniformColor(double currentVaule,Color &result);
+
 	void removeTriangleModel()
 	{
-		delete TriangleModel;
-		TriangleModel=NULL;
+	//	delete TriangleModel;
+	//	TriangleModel=NULL;
 		drawTriangleScene=false;
 		minPos=Vector3d(0,0,0);
 	}
@@ -97,6 +117,15 @@ public:
 		minPos = MinPoint;
 		maxPos = MaxPoint;
 	}
+	void setGrid(int level, int vertical){horizonNum = level; veticalNum = vertical;}
+	void setSimPlane(vector<vector<EField>> &PlacePoint,int h,int v)
+	{
+		AP_EPoints=PlacePoint;
+		setGrid(h+1,v+1);
+		sceneIsDislpay.push_back(true);
+		drawSimplaneFlag=true;
+	}
+
 	//
 protected:
 	void initializeGL();

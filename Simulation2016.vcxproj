@@ -220,6 +220,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="para\computePara.cpp" />
     <ClCompile Include="para\modelPara.cpp" />
+    <ClCompile Include="para\visualPara.cpp" />
     <ClCompile Include="rasterHeight\canny.cpp" />
     <ClCompile Include="rasterHeight\IO_obj.cpp" />
     <ClCompile Include="rasterHeight\Mesh.cpp" />
@@ -294,6 +295,7 @@
     </CustomBuild>
     <ClInclude Include="para\computePara.h" />
     <ClInclude Include="para\modelPara.h" />
+    <ClInclude Include="para\visualPara.h" />
     <ClInclude Include="plugin\PluginInterface.h" />
     <ClInclude Include="rasterHeight\canny.h" />
     <ClInclude Include="rasterHeight\defaultPara.h" />

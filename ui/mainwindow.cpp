@@ -745,17 +745,17 @@ void MainWindow::meshAll()
 	MESH_PTR ground_pMesh = &meshCTX;
 	LocalGround( ground_pMesh,center,range);
 	setProgress(70);
-	triangleModel = new emxModel(gctx->modelPara->Local_buildings, ground_pMesh);
+	gctx->modelPara->trianglePara = new emxModel(gctx->modelPara->Local_buildings, ground_pMesh);
 	setProgress(80);
-	triangleModel->GenerateEdge(gctx->modelPara->Local_buildings);
+	gctx->modelPara->trianglePara->GenerateEdge(gctx->modelPara->Local_buildings);
 	setProgress(90);
 	gctx->modelPara->groundMesh=meshCTX;
 	//右侧边栏显示参数
 	Vector3d MaxPointLocal,MinPointLocal;
-	triangleModel->GetBBox(MinPointLocal,MaxPointLocal);
+	gctx->modelPara->trianglePara->GetBBox(MinPointLocal,MaxPointLocal);
 	globalContext *globalCtx=globalContext::GetInstance();
 	globalCtx->modelPara->localexist=true;
-	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
+	lpg->setParametre(gctx->modelPara->trianglePara->NumF(),MinPointLocal,MaxPointLocal);
 	setProgress(100);
 }
 
@@ -859,15 +859,17 @@ void MainWindow::run()
 	QObject* object ;
 	QPluginLoader loader( plugin_file_path); 
 
-
+	globalContext *gctx=globalContext::GetInstance();
 	if ((object=loader.instance())!=NULL)
 	{
 		ComputeInterface * pluginTemp=qobject_cast<ComputeInterface*>(object);
 		if (pluginTemp)
 		{
 			outputLog(QStringLiteral("开始运行计算函数"));	
-			pluginTemp->runAlgorithm();
+			pluginTemp->runAlgorithm(gctx->modelPara,gctx->cptPara,gctx->visualPara);
 		    outputLog(QStringLiteral("结束计算"));
+			ui.simuArea->setSimPlane(gctx->visualPara->vis_AP_EFieldArrays,gctx->visualPara->horizonNum,gctx->visualPara->veticalNum);
+			outputLog(QStringLiteral("显示结果"));
 		}
 	}
 }

@@ -5,6 +5,7 @@
 
 #include "para/modelPara.h"
 #include "para/computePara.h"
+#include "para/visualPara.h"
 /************************************************************************/
 /* 单例模式                                                                     */
 /************************************************************************/
@@ -15,7 +16,7 @@ public:
 	//
 	ModelPara * modelPara;
 	ComputePara* cptPara;
-
+	visPara *visualPara;
 	
 
 

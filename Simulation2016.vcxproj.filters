@@ -175,6 +175,9 @@
     <ClCompile Include="para\computePara.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="para\visualPara.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.ui">
@@ -309,6 +312,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="para\computePara.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="para\visualPara.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

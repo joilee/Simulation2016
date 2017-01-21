@@ -21,6 +21,7 @@ GLWidget::GLWidget(QWidget *parent): QGLWidget(QGLFormat(QGL::SampleBuffers), pa
 
 	drawTriangleScene=false;
 	drawVectorScene=false;
+	drawSimplaneFlag=false;
 	vis_factor_scence =0.8;
 	materials.clear();
 	defaultMaterial=-1;
@@ -75,9 +76,9 @@ void GLWidget::initializeGL()
 	initializeOpenGLFunctions();
 
 	//定义材料属性
-	//float mat_specular   [] = {0.0f, 0.0f, 0.0f, 1.0f };
-	float mat_shininess  [] = { 120.0f };
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
+	float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
+	float mat_shininess  [] = { 100.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);  
 	
 	 //创建光源
@@ -109,6 +110,11 @@ void GLWidget::paintGL()
 		if (drawVectorScene)
 		{
 			drawAllScene();
+		}
+
+		if (drawSimplaneFlag)
+		{
+			drawPlane();
 		}
 }
 
@@ -416,4 +422,220 @@ void GLWidget::setTriangleModel(emxModel* TriangleData)
 
 
 	  drawTriangleScene = true;
+}
+
+void GLWidget::drawPlane()
+{
+	
+	for (int id=0;id<AP_EPoints.size();id++)
+	{
+		if (sceneIsDislpay[id])  //选中的小区才能显示仿真结果
+		{
+			vector<EField> &EPoint = AP_EPoints[id];
+			double emax = EPoint[0].MolStrength;
+			double emin = EPoint[0].MolStrength;
+			for(size_t m = 1; m < EPoint.size(); m++)
+			{
+				if (EPoint[m].Path.size() > 0) //若EPoint[i].Path.size() == 0 说明，此接收点没有路径到达，信号强度值未知
+				{
+					if(EPoint[m].MolStrength > emax)
+					{
+						emax = EPoint[m].MolStrength;
+					}
+					if(EPoint[m].MolStrength < emin)
+					{
+						emin = EPoint[m].MolStrength;
+				
+					}
+				}
+			}
+		//	cout<<"the minimal point id is:"<<min_id<<endl;
+			for (size_t n = 0; n< EPoint.size();n++)
+			{
+				if (EPoint[n].Path.size() == 0) //对于没有路径到达的接收点，信号强度设为最小值
+				{
+					EPoint[n].MolStrength = emin;
+				}
+			}
+			Tmax = emax;
+			Tmin = emin;
+
+			drawColorbar();
+
+			double length = emax - emin;
+
+			glEnable(GL_BLEND); //启用混合
+			glPushMatrix();
+			glBegin(GL_QUADS);
+			for(int i = 0; i < veticalNum-1; i++)
+			{
+				for(int j = 0; j < horizonNum-1; j++)
+				{
+					Vector3d v1 = EPoint[j*veticalNum + i].Position;
+					Vector3d v2 = EPoint[j*veticalNum + i + 1].Position;
+					Vector3d v4 = EPoint[(j+1)*veticalNum + i].Position;
+					Vector3d v3 = EPoint[(j+1)*veticalNum + i + 1].Position;
+					double c1 = (EPoint[j*veticalNum + i].MolStrength - emin)/length;
+					double c2 = (EPoint[j*veticalNum + i +1].MolStrength - emin)/length;
+					double c4 = (EPoint[(j+1)*veticalNum + i].MolStrength - emin)/length;
+					double c3 = (EPoint[(j+1)*veticalNum + i + 1].MolStrength - emin)/length;
+
+					Color result(0.5, 0.0, 0.0); 
+
+					LoadUniformColor(c1,result);
+					glColor4d(result.r, result.g, result.b, vis_factor_face);
+					glVertex3d(v1.x, v1.y, v1.z);
+					LoadUniformColor(c2,result);
+					glColor4d(result.r, result.g, result.b, vis_factor_face);
+					glVertex3d(v2.x, v2.y, v2.z);
+					LoadUniformColor(c3,result);
+					glColor4d(result.r, result.g, result.b, vis_factor_face);
+					glVertex3d(v3.x, v3.y, v3.z);
+					LoadUniformColor(c4,result);
+					glColor4d(result.r, result.g, result.b, vis_factor_face);
+					glVertex3d(v4.x, v4.y, v4.z);
+				}
+			}
+			glEnd();
+			glPopMatrix();
+			glDisable(GL_BLEND);
+		}		
+	}
+}
+
+void GLWidget::LoadUniformColor(double currentVaule,Color &result)
+{ 
+	if(currentVaule <= 0.2) 
+		result = Color(0.0,currentVaule * 5,1.0);
+	else if(currentVaule <= 0.4)
+		result = Color(0.0, 1.0, (0.4 - currentVaule) * 5);
+	else if(currentVaule <= 0.6)
+		result = Color((currentVaule - 0.4) * 5,1.0,0.0);
+	else if(currentVaule <= 0.8)
+		result = Color(1.0, (0.8 - currentVaule) * 2.5 + 0.5, 0.0);
+	else if(currentVaule <= 1.0)
+		result = Color(1.0,(1.0 - currentVaule) * 2.5,0.0);
+
+}
+
+void GLWidget::drawColorbar()
+{
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+    
+	int viewWidth = width() / 10;
+	if (viewWidth>80) viewWidth = 80;
+	int viewheight = height() / 2;
+
+	glViewport(width() - viewWidth - 20, height() - viewheight - 20, viewWidth, viewheight);  //视口（窗口）变换
+	gluOrtho2D(0, viewWidth, 0, viewheight);  //正投影
+
+	int cx = 0,cy = 0,cw = viewWidth / 4,ch = viewheight;
+	
+	// Draw Color Bar 6种颜色 
+	cy = ch;
+	ch = - ch;
+
+	glBegin (GL_QUAD_STRIP);      //
+
+	glColor3f( 1.0 ,0.0 ,0.0 ) ;	   //红 
+	glVertex2i(cx,cy);
+	glVertex2i(cx+cw,cy);
+
+	glColor3f(  1.0 ,0.5 ,0.0 );	   //桔黄
+	glVertex2i(cx,cy+ch/5);
+	glVertex2i(cx+cw,cy+ch/5);
+
+	glColor3f( 1.0 ,1.0 ,0.0);	   //黄
+	glVertex2i(cx,cy+2*ch/5);
+	glVertex2i(cx+cw,cy+2*ch/5);
+
+	glColor3f( 0.0 ,1.0 ,0.0);	   //绿
+	glVertex2i(cx,cy+3*ch/5);
+	glVertex2i(cx+cw,cy+3*ch/5);
+
+	glColor3f( 0.0 ,1.0 ,1.0);	   //青 
+	glVertex2i(cx,cy+4*ch/5);
+	glVertex2i(cx+cw,cy+4*ch/5);
+
+	glColor3f( 0.0 ,0.0 ,1.0);	   //蓝
+	glVertex2i(cx,cy+5*ch/5);
+	glVertex2i(cx+cw,cy+5*ch/5);
+
+	glEnd(); 
+
+	// Draw the outline of color bar
+	glColor3ub(0,0,0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2i(cx,cy);
+	glVertex2i(cx+cw,cy);
+	glVertex2i(cx+cw,cy+ch);
+	glVertex2i(cx,cy+ch);
+	glEnd();
+
+	// Draw the coordinate values
+	double y;
+	double strength[6];
+	for(int i=0;i<=5;i++)
+	{
+		y=cy+i*ch/5.0;
+		glBegin(GL_LINES);
+		glVertex2i(cx+cw,y);
+		glVertex2i(cx+cw+1,y);
+		glEnd();
+		
+		strength[i] = Tmax - (Tmax - Tmin)*i/5.0;
+
+		char* format;
+		format = new char[30]; 
+		
+		/*
+		函数gcvt(double number,size_t ndigits,char *buf)，把浮点数number转换成字符串(包含小数点和正负符号)，
+		参数ndigits表示需显示的位数(仅包含数字),并返回指向该字符串的指针buf
+		*/
+		if(strength[i]>=-1000 && strength[i]<-100)
+		{
+			gcvt(strength[i], 5, format);  
+		}
+		else if(strength[i]>=-100 && strength[i]<-10)
+		{
+			gcvt(strength[i], 4, format);
+		}
+		else if (strength[i]>=-10 && strength[i]<10)
+		{
+			gcvt(strength[i], 3, format);
+		}
+		else if (strength[i]>=10 && strength[i]<100)
+		{
+			gcvt(strength[i], 4, format);
+		}
+		else if (strength[i]>=100 && strength[i]<1000)
+		{
+			gcvt(strength[i], 5, format);
+		}
+		else if (strength[i]>=1000 && strength[i]<10000)
+		{
+			gcvt(strength[i], 6, format);
+		}
+		else if (strength[i]>=10000 && strength[i]<100000)
+		{
+			gcvt(strength[i], 7, format);
+		}
+
+		char *s;
+		glRasterPos2f(cx+cw+2,y);
+		for(s = format; *s; ++s)
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *s);
+		delete[] format;
+	}
+	glMatrixMode(GL_PROJECTION); 
+	glPopMatrix(); 
+	glMatrixMode(GL_MODELVIEW); 
+	glPopMatrix();
+	glViewport(0, 0, (GLint)width(), (GLint)height()); //视口还原为原始的整个屏幕
 }
