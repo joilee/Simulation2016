@@ -10,6 +10,6 @@
   
   
 ## 结果展示 
-![image]https://raw.githubusercontent.com/joilee/Simulation2016/master/ImageFIle/ReadMD/Simulation_Result.png
+![image](https://raw.githubusercontent.com/joilee/Simulation2016/master/ImageFIle/ReadMD/Simulation_Result.png)
   
   代码将会持续改进，直到完整的推出1.0版本。
