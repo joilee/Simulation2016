@@ -52,6 +52,8 @@ private slots:
 	void deletePlugin();
 	void run();
 	void quickLoadJson();
+	void saveSimuPlane();
+	void loadSimuPlane();
 	//内部界面控件
 private:
 	Ui::MainWindowClass ui;

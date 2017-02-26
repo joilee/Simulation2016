@@ -178,6 +178,9 @@
     <ClCompile Include="para\visualPara.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="io\io_simuPlane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.ui">
@@ -315,6 +318,12 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="para\visualPara.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="io\io_simuPlane.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLHelper\MeshGLEnv.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

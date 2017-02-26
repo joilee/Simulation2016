@@ -20,7 +20,6 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QProgressBar>
-#include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextBrowser>
@@ -52,11 +51,14 @@ public:
     QAction *action_deletePlugin;
     QAction *action_run;
     QAction *action_json;
+    QAction *action_SaveSimuPlane;
+    QAction *action_loadSimuPlane;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget_Dispaly;
     GLWidget *ModelView;
     GLWidget *simuArea;
+    GLWidget *simuPlane;
     QMenuBar *menuBar;
     QMenu *menuFILE;
     QMenu *menuMesh;
@@ -79,11 +81,12 @@ public:
     QDockWidget *dockWidget_2;
     QWidget *dockWidgetContents_5;
     QVBoxLayout *verticalLayout_3;
-    QStackedWidget *stackedWidget_Info;
     QDockWidget *dockWidget_para;
     QWidget *dockWidgetContents_3;
     QVBoxLayout *verticalLayout_6;
     QTreeWidget *treeWidget_para;
+    QDockWidget *dockWidget_localsecene;
+    QWidget *dockWidgetContents_4;
 
     void setupUi(QMainWindow *MainWindowClass)
     {
@@ -125,6 +128,10 @@ public:
         action_run->setObjectName(QStringLiteral("action_run"));
         action_json = new QAction(MainWindowClass);
         action_json->setObjectName(QStringLiteral("action_json"));
+        action_SaveSimuPlane = new QAction(MainWindowClass);
+        action_SaveSimuPlane->setObjectName(QStringLiteral("action_SaveSimuPlane"));
+        action_loadSimuPlane = new QAction(MainWindowClass);
+        action_loadSimuPlane->setObjectName(QStringLiteral("action_loadSimuPlane"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -140,6 +147,9 @@ public:
         simuArea = new GLWidget();
         simuArea->setObjectName(QStringLiteral("simuArea"));
         tabWidget_Dispaly->addTab(simuArea, QString());
+        simuPlane = new GLWidget();
+        simuPlane->setObjectName(QStringLiteral("simuPlane"));
+        tabWidget_Dispaly->addTab(simuPlane, QString());
 
         horizontalLayout->addWidget(tabWidget_Dispaly);
 
@@ -236,11 +246,6 @@ public:
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        stackedWidget_Info = new QStackedWidget(dockWidgetContents_5);
-        stackedWidget_Info->setObjectName(QStringLiteral("stackedWidget_Info"));
-
-        verticalLayout_3->addWidget(stackedWidget_Info);
-
         dockWidget_2->setWidget(dockWidgetContents_5);
         MainWindowClass->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget_2);
         dockWidget_para = new QDockWidget(MainWindowClass);
@@ -263,6 +268,13 @@ public:
 
         dockWidget_para->setWidget(dockWidgetContents_3);
         MainWindowClass->addDockWidget(static_cast<Qt::DockWidgetArea>(1), dockWidget_para);
+        dockWidget_localsecene = new QDockWidget(MainWindowClass);
+        dockWidget_localsecene->setObjectName(QStringLiteral("dockWidget_localsecene"));
+        dockWidget_localsecene->setMinimumSize(QSize(80, 100));
+        dockWidgetContents_4 = new QWidget();
+        dockWidgetContents_4->setObjectName(QStringLiteral("dockWidgetContents_4"));
+        dockWidget_localsecene->setWidget(dockWidgetContents_4);
+        MainWindowClass->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget_localsecene);
 
         menuBar->addAction(menuFILE->menuAction());
         menuBar->addAction(menuMesh->menuAction());
@@ -292,11 +304,13 @@ public:
         menuComputer->addAction(action_run);
         menuVisualize->addAction(action_ShowAll);
         menuVisualize->addAction(action_localscene);
+        menuVisualize->addSeparator();
+        menuVisualize->addAction(action_SaveSimuPlane);
+        menuVisualize->addAction(action_loadSimuPlane);
 
         retranslateUi(MainWindowClass);
 
-        tabWidget_Dispaly->setCurrentIndex(1);
-        stackedWidget_Info->setCurrentIndex(-1);
+        tabWidget_Dispaly->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(MainWindowClass);
@@ -304,7 +318,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindowClass)
     {
-        MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "\345\256\244\345\206\205\344\277\241\345\217\267\344\273\277\347\234\237", 0));
+        MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "SCS", 0));
         action->setText(QApplication::translate("MainWindowClass", "\346\226\260\345\273\272", 0));
         action_3->setText(QApplication::translate("MainWindowClass", "\345\257\274\345\205\245\345\256\244\345\244\226\345\234\272\346\231\257", 0));
         action_saveLocal->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230\345\261\200\351\203\250\345\234\272\346\231\257", 0));
@@ -322,8 +336,11 @@ public:
         action_deletePlugin->setText(QApplication::translate("MainWindowClass", "\345\215\270\350\275\275\347\256\227\346\263\225", 0));
         action_run->setText(QApplication::translate("MainWindowClass", "\350\256\241\347\256\227", 0));
         action_json->setText(QApplication::translate("MainWindowClass", "\345\277\253\351\200\237\345\257\274\345\205\245\345\234\272\346\231\257(.json)", 0));
+        action_SaveSimuPlane->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230\344\273\277\347\234\237\351\235\242", 0));
+        action_loadSimuPlane->setText(QApplication::translate("MainWindowClass", "\345\257\274\345\205\245\344\273\277\347\234\237\351\235\242", 0));
         tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(ModelView), QApplication::translate("MainWindowClass", "\346\250\241\345\236\213\345\234\272\346\231\257", 0));
         tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(simuArea), QApplication::translate("MainWindowClass", "\344\273\277\347\234\237\345\234\272\346\231\257", 0));
+        tabWidget_Dispaly->setTabText(tabWidget_Dispaly->indexOf(simuPlane), QApplication::translate("MainWindowClass", "\344\273\277\347\234\237\351\235\242", 0));
         menuFILE->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuMesh->setTitle(QApplication::translate("MainWindowClass", "Mesh", 0));
         menuComputer->setTitle(QApplication::translate("MainWindowClass", "Computer", 0));
@@ -331,7 +348,9 @@ public:
         menuAbout->setTitle(QApplication::translate("MainWindowClass", "About", 0));
         dockWidget_outputLog->setWindowTitle(QApplication::translate("MainWindowClass", "Log", 0));
         dockWidget_outline->setWindowTitle(QApplication::translate("MainWindowClass", "\347\233\256\345\275\225", 0));
+        dockWidget_2->setWindowTitle(QApplication::translate("MainWindowClass", "\345\273\272\347\255\221\347\211\251\345\234\272\346\231\257\346\225\260\346\215\256", 0));
         dockWidget_para->setWindowTitle(QApplication::translate("MainWindowClass", "\345\217\202\346\225\260", 0));
+        dockWidget_localsecene->setWindowTitle(QApplication::translate("MainWindowClass", "\345\261\200\351\203\250\345\234\272\346\231\257\346\225\260\346\215\256", 0));
     } // retranslateUi
 
 };

@@ -12,7 +12,7 @@ GLWidget::GLWidget(QWidget *parent): QGLWidget(QGLFormat(QGL::SampleBuffers), pa
 {
 	resetRenderColor();
 	// Ground
-	m_lightPos = Vector3d(-0.55, 0.55,20);
+	m_lightPos = Vector3d(0, 0.55,20);
 
 	m_groundCenter = Vector3d(0, 0, 0);
 	m_dGroundWidth=5;
@@ -75,27 +75,31 @@ void GLWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
 
-	//定义材料属性
-	float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
-	float mat_shininess  [] = { 100.0f };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);  
+	////定义材料属性
+	//float mat_specular   [] = {0.3f, 0.3f, 0.3f, 0.3f };
+	//float mat_shininess  [] = { 100.0f };
+	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);  
+	//glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);  
 	
 	 //创建光源
 	float light0_position[] = { m_lightPos.x, m_lightPos.y, m_lightPos.z, 0 };
 	float light0_diffuse [] = { m_lightColor.r, m_lightColor.g, m_lightColor.b, 1.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);  //光源位置
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);  //散射光
-	
+	// 指定环境光的RGBA强度值
+	GLfloat ambientLight[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	// 设置光照模型，将ambientLight所指定的RGBA强度值应用到环境光
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 	 //定义光照模型
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE); 
+	glEnable(GL_LIGHTING);
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE); 
 
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
 
 	glClearColor(m_backGroundColor.r , m_backGroundColor.g, m_backGroundColor.b, 0.0);   //设置当前清除颜色
-	glShadeModel(GL_SMOOTH);  //平滑着色
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);		// 基于源象素alpha通道值的半透明混合函数
+//	glShadeModel(GL_SMOOTH);  //平滑着色
+//	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);		// 基于源象素alpha通道值的半透明混合函数
 }
 
 
@@ -103,6 +107,7 @@ void GLWidget::paintGL()
 {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //用设定的当前清除值清除指定的缓冲区
 		m_camera.setupModelMatrix();
+
 		if (drawTriangleScene)
 		{
 			drawLocalScene();
@@ -111,11 +116,12 @@ void GLWidget::paintGL()
 		{
 			drawAllScene();
 		}
-
 		if (drawSimplaneFlag)
 		{
 			drawPlane();
 		}
+
+		drawCoordinates();
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -138,8 +144,8 @@ GLWidget::~GLWidget()
 }
 void GLWidget::resetRenderColor()
 {
-	m_lightColor = Color:: LIGHT_GRAY;
-	m_backGroundColor = Color(130/256.f, 130/256.f, 172/256.f);
+	m_lightColor = Color::WHITE;
+	m_backGroundColor =  Color::MediumSlateBlue;
 	m_groundColor = Color::GRAY;
 }
 
@@ -232,13 +238,13 @@ void GLWidget::drawLocalScene(){
 
 	if (drawTriangleScene) //读取场景obj格式文件并展示
 	{
-		glEnable(GL_BLEND);
+	
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
 		glEnable(GL_DEPTH_TEST);
 
 		glClear(GL_COLOR_BUFFER_BIT);
-		
+		glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE );
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);  
 		glEnableClientState(GL_VERTEX_ARRAY);    
 		glVertexPointer(3, GL_FLOAT, 0, 0);  
@@ -427,6 +433,7 @@ void GLWidget::setTriangleModel(emxModel* TriangleData)
 void GLWidget::drawPlane()
 {
 	
+	glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL );
 	for (int id=0;id<AP_EPoints.size();id++)
 	{
 		if (sceneIsDislpay[id])  //选中的小区才能显示仿真结果
@@ -436,7 +443,7 @@ void GLWidget::drawPlane()
 			double emin = EPoint[0].MolStrength;
 			for(size_t m = 1; m < EPoint.size(); m++)
 			{
-				if (EPoint[m].Path.size() > 0) //若EPoint[i].Path.size() == 0 说明，此接收点没有路径到达，信号强度值未知
+				if (EPoint[m].pathsize> 0) //若EPoint[i].pathsize == 0 说明，此接收点没有路径到达，信号强度值未知
 				{
 					if(EPoint[m].MolStrength > emax)
 					{
@@ -445,14 +452,13 @@ void GLWidget::drawPlane()
 					if(EPoint[m].MolStrength < emin)
 					{
 						emin = EPoint[m].MolStrength;
-				
 					}
 				}
 			}
 		//	cout<<"the minimal point id is:"<<min_id<<endl;
 			for (size_t n = 0; n< EPoint.size();n++)
 			{
-				if (EPoint[n].Path.size() == 0) //对于没有路径到达的接收点，信号强度设为最小值
+				if (EPoint[n].pathsize== 0) //对于没有路径到达的接收点，信号强度设为最小值
 				{
 					EPoint[n].MolStrength = emin;
 				}
@@ -460,25 +466,29 @@ void GLWidget::drawPlane()
 			Tmax = emax;
 			Tmin = emin;
 
+
+			minPos=EPoint[0].Position;
+			maxPos=EPoint[EPoint.size()-1].Position;
+			updateMesh();
 			drawColorbar();
 
 			double length = emax - emin;
-
 			glEnable(GL_BLEND); //启用混合
 			glPushMatrix();
 			glBegin(GL_QUADS);
-			for(int i = 0; i < veticalNum-1; i++)
+
+			for(int i = 0; i < veticalNum[id]-1; i++)
 			{
-				for(int j = 0; j < horizonNum-1; j++)
+				for(int j = 0; j < horizonNum[id]-1; j++)
 				{
-					Vector3d v1 = EPoint[j*veticalNum + i].Position;
-					Vector3d v2 = EPoint[j*veticalNum + i + 1].Position;
-					Vector3d v4 = EPoint[(j+1)*veticalNum + i].Position;
-					Vector3d v3 = EPoint[(j+1)*veticalNum + i + 1].Position;
-					double c1 = (EPoint[j*veticalNum + i].MolStrength - emin)/length;
-					double c2 = (EPoint[j*veticalNum + i +1].MolStrength - emin)/length;
-					double c4 = (EPoint[(j+1)*veticalNum + i].MolStrength - emin)/length;
-					double c3 = (EPoint[(j+1)*veticalNum + i + 1].MolStrength - emin)/length;
+					Vector3d v1 = EPoint[j*veticalNum[id] + i].Position;
+					Vector3d v2 = EPoint[j*veticalNum[id] + i + 1].Position;
+					Vector3d v4 = EPoint[(j+1)*veticalNum[id] + i].Position;
+					Vector3d v3 = EPoint[(j+1)*veticalNum[id] + i + 1].Position;
+					double c1 = (EPoint[j*veticalNum[id] + i].MolStrength - emin)/length;
+					double c2 = (EPoint[j*veticalNum[id] + i +1].MolStrength - emin)/length;
+					double c4 = (EPoint[(j+1)*veticalNum[id] + i].MolStrength - emin)/length;
+					double c3 = (EPoint[(j+1)*veticalNum[id] + i + 1].MolStrength - emin)/length;
 
 					Color result(0.5, 0.0, 0.0); 
 
@@ -497,8 +507,9 @@ void GLWidget::drawPlane()
 				}
 			}
 			glEnd();
+		
 			glPopMatrix();
-			glDisable(GL_BLEND);
+			//glDisable(GL_BLEND);
 		}		
 	}
 }
@@ -516,6 +527,63 @@ void GLWidget::LoadUniformColor(double currentVaule,Color &result)
 	else if(currentVaule <= 1.0)
 		result = Color(1.0,(1.0 - currentVaule) * 2.5,0.0);
 
+}
+
+//绘制坐标轴
+void GLWidget::drawCoordinates()
+{
+	GLUquadricObj* quadratic=gluNewQuadric(); 
+	gluQuadricNormals(quadratic, GLU_SMOOTH); 
+	gluQuadricTexture(quadratic, GL_FALSE);
+
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST); 
+
+	glMatrixMode(GL_PROJECTION); 
+	glPushMatrix();
+	glLoadIdentity(); 
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	int ww = width() / 4;
+	if (ww > 128) ww = 128;
+	glViewport(0, 0, ww + 20, (GLint)ww + 20);
+	glOrtho(-24, 24, -24, 24, -24, 24); 
+
+	//画坐标轴
+	glMultMatrixd(m_camera.getRotateMatrix());
+	glColor3f(1.0, 0.0, 0.0);
+	gluCylinder(quadratic, 1.0f, 1.0f, 12.0f ,32, 32);
+	glTranslatef(0.0, 0.0, 12.0f); 
+	gluCylinder(quadratic, 2.0f, 0.0f, 4.0f, 32, 32);
+	glRasterPos3f (0.0, 0.0, 8);
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,'z');
+	glTranslatef(0.0, 0.0, -12.0f);
+	glRotated(-90, 1.0, 0.0, 0.0); 
+	glColor3f( 0.0, 1.0, 0.0 );
+	gluCylinder(quadratic, 1.0f, 1.0f, 12.0f ,32, 32); 
+	glTranslatef(0.0, 0.0, 12.0f);
+	gluCylinder(quadratic, 2.0f, 0.0f, 4.0f, 32, 32);
+	glRasterPos3f (0.0, 0.0, 8); 
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,'y'); 
+	glTranslatef(0.0, 0.0, -12.0f); 
+	glRotated(90, 0.0, 1.0, 0.0); 
+	glColor3f(0.0, 0.0, 1.0); 
+	gluCylinder(quadratic, 1.0f, 1.0f, 12.0f ,32, 32); 
+	glTranslatef(0.0, 0.0, 12.0f); 
+	gluCylinder(quadratic, 2.0f, 0.0f, 4.0f, 32, 32);
+	glRasterPos3f (0.0, 0.0, 8); 
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,'x');
+
+	glMatrixMode(GL_PROJECTION); 
+	glPopMatrix(); 
+	glMatrixMode(GL_MODELVIEW); 
+	glPopMatrix(); 
+
+	glViewport(0, 0, (GLint)width(), (GLint)height());  //视口还原为原始的整个屏幕
+	glDisable(GL_BLEND);
+	gluDeleteQuadric(quadratic); 
 }
 
 void GLWidget::drawColorbar()

@@ -217,6 +217,7 @@
     <ClCompile Include="glWidget.cpp">
       <UseMSVC Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseMSVC>
     </ClCompile>
+    <ClCompile Include="io\io_simuPlane.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="para\computePara.cpp" />
     <ClCompile Include="para\modelPara.cpp" />
@@ -275,6 +276,7 @@
     <ClInclude Include="geometry\emxVertex.h" />
     <ClInclude Include="geometry\meshStruct.h" />
     <ClInclude Include="geometry\SphereBeam.h" />
+    <ClInclude Include="GLHelper\MeshGLEnv.h" />
     <CustomBuild Include="glWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing glWidget.h...</Message>
@@ -293,6 +295,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\Visual Leak Detector\include"</Command>
     </CustomBuild>
+    <ClInclude Include="io\io_simuPlane.h" />
     <ClInclude Include="para\computePara.h" />
     <ClInclude Include="para\modelPara.h" />
     <ClInclude Include="para\visualPara.h" />

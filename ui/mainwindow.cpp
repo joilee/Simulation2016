@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QTextStream>
 #include "Antenna/receiver.h"
+#include "io/io_simuPlane.h"
 #include <QObject>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -49,8 +50,8 @@ void MainWindow::init()
 
 
 
-	ui.stackedWidget_Info->addWidget(bip);
-	ui.stackedWidget_Info->addWidget(lpg);
+	ui.dockWidget_2->setWidget(bip);
+	ui.dockWidget_localsecene->setWidget(lpg);
 	ui.progressBar->setRange(0,100);
 
 	//设置对话框的默认数据
@@ -95,7 +96,8 @@ void MainWindow:: createActions()
 		connect(ui.action_obj,SIGNAL(triggered()),this,SLOT(loadObj()));
 		connect(ui.action_9,SIGNAL(triggered()),this,SLOT(setMaterial()));
 		connect(ui.action_matFile,SIGNAL(triggered()),this,SLOT(open_material()));
-		connect(ui.tabWidget_Dispaly,SIGNAL(currentChanged(int)),ui.stackedWidget_Info,SLOT(setCurrentIndex(int)));
+		connect(ui.action_SaveSimuPlane,SIGNAL(triggered()),this,SLOT(saveSimuPlane()));
+		connect(ui.action_loadSimuPlane,SIGNAL(triggered()),this,SLOT(loadSimuPlane()));
 		connect(ui.action_6,SIGNAL(triggered()),this,SLOT(setMeshOption()));
 		connect(ui.action_startMesh,SIGNAL(triggered()),this,SLOT(meshAll()));
 		connect(ui.action_saveLocal,SIGNAL(triggered()),this,SLOT(saveLocalScene()));
@@ -105,6 +107,36 @@ void MainWindow:: createActions()
        	connect(ui.action_loadPlugin,SIGNAL(triggered()),this,SLOT(loadPlugin()));
 		connect(ui.action_run,SIGNAL(triggered()),this,SLOT(run()));
 		connect(ui.action_json,SIGNAL(triggered()),this,SLOT(quickLoadJson()));
+}
+
+void MainWindow::saveSimuPlane()
+{
+	QString filepath=QFileDialog::getSaveFileName(this,QStringLiteral("保存为"),"",tr("*.sp"));
+	if (filepath.isEmpty())
+	{
+		outputLog(QStringLiteral("获取保存路径失败！"));
+		return;
+	}
+	globalContext *globalCtx=globalContext::GetInstance();
+	if (globalCtx->visualPara->vis_AP_EFieldArrays.size()==0)
+	{
+		outputLog(QStringLiteral("没有仿真面生成！"));
+		return;	
+	}
+	saveSimuPlaneResult(globalCtx->visualPara->vis_AP_EFieldArrays,globalCtx->visualPara->veticalNum,globalCtx->visualPara->horizonNum,filepath.toStdString());
+}
+void MainWindow::loadSimuPlane()
+{
+	QString path = QFileDialog::getOpenFileName(this,QStringLiteral("打开仿真面文件"),"./",QStringLiteral("sp 仿真面文件 (*.sp)"));
+	if (path.isEmpty())
+	{
+		outputLog(QStringLiteral("仿真面路径错误！"));
+		return;
+	}
+	globalContext *globalCtx=globalContext::GetInstance();
+	loadSimuPlaneResult(globalCtx->visualPara->vis_AP_EFieldArrays,globalCtx->visualPara->veticalNum,globalCtx->visualPara->horizonNum ,path);
+	ui.simuPlane->setSimPlane(globalCtx->visualPara->vis_AP_EFieldArrays,globalCtx->visualPara->horizonNum,globalCtx->visualPara->veticalNum);
+	outputLog(QStringLiteral("显示结果"));
 }
 
 void MainWindow::saveLocalScene()
@@ -311,7 +343,7 @@ string Trim(string &str)   //提取不包含空格、制表符、回车、换行
 
 void MainWindow::openTransAntennas_DirGain()
 {
-	QStringList paths = QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("批量导入天线方向增益文件"),"./",QString::fromLocal8Bit("txt  天线方向增益文件 (*.txt)"));
+	QStringList paths = QFileDialog::getOpenFileNames(this,QStringLiteral("批量导入天线方向增益文件"),"./",QStringLiteral("txt  天线方向增益文件 (*.txt)"));
 	if (paths.isEmpty())
 		return;
 	globalContext *glbctx=globalContext::GetInstance();
@@ -372,7 +404,7 @@ void MainWindow::openTransAntennas_DirGain()
 			}
 		}
 	}
-	QMessageBox::warning(this, QString::fromLocal8Bit("多个站点方向增益文件"), QString::fromLocal8Bit("加载成功"));
+	QMessageBox::warning(this, QStringLiteral("多个站点方向增益文件"), QStringLiteral("加载成功"));
 }
 
 void MainWindow::openTransAntenna_ParamFile()
@@ -691,6 +723,7 @@ void MainWindow::loadObj()
 	lpg->setParametre(triangleModel->NumF(),MinPointLocal,MaxPointLocal);
 	setModelName(1,OBJFile_path);
 	setProgress(100);
+	gctx->modelPara->trianglePara=triangleModel;
 	return;
 }
 
@@ -868,7 +901,7 @@ void MainWindow::run()
 			outputLog(QStringLiteral("开始运行计算函数"));	
 			pluginTemp->runAlgorithm(gctx->modelPara,gctx->cptPara,gctx->visualPara);
 		    outputLog(QStringLiteral("结束计算"));
-			ui.simuArea->setSimPlane(gctx->visualPara->vis_AP_EFieldArrays,gctx->visualPara->horizonNum,gctx->visualPara->veticalNum);
+			ui.simuPlane->setSimPlane(gctx->visualPara->vis_AP_EFieldArrays,gctx->visualPara->horizonNum,gctx->visualPara->veticalNum);
 			outputLog(QStringLiteral("显示结果"));
 		}
 	}

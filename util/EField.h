@@ -4,6 +4,7 @@
 #include <complex>
 #include <vector>
 
+#define MinMol -1000
 class Field_Path
 {
 public:
@@ -28,6 +29,7 @@ class EField
 public:
 	Vector3d Position;  //接收点位置
 	std::vector<Field_Path> Path;  //Field_Path 类成员：all_distance、power_loss、Path_interPoint
+	int pathsize;//显示专用
 	double MolStrength;   //信号模值
 	Vector3cd EFieldAll;  //矢量总场强
 	bool In_or_Out; //接收点是否在建筑物内部的特征标志，0表示在内部，1表示不在内部
@@ -38,6 +40,6 @@ public:
 	//complex<double> EFieldTotal;  //模值总场强
 	double HorizontalDis;  //接收点和发射源之间水平距离
 	double LosDis; //接收点和发射源之间的直达距离
-	EField(): MolStrength(0.0),EFieldAll(Vector3cd(0, 0, 0)),In_or_Out(1){}
+	EField(): pathsize(0),MolStrength(0.0),EFieldAll(Vector3cd(0, 0, 0)),In_or_Out(1){}
 };
 #endif

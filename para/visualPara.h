@@ -9,8 +9,8 @@ public:
 	visPara();
 	~visPara();
 	vector<vector<EField>> vis_AP_EFieldArrays;   //存储多个站点接收点计算信号强度
-	int horizonNum;
-	int veticalNum;
+	vector<int> horizonNum;
+	vector<int> veticalNum;
 protected:
 
 private:

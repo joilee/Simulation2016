@@ -38,7 +38,6 @@ public:
 
 	Color m_backGroundColor;/**< scene background color(OpenGL clear color) */
 
-
 	// Ground
 	Vector3d m_groundCenter;/**< the center position of the ground */
 	double m_dGroundWidth;
@@ -68,8 +67,8 @@ public:
 
 	bool drawSimplaneFlag;
 	double vis_factor_face;
-	int horizonNum;
-	int veticalNum;
+	vector<int> horizonNum;
+	vector<int> veticalNum;
 	double Tmax;
 	double Tmin;
 	vector<vector<EField>> AP_EPoints;  //记录接收点处相关信息，以便仿真面的绘制
@@ -81,6 +80,8 @@ public:
 	void drawAllScene();//全局，建筑物展示，无地面，建筑物本身有海拔
 
 	void drawLocalScene();//局部信息，只有三角面片
+
+	void drawCoordinates();
 
 	void setMaterial(vector<material> &materialdatabase){materials = materialdatabase;}
 	
@@ -117,11 +118,23 @@ public:
 		minPos = MinPoint;
 		maxPos = MaxPoint;
 	}
-	void setGrid(int level, int vertical){horizonNum = level; veticalNum = vertical;}
-	void setSimPlane(vector<vector<EField>> &PlacePoint,int h,int v)
+	void setGrid(vector<int> level, vector<int> vertical)
+	{
+		horizonNum = level; 
+		veticalNum = vertical;
+		for (int i=0;i<horizonNum.size();i++)
+		{
+			horizonNum[i]++;
+		}
+		for (int i=0;i<veticalNum.size();i++)
+		{
+			veticalNum[i]++;
+		}
+	}
+	void setSimPlane(vector<vector<EField>> &PlacePoint,vector<int> h,vector<int> v)
 	{
 		AP_EPoints=PlacePoint;
-		setGrid(h+1,v+1);
+		setGrid(h,v);
 		sceneIsDislpay.push_back(true);
 		drawSimplaneFlag=true;
 	}

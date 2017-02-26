@@ -9,6 +9,8 @@
 	{
 	public:
 		static const Color WHITE;
+		static const Color Turquoise;
+		static const Color MediumSlateBlue;
 		static const Color GRAY;
 		static const Color BLACK;
 		static const Color RED;
