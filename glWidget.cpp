@@ -443,7 +443,8 @@ void GLWidget::drawPlane()
 			double emin = EPoint[0].MolStrength;
 			for(size_t m = 1; m < EPoint.size(); m++)
 			{
-				if (EPoint[m].pathsize> 0) //若EPoint[i].pathsize == 0 说明，此接收点没有路径到达，信号强度值未知
+
+				if (EPoint[m].pathsize> 0||EPoint[m].Path.size()>0) //若EPoint[i].pathsize == 0 说明，此接收点没有路径到达，信号强度值未知
 				{
 					if(EPoint[m].MolStrength > emax)
 					{
@@ -458,7 +459,7 @@ void GLWidget::drawPlane()
 		//	cout<<"the minimal point id is:"<<min_id<<endl;
 			for (size_t n = 0; n< EPoint.size();n++)
 			{
-				if (EPoint[n].pathsize== 0) //对于没有路径到达的接收点，信号强度设为最小值
+				if (EPoint[n].pathsize== 0&&EPoint[n].Path.size()==0) //对于没有路径到达的接收点，信号强度设为最小值
 				{
 					EPoint[n].MolStrength = emin;
 				}
@@ -466,7 +467,7 @@ void GLWidget::drawPlane()
 			Tmax = emax;
 			Tmin = emin;
 
-
+			//更新场景的数据
 			minPos=EPoint[0].Position;
 			maxPos=EPoint[EPoint.size()-1].Position;
 			updateMesh();

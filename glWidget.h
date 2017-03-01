@@ -117,6 +117,8 @@ public:
 		drawVectorScene = true;
 		minPos = MinPoint;
 		maxPos = MaxPoint;
+		updateMesh();
+		m_camera.zoomOut(2.6);
 	}
 	void setGrid(vector<int> level, vector<int> vertical)
 	{

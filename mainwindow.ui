@@ -134,7 +134,7 @@
     <set>QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="windowTitle">
-    <string>Log</string>
+    <string>日志</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>

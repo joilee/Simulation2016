@@ -346,7 +346,7 @@ public:
         menuComputer->setTitle(QApplication::translate("MainWindowClass", "Computer", 0));
         menuVisualize->setTitle(QApplication::translate("MainWindowClass", "Visualize", 0));
         menuAbout->setTitle(QApplication::translate("MainWindowClass", "About", 0));
-        dockWidget_outputLog->setWindowTitle(QApplication::translate("MainWindowClass", "Log", 0));
+        dockWidget_outputLog->setWindowTitle(QApplication::translate("MainWindowClass", "\346\227\245\345\277\227", 0));
         dockWidget_outline->setWindowTitle(QApplication::translate("MainWindowClass", "\347\233\256\345\275\225", 0));
         dockWidget_2->setWindowTitle(QApplication::translate("MainWindowClass", "\345\273\272\347\255\221\347\211\251\345\234\272\346\231\257\346\225\260\346\215\256", 0));
         dockWidget_para->setWindowTitle(QApplication::translate("MainWindowClass", "\345\217\202\346\225\260", 0));
